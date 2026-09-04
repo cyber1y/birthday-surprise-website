@@ -119,7 +119,7 @@ body::after {
 #curtainCenter {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 10001;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -728,6 +728,19 @@ input[type="file"] { display: none; }
 .wordle-tile.correct { background: #16a34a; border-color: #16a34a; }
 .wordle-tile.present { background: #ca8a04; border-color: #ca8a04; }
 .wordle-tile.absent { background: rgba(255,255,255,0.08); }
+.wordle-input {
+  width: 52px;
+  height: 58px;
+  border: 2px solid var(--panel-border);
+  border-radius: 8px;
+  background: var(--glass);
+  color: var(--text);
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 10px;
+}
 
 /* slot machine */
 .slot-machine { display: flex; justify-content: center; gap: 16px; align-items: center; }
@@ -997,3 +1010,12 @@ input[type="file"] { display: none; }
   .main-nav { gap: 8px; }
   .nav-link { padding: 8px 12px; font-size: 0.8rem; }
 }
+
+/* ==== Share a moment (gallery) ==== */
+#cameraPreview video {
+  width: 220px;
+  border-radius: 12px;
+  border: 2px solid var(--panel-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+#shareStatus { text-align: center; font-weight: 600; }

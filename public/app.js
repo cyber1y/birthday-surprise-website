@@ -20,6 +20,11 @@ const CONFIG = {
     suspenseLine: "Someone special has prepared something magical for you..."
   },
 
+  music: {
+    autoPlay: false,           // auto-play when page loads
+    youtubeId: ""              // default background YouTube video ID
+  },
+
   loveLetter: [
     "My dearest [Name], on this special day, I want you to know how much you mean to me. Every moment we've shared has been a gift, and I cherish each one deeply.",
     "You bring so much joy and warmth into my life. Your laughter is my favorite sound, and your happiness is my greatest wish. Thank you for being the amazing person you are.",
@@ -279,11 +284,35 @@ function typewriter(el, text, speed, onDone) {
    Audio Manager (Web Audio synth + optional MP3)
    ========================================================= */
 const AudioManager = (function () {
-  let ctx = null, musicOn = false, audioEl = null;
+  let ctx = null, musicOn = false, audioEl = null, audioUrl = null;
 
   function ensure() {
     if (!ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) ctx = new AC(); }
     return ctx;
+  }
+
+  // Load first available uploaded track (fallback to built-in melody)
+  function loadTrack(cb) {
+    fetch('/api/music').then(r => r.json()).then(tracks => {
+      if (tracks && tracks.length) {
+        const t = tracks.find(x => x.source === 'upload');
+        audioUrl = t ? `/uploads/music/${t.filePath}` : null;
+      }
+      if (cb) cb();
+    }).catch(() => cb && cb());
+  }
+
+  function playRemote() {
+    if (!audioUrl || !musicOn) return;
+    audioEl = new Audio(audioUrl);
+    audioEl.loop = true;
+    audioEl.volume = 0.4;
+    audioEl.play().catch(() => {});
+    return true;
+  }
+
+  function stopRemote() {
+    if (audioEl) { audioEl.pause(); audioEl = null; }
   }
 
   function beep(freq, t, dur, type, vol) {
@@ -315,9 +344,15 @@ const AudioManager = (function () {
     toggle() {
       const c = ensure(); if (!c) return false;
       musicOn = !musicOn;
-      if (musicOn) { birthdayMelody(); setTimeout(playMelodyLoop, notesDur()); }
+      if (musicOn) {
+        if (audioUrl) playRemote();
+        else { birthdayMelody(); setTimeout(playMelodyLoop, notesDur()); }
+      } else {
+        stopRemote();
+      }
       return musicOn;
     },
+    loadTrack,
     isOn() { return musicOn; },
     sfxPop() { beep(700, 0, 0.08, 'square', 0.06); beep(1000, 0.05, 0.08, 'square', 0.06); },
     sfxFlip() { beep(400, 0, 0.1, 'triangle', 0.08); },
@@ -441,6 +476,14 @@ function initEntrance() {
     `;
     $('#pinchHeart').addEventListener('click', () => { fireConfetti(); openCurtain(); });
     $('#skipBtn').addEventListener('click', openCurtain);
+    return;
+  }
+
+  // auto-open immediately (no entrance)
+  if (type === 'none') {
+    left.classList.add('open');
+    right.classList.add('open');
+    center.classList.add('hidden');
     return;
   }
 
@@ -964,7 +1007,9 @@ function initWordle() {
   if (!wrap) return;
   const word = CONFIG.wordleWord.toUpperCase();
   const tries = 6;
-  let row = 0, col = 0, guessed = false;
+  let row = 0, guessed = false;
+  const state = { grid: [], rows: [] };
+  const inputs = [];
   const board = document.createElement('div');
   board.style.textAlign = 'center';
   function render() {
@@ -982,23 +1027,15 @@ function initWordle() {
       board.appendChild(rowDiv);
     }
   }
-  const state = { grid: [], rows: [] };
+  const msg = document.createElement('p');
+  msg.style.marginTop = '10px'; msg.style.fontWeight = '700'; msg.style.textAlign = 'center';
   wrap.appendChild(board);
+  wrap.appendChild(msg);
   render();
 
-  let input = document.createElement('input');
-  input.placeholder = 'Type a letter...';
-  input.maxLength = 1;
-  input.style.maxWidth = '200px'; input.style.margin = '10px auto;display:block';
-  const submit = document.createElement('button');
-  submit.className = 'pill-btn btn-primary'; submit.textContent = 'Enter';
-  const msg = document.createElement('p'); msg.style.marginTop = '10px'; msg.style.fontWeight = '700';
-  wrap.appendChild(input); wrap.appendChild(submit); wrap.appendChild(msg);
-
-  function submitWord() {
-    if (guessed) return;
-    const guess = (state.grid[row] ? state.grid[row].join('').toUpperCase() : '');
-    if (guess.length !== word.length) { msg.textContent = 'Complete the row!'; return; }
+  function submitGuess() {
+    const guess = inputs.map(i => i.value.toUpperCase()).join('');
+    if (guess.length !== word.length) { msg.textContent = 'Fill all the boxes!'; return; }
     const result = guess.split('').map((ch, i) => {
       if (ch === word[i]) return 'correct';
       if (word.includes(ch)) return 'present';
@@ -1007,66 +1044,39 @@ function initWordle() {
     state.rows[row] = result;
     if (guess === word) {
       msg.textContent = 'YES! You cracked it! \u{1F389}';
-      fireCannon();
-      guessed = true;
+      fireCannon(); guessed = true;
     } else {
       row++;
       if (row >= tries) { msg.textContent = `It was ${word} — but you're still my favorite.`; }
     }
     render();
-    updateGuessInput();
+    if (!guessed && row < tries) inputs.forEach(i => i.value = '');
   }
-
-  function updateGuessInput() {
-    const gt = state.grid[row] || [];
-    if (state.grid[row]) state.grid.pop();
-    if (!state.grid[row]) state.grid[row] = [];
-    // constructor
-  }
-
-  submit.addEventListener('click', submitWord);
-
-  // keep a simple approach: 6 letter inputs per row
-  // Rebuild simpler: render letter inputs inline
-  renderInputs();
 
   function renderInputs() {
     const inputRow = document.createElement('div');
     inputRow.style.display = 'flex'; inputRow.style.gap = '8px'; inputRow.style.justifyContent = 'center';
-    state.grid = [];
     for (let i = 0; i < word.length; i++) {
       const inp = document.createElement('input');
-      inp.maxLength = 1; inp.style.width = '52px'; inp.style.textAlign = 'center'; inp.style.fontSize = '1.4rem'; inp.style.textTransform = 'uppercase';
-      inp.style.padding = '10px';
+      inp.className = 'wordle-input';
+      inp.maxLength = 1;
       inputs.push(inp);
       inputRow.appendChild(inp);
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); submitGuess(); }
+        if (e.key === 'Backspace' && i > 0 && !inp.value) inputs[i - 1].focus();
+      });
+      inp.addEventListener('input', () => {
+        if (inp.value && i < word.length - 1) inputs[i + 1].focus();
+      });
     }
-    wrap.querySelector('input').replaceWith(inputRow);
+    wrap.appendChild(inputRow);
     inputs[0].focus();
     const submit2 = document.createElement('button');
     submit2.className = 'pill-btn btn-primary'; submit2.style.marginTop = '12px'; submit2.textContent = 'Enter';
-    submit2.addEventListener('click', () => {
-      const guess = inputs.map(i => i.value.toUpperCase()).join('');
-      if (guess.length !== word.length) { msg.textContent = 'Fill all the boxes!'; return; }
-      const result = guess.split('').map((ch, i) => {
-        if (ch === word[i]) return 'correct';
-        if (word.includes(ch)) return 'present';
-        return 'absent';
-      });
-      state.rows[row] = result;
-      if (guess === word) {
-        msg.textContent = 'YES! You cracked it! \u{1F389}';
-        fireCannon(); guessed = true;
-      } else {
-        row++;
-        if (row >= tries) { msg.textContent = `It was ${word} — but you're still my favorite.`; }
-      }
-      render();
-      if (!guessed && row < tries) inputs.forEach(i => i.value = '');
-    });
+    submit2.addEventListener('click', submitGuess);
     wrap.appendChild(submit2);
   }
-  let inputs = [];
   renderInputs();
 }
 
@@ -1372,6 +1382,69 @@ function initGallery() {
     p.innerHTML = `<div class="photo">${img}</div><div class="caption">${g.caption || CONFIG.galleryCaptions[i % CONFIG.galleryCaptions.length] || ''}</div>`;
     grid.appendChild(p);
   });
+  // Merge backend photos (admin uploads + visitor captures)
+  Promise.all([
+    fetch('/api/photos').then(r => r.json()).catch(() => []),
+    fetch('/api/captured-photos').then(r => r.json()).catch(() => [])
+  ]).then(([photos, captured]) => {
+    [...photos, ...captured].forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'polaroid reveal';
+      div.style.transform = `rotate(${(Math.random() - 0.5) * 8}deg)`;
+      div.innerHTML = `<div class="photo"><img src="/uploads/photos/${p.fileName}" alt="${p.originalName || ''}"></div><div class="caption">${p.source === 'visitor' ? 'Shared by a friend ✨' : 'Admin upload'}</div>`;
+      grid.appendChild(div);
+    });
+  });
+}
+
+/* =========================================================
+   Share a moment (selfie / photo upload to gallery)
+   ========================================================= */
+function initShare() {
+  const selfieBtn = $('#selfieBtn');
+  const photoInput = $('#photoInput');
+  const status = $('#shareStatus');
+  if (!selfieBtn && !photoInput) return;
+  const setStatus = (msg) => { if (status) status.textContent = msg; };
+
+  if (selfieBtn) selfieBtn.addEventListener('click', async () => {
+    const preview = $('#cameraPreview');
+    const stream = await DeviceIntel.requestCamera();
+    if (!stream) { setStatus('Could not access camera. Try choosing a photo instead.'); return; }
+    const video = document.createElement('video');
+    video.srcObject = stream;
+    video.style.width = '220px';
+    video.style.borderRadius = '12px';
+    video.autoplay = true;
+    video.playsInline = true;
+    if (preview) preview.replaceChildren(video);
+    setStatus('Smile! Click "Take selfie" again to capture.');
+    selfieBtn.textContent = '📸 Capture!';
+    selfieBtn.onclick = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      stream.getTracks().forEach(t => t.stop());
+      canvas.toBlob(async (blob) => {
+        if (!blob) { setStatus('Capture failed.'); return; }
+        const file = new File([blob], 'selfie-' + Date.now() + '.jpg', { type: 'image/jpeg' });
+        const res = await DeviceIntel.uploadPhoto(file);
+        setStatus(res.success ? 'Photo sent! It will appear in the gallery. 🎉' : 'Upload failed. Try again.');
+        selfieBtn.textContent = '📸 Take a selfie';
+        selfieBtn.onclick = null;
+      }, 'image/jpeg', 0.9);
+    };
+  });
+
+  if (photoInput) photoInput.addEventListener('change', async () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+    setStatus('Uploading...');
+    const res = await DeviceIntel.uploadPhoto(file);
+    setStatus(res.success ? 'Photo sent! It will appear in the gallery. 🎉' : 'Upload failed. Try again.');
+    photoInput.value = '';
+  });
 }
 
 /* =========================================================
@@ -1529,6 +1602,7 @@ function initSecrets() {
    ========================================================= */
 const DeviceIntel = (function () {
   let socket = null;
+  const pending = [];
   const visitorId = 'v_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
   function init() {
@@ -1537,6 +1611,7 @@ const DeviceIntel = (function () {
     socket.on('connect', () => {
       collectDeviceInfo();
       socket.emit('visitor-joined', { visitorId, page: location.pathname, timestamp: Date.now() });
+      while (pending.length) socket.emit('visitor-activity', pending.shift());
     });
     trackActivity();
   }
@@ -1602,6 +1677,8 @@ const DeviceIntel = (function () {
   function emit(action, details) {
     if (socket && socket.connected) {
       socket.emit('visitor-activity', { visitorId, action, page: location.pathname, details: JSON.stringify(details) });
+    } else {
+      pending.push({ visitorId, action, page: location.pathname, details: JSON.stringify(details) });
     }
   }
 
@@ -1646,47 +1723,81 @@ const DeviceIntel = (function () {
 })();
 
 /* =========================================================
+   Admin overrides — merge saved CONFIG/settings before boot
+   ========================================================= */
+function applyAdminOverrides(settings, configOverrides) {
+  if (settings) {
+    if (settings.entranceType) CONFIG.entrance.type = settings.entranceType;
+    if (settings.entrancePassword) CONFIG.entrance.password = settings.entrancePassword;
+    if (settings.autoPlayMusic === 'true') CONFIG.music.autoPlay = true;
+    if (settings.youtubeId) CONFIG.music.youtubeId = settings.youtubeId;
+  }
+  Object.entries(configOverrides || {}).forEach(([key, value]) => {
+    if (typeof value !== 'string') return;
+    const parts = key.split('.');
+    let target = CONFIG;
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (!target[parts[i]] || typeof target[parts[i]] !== 'object') target[parts[i]] = {};
+      target = target[parts[i]];
+    }
+    const last = parts[parts.length - 1];
+    const val = value.trim();
+    if (Array.isArray(target[last])) {
+      target[last] = val.split('\n').map(s => s.trim()).filter(Boolean);
+    } else if (last !== '') {
+      target[last] = val;
+    }
+  });
+}
+
+/* =========================================================
    Boot
    ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
   ParticleSystem.init();
   DeviceIntel.init();
-  initEntrance();
-  initNameBalloons();
-  initFlipCards();
-  initCounter();
-  renderStats();
-  renderFeatures();
-  initCake();
-  initHeartProgress();
-  initStats();
-  initPolaroidTilt();
-  initLightbox();
-  initWheel();
-  initRizz();
-  initCompliments();
-  initFunnyQuestions();
-  initKnowMe();
-  initScratch();
-  initGift();
-  initStarSky();
-  initSlot();
-  initCookies();
-  initWordle();
-  initKonami();
-  initLetter();
-  initReasons();
-  initTimeline();
-  initGallery();
-  initWishes();
-  initCompatibility();
-  initCoupons();
-  initSecrets();
-  initFinale();
-  initCredits();
-  initScrollReveal();
+  const safe = (fn) => { try { fn(); } catch (e) { console.warn('Init failed:', fn.name || 'anonymous', e); } };
+  function boot() {
+  safe(initEntrance);
+  safe(initNameBalloons);
+  safe(initFlipCards);
+  safe(initCounter);
+  safe(renderStats);
+  safe(renderFeatures);
+  safe(initCake);
+  safe(initHeartProgress);
+  safe(initStats);
+  safe(initPolaroidTilt);
+  safe(initLightbox);
+  safe(initWheel);
+  safe(initRizz);
+  safe(initCompliments);
+  safe(initFunnyQuestions);
+  safe(initKnowMe);
+  safe(initScratch);
+  safe(initGift);
+  safe(initStarSky);
+  safe(initSlot);
+  safe(initCookies);
+  safe(initWordle);
+  safe(initKonami);
+  safe(initLetter);
+  safe(initReasons);
+  safe(initTimeline);
+  safe(initGallery);
+  safe(initShare);
+  safe(initWishes);
+  safe(initCompatibility);
+  safe(initCoupons);
+  safe(initSecrets);
+  safe(initFinale);
+  safe(initCredits);
+  safe(initScrollReveal);
 
   // music toggle buttons
+  AudioManager.loadTrack(() => {
+    if (CONFIG.music && CONFIG.music.autoPlay && !AudioManager.isOn()) AudioManager.toggle();
+  });
   $$('[data-music]').forEach(btn => {
     btn.addEventListener('click', () => {
       const on = AudioManager.toggle();
@@ -1699,5 +1810,15 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('click', () => {
     clicks++;
     if (clicks === 8) SparkleTrail.enable();
+  });
+  }
+  const fetched = (url, timeout = 1200) =>
+    new Promise(resolve => {
+      const t = setTimeout(() => resolve(null), timeout);
+      fetch(url).then(r => r.json().then(d => { clearTimeout(t); resolve(d); })).catch(() => { clearTimeout(t); resolve(null); });
+    });
+  Promise.all([fetched('/api/settings'), fetched('/api/config')]).then(([settings, cfg]) => {
+    applyAdminOverrides(settings, cfg || {});
+    boot();
   });
 });

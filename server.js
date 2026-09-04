@@ -138,6 +138,20 @@ app.post('/api/captured-photos', upload.single('photo'), (req, res) => {
     });
 });
 
+app.delete('/api/captured-photos/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!id) return res.status(400).json({ error: 'Invalid id.' });
+  db.get('SELECT fileName FROM captured_photos WHERE id = ?', [id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Photo not found.' });
+    fs.unlink(path.join(photosDir, row.fileName), () => {});
+    db.run('DELETE FROM captured_photos WHERE id = ?', [id], function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ success: true, id });
+    });
+  });
+});
+
 // === Photos (legacy) ===
 app.get('/api/photos', (_req, res) => {
   db.all('SELECT * FROM photos ORDER BY id DESC', (err, rows) => {

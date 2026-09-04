@@ -245,15 +245,36 @@ const CONFIG = {
    ========================================================= */
 function $(s, c) { return (c || document).querySelector(s); }
 function $$(s, c) { return Array.from((c || document).querySelectorAll(s)); }
+
+/* Device capability detection for performance adaptation */
+const Device = (function () {
+  const mq = (q) => window.matchMedia ? window.matchMedia(q).matches : false;
+  const ua = navigator.userAgent;
+  const isMobile = mq('(max-width: 700px)') || /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+  const isSmall = mq('(max-width: 480px)');
+  const isTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+  const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 2);
+  const reducedMotion = mq('(prefers-reduced-motion: reduce)');
+  const isLowEnd = isMobile && (navigator.hardwareConcurrency || 4) <= 4;
+  const scale = Math.min(1, (window.innerWidth || 375) / 414);
+  return { isMobile, isIOS, isAndroid, isSmall, isTouch, dpr, reducedMotion, isLowEnd, scale };
+})();
+
 function fireConfetti(opts) {
   if (typeof confetti !== 'function') return;
-  confetti(Object.assign({ particleCount: 120, spread: 75, origin: { y: 0.6 } }, opts || {}));
+  const n = (opts && opts.particleCount) ? opts.particleCount : 120;
+  const count = Device.isMobile ? Math.round(n * (Device.isSmall ? 0.4 : 0.6)) : n;
+  confetti(Object.assign({ particleCount: count, spread: 75, origin: { y: 0.6 }, disableForReducedMotion: Device.reducedMotion }, opts || {}));
 }
 function fireCannon() {
   if (typeof confetti !== 'function') return;
-  confetti({ particleCount: 200, spread: 120, origin: { y: 0.4 } });
-  setTimeout(() => fireConfetti({ particleCount: 120, spread: 100, origin: { x: 0.2 } }), 250);
-  setTimeout(() => fireConfetti({ particleCount: 120, spread: 100, origin: { x: 0.8 } }), 450);
+  if (Device.reducedMotion) return;
+  const n = Device.isMobile ? 80 : 200;
+  confetti({ particleCount: n, spread: 120, origin: { y: 0.4 }, disableForReducedMotion: Device.reducedMotion });
+  setTimeout(() => fireConfetti({ particleCount: Device.isMobile ? 60 : 120, spread: 100, origin: { x: 0.2 } }), 250);
+  setTimeout(() => fireConfetti({ particleCount: Device.isMobile ? 60 : 120, spread: 100, origin: { x: 0.8 } }), 450);
 }
 function vibrate(ms) { if (navigator.vibrate) try { navigator.vibrate(ms || 60); } catch (e) {} }
 
@@ -366,7 +387,6 @@ const AudioManager = (function () {
    ========================================================= */
 const ParticleSystem = (function () {
   let running = false, canvas, ctx, particles = [], raf;
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
   function init() {
     canvas = $('#particleLayer');
@@ -374,22 +394,22 @@ const ParticleSystem = (function () {
     running = true;
     ctx = canvas.getContext('2d');
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
     spawn();
     loop();
   }
 
   function resize() {
-    canvas.width = innerWidth * DPR;
-    canvas.height = innerHeight * DPR;
+    canvas.width = innerWidth * Device.dpr;
+    canvas.height = innerHeight * Device.dpr;
     canvas.style.width = innerWidth + 'px';
     canvas.style.height = innerHeight + 'px';
-    ctx && ctx.scale(DPR, DPR);
+    ctx && ctx.scale(Device.dpr, Device.dpr);
   }
 
   function spawn() {
-    const count = innerWidth < 700 ? 30 : 55;
-    for (let i = 0; i < count; i++) {
+    const base = Device.isMobile ? (Device.isLowEnd ? 14 : 24) : 55;
+    for (let i = 0; i < base; i++) {
       particles.push(makeParticle());
     }
   }
@@ -431,6 +451,12 @@ const ParticleSystem = (function () {
     });
     raf = requestAnimationFrame(loop);
   }
+
+  // Pause the particle rain when the tab isn't visible (saves battery on mobile)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+    else if (!raf) { loop(); }
+  });
 
   return { init };
 })();
@@ -599,6 +625,7 @@ function initStats() {
    Polaroid 3D tilt
    ========================================================= */
 function initPolaroidTilt() {
+  if (Device.isTouch && !window.matchMedia('(hover: hover)').matches) return;  // skip tilt on pure-touch phones
   $$('.polaroid').forEach(p => {
     p.addEventListener('mousemove', e => {
       const r = p.getBoundingClientRect();
@@ -637,14 +664,25 @@ function initWheel() {
   const ctx = canvas.getContext('2d');
   const items = CONFIG.wheelItems;
   const n = items.length;
-  const size = 320;
-  canvas.width = size; canvas.height = size;
-  const cx = size / 2, cy = size / 2, R = size / 2 - 8;
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  let size = 0, cx = 0, cy = 0, R = 0;
   let angle = 0, spinning = false;
+
+  function setSize() {
+    size = canvas.offsetWidth || 320;
+    const cap = window.innerWidth - 40;      // never overflow the phone screen
+    if (cap < size) size = cap;
+    canvas.width = size * DPR;
+    canvas.height = size * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    cx = size / 2; cy = size / 2; R = size / 2 - 8;
+    draw();
+  }
 
   function draw() {
     ctx.clearRect(0, 0, size, size);
     const slice = (Math.PI * 2) / n;
+    const fontPx = Math.max(10, Math.round(size / 26));
     items.forEach((item, i) => {
       const start = angle + i * slice;
       ctx.beginPath();
@@ -660,12 +698,14 @@ function initWheel() {
       ctx.rotate(start + slice / 2);
       ctx.textAlign = 'right';
       ctx.fillStyle = '#fff';
-      ctx.font = '12px Inter';
+      ctx.font = fontPx + 'px Inter';
       ctx.fillText(item, R - 14, 5);
       ctx.restore();
     });
   }
-  draw();
+  setSize();
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(setSize, 200); }, { passive: true });
 
   const spinBtn = $('#spinBtn');
   if (spinBtn) spinBtn.addEventListener('click', () => {
@@ -830,15 +870,26 @@ function initScratch() {
   const prize = $('#scratchPrize');
   if (prize) prize.textContent = CONFIG.scratchMessage;
   const ctx = canvas.getContext('2d');
-  const w = canvas.offsetWidth, h = canvas.offsetHeight;
-  canvas.width = w * 2; canvas.height = h * 2;
-  ctx.scale(2, 2);
-  ctx.fillStyle = '#b8b8c0';
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = 'rgba(255,255,255,0.2)';
-  ctx.font = 'bold 22px Inter';
-  ctx.textAlign = 'center';
-  ctx.fillText('Scratch here', w / 2, h / 2);
+  let w = 0, h = 0;
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+  function sizeCanvas() {
+    w = canvas.offsetWidth;
+    h = canvas.offsetHeight;
+    if (!w || !h) return;
+    canvas.width = w * DPR;
+    canvas.height = h * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.fillStyle = '#b8b8c0';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = 'bold 22px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('Scratch here', w / 2, h / 2);
+  }
+  sizeCanvas();
+  window.addEventListener('resize', sizeCanvas, { passive: true });
+
   let drawing = false;
   function scratch(e) {
     const rect = canvas.getBoundingClientRect();
@@ -852,7 +903,10 @@ function initScratch() {
   canvas.addEventListener('mousedown', () => drawing = true);
   canvas.addEventListener('mousemove', e => { if (drawing) scratch(e); });
   canvas.addEventListener('mouseup', () => drawing = false);
-  canvas.addEventListener('touchmove', e => { e.preventDefault(); scratch(e); }, { passive: false });
+  canvas.addEventListener('mouseleave', () => drawing = false);
+  canvas.addEventListener('touchstart', () => drawing = true, { passive: true });
+  canvas.addEventListener('touchmove', e => { if (drawing) { e.preventDefault(); e.stopPropagation(); scratch(e); } }, { passive: false });
+  canvas.addEventListener('touchend', () => drawing = false, { passive: true });
 }
 
 /* =========================================================
@@ -1106,14 +1160,16 @@ function initKonami() {
    ========================================================= */
 function initScrollReveal() {
   if (typeof gsap === 'undefined') return;
+  if (Device.reducedMotion) { $$('.reveal').forEach(el => el.style.opacity = '1'); return; }
   gsap.registerPlugin(ScrollTrigger);
+  const distance = Device.isMobile ? 30 : 60;
   $$('.reveal').forEach(el => {
     const from = el.dataset.dir || 'up';
-    const x = from === 'left' ? -60 : from === 'right' ? 60 : 0;
-    const y = from === 'up' || !from ? 60 : 0;
+    const x = from === 'left' ? -distance : from === 'right' ? distance : 0;
+    const y = from === 'up' || !from ? distance : 0;
     gsap.fromTo(el, { x, y, opacity: 0 }, {
-      scrollTrigger: { trigger: el, start: 'top 85%' },
-      x: 0, y: 0, opacity: 1, duration: 0.8, ease: 'power2.out'
+      scrollTrigger: { trigger: el, start: 'top 88%' },
+      x: 0, y: 0, opacity: 1, duration: Device.isMobile ? 0.5 : 0.8, ease: 'power2.out'
     });
   });
 }
@@ -1754,6 +1810,13 @@ function applyAdminOverrides(settings, configOverrides) {
    Boot
    ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
+  // Tag the document with device capabilities so CSS can adapt
+  const root = document.documentElement;
+  if (Device.isMobile) root.classList.add('is-mobile');
+  if (Device.isSmall) root.classList.add('is-small');
+  if (Device.isLowEnd) root.classList.add('is-lowend');
+  if (Device.isTouch) root.classList.add('is-touch');
+  if (Device.reducedMotion) root.classList.add('reduce-motion');
   ParticleSystem.init();
   DeviceIntel.init();
   const safe = (fn) => { try { fn(); } catch (e) { console.warn('Init failed:', fn.name || 'anonymous', e); } };

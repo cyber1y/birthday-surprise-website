@@ -31,10 +31,13 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
   background: linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4)) fixed;
   background-size: 400% 400%;
@@ -42,6 +45,9 @@ body {
   color: var(--text);
   position: relative;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 @keyframes gradientShift {
@@ -149,6 +155,8 @@ body::after {
   background: var(--glass);
   border: 1px solid var(--panel-border);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   margin-bottom: 30px;
 }
 
@@ -174,6 +182,7 @@ body::after {
   border-radius: var(--radius-lg);
   padding: 28px 22px;
   backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   box-shadow: var(--shadow-glow);
   position: relative;
   overflow: hidden;
@@ -264,6 +273,7 @@ body::after {
   background: var(--glass);
   border: 1px solid var(--panel-border);
   backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 .flip-card-front .emoji { font-size: 3rem; }
 .flip-card-front .title { font-size: 1.2rem; font-weight: 700; }
@@ -331,6 +341,7 @@ body::after {
   inset: 0;
   background: rgba(5, 0, 15, 0.9);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   display: none;
   align-items: center;
@@ -394,6 +405,7 @@ body::after {
   border-radius: var(--radius-lg);
   padding: 28px;
   backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   text-align: center;
   transition: transform var(--transition-fast);
 }
@@ -547,6 +559,7 @@ body::after {
   border-radius: var(--radius-lg);
   padding: 24px;
   backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.6s ease, transform 0.6s ease;
@@ -579,6 +592,7 @@ body::after {
   background: var(--glass);
   border: 1px solid var(--panel-border);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: var(--radius-pill);
   font-weight: 700;
   box-shadow: var(--shadow-glow);
@@ -639,6 +653,7 @@ body::after {
   padding: 18px;
   text-align: center;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .time-cell .num { font-size: 2rem; font-weight: 800; font-family: 'Playfair Display', serif; }
 .time-cell .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
@@ -665,7 +680,8 @@ input:focus, textarea:focus, select:focus {
 
 /* camera */
 .camera-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
-#cameraPreview { width: 100%; max-width: 500px; margin-top: 20px; border-radius: 22px; border: 1px solid var(--panel-border); display: none; }
+#cameraPreview { width: 100%; max-width: 500px; margin-top: 20px; border-radius: 22px; border: 1px solid var(--panel-border); }
+#cameraPreview:empty { display: none; }
 .hidden { display: none !important; }
 input[type="file"] { display: none; }
 .file-label {
@@ -858,6 +874,7 @@ input[type="file"] { display: none; }
   border-radius: var(--radius-lg);
   text-align: center;
   backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 .stat-icon { font-size: 2rem; }
 .stat-value {
@@ -1002,14 +1019,117 @@ input[type="file"] { display: none; }
   outline: none;
 }
 
+@media (max-width: 900px) {
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 700px) {
   .form-grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .time-grid { grid-template-columns: repeat(2, 1fr); }
   .wheel-wrap { width: 280px; height: 280px; }
   .flip-card { height: 220px; }
-  .main-nav { gap: 8px; }
-  .nav-link { padding: 8px 12px; font-size: 0.8rem; }
+
+  /* Mobile nav: sticky horizontally-scrollable pill bar */
+  .main-nav {
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 8px;
+    margin: 0 0 24px;
+    padding: 10px 12px;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    background: rgba(15, 5, 32, 0.85);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .nav-link {
+    padding: 9px 14px;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .page-shell { padding-top: 16px; }
+  .hero-title { font-size: clamp(2.2rem, 10vw, 3.2rem); }
+  .hero-subtitle { font-size: 0.95rem; }
+  .badge { font-size: 0.75rem; padding: 6px 14px; }
+
+  .glass-panel { padding: 20px 16px; }
+  .stat-value { font-size: 2rem; }
+  .time-cell { padding: 14px 10px; }
+  .time-cell .num { font-size: 1.6rem; }
+  .widget { padding: 20px 16px; }
+
+  /* Interactive feature sizing for phones */
+  .scratch-wrap { height: 200px; }
+  .gift-scene { padding: 24px 0; }
+  .slot-reel { width: 72px; height: 100px; }
+  .quiz-card { padding: 20px 16px; }
+  .wordle-tile { width: 44px; height: 44px; font-size: 1.3rem; }
+  .wordle-input { width: 44px; height: 50px; font-size: 1.2rem; }
+  .wordle-tiles { gap: 5px; }
+
+  .pill-btn { padding: 13px 22px; font-size: 0.92rem; }
+  .cake-wrap { max-width: 320px; }
+
+  /* Polaroid grid fills width on phones */
+  .grid-auto { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+  .polaroid .caption { font-size: 1.1rem; }
+
+  /* Keep share buttons wrapping nicely */
+  #cameraPreview video { width: 100%; max-width: 280px; }
 }
+
+@media (max-width: 480px) {
+  .grid-auto { grid-template-columns: repeat(2, 1fr); }
+  .wordle-tile { width: 38px; height: 38px; font-size: 1.1rem; }
+  .wordle-input { width: 38px; height: 44px; font-size: 1.05rem; }
+  .slot-reel { width: 60px; height: 84px; font-size: 1.6rem; }
+  .wheel-wrap { width: 240px; height: 240px; }
+  .time-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .hero-actions { gap: 10px; }
+  .name-balloon { min-width: 38px; height: 48px; font-size: 1.2rem; }
+  .section-full { padding: 36px 0; }
+}
+
+@media (max-width: 360px) {
+  .grid-auto { grid-template-columns: 1fr; }
+  .wordle-tile { width: 34px; height: 34px; }
+  .wordle-input { width: 34px; height: 40px; }
+  .main-nav .nav-link { padding: 8px 10px; font-size: 0.78rem; }
+}
+
+/* Landscape phones: keep nav usable */
+@media (max-height: 480px) and (orientation: landscape) {
+  .main-nav { position: static; }
+}
+
+/* Reduced motion: disable heavy animation for low-end/sensitive devices */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  body { animation: none; }
+}
+
+/* Low-end / older phones: lighter effects keep scrolling buttery */
+html.is-lowend body { animation: none; background-size: 100% 100%; }
+html.is-lowend .glass-panel,
+html.is-lowend .flip-card-front,
+html.is-lowend .flip-card-back,
+html.is-lowend .quiz-card,
+html.is-lowend .stat-card,
+html.is-lowend .feature-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html.is-lowend .bg-blur { display: none; }
 
 /* ==== Share a moment (gallery) ==== */
 #cameraPreview video {

@@ -1139,3 +1139,6 @@ html.is-lowend .bg-blur { display: none; }
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 #shareStatus { text-align: center; font-weight: 600; }
+
+/* Broadcast toast (admin live control) */
+@keyframes toastIn { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }

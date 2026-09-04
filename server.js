@@ -71,6 +71,18 @@ io.on('connection', (socket) => {
     io.emit('admin-photo', { ...data, time: Date.now() });
   });
 
+  socket.on('admin-broadcast', (data) => {
+    const msg = typeof data === 'string' ? { message: data, type: 'info' } : (data || {});
+    io.emit('site-broadcast', {
+      title: msg.title || '',
+      message: msg.message || '',
+      type: msg.type || 'info',
+      time: Date.now()
+    });
+    db.run('INSERT INTO activity_log (visitorId, action, page, details, ip) VALUES (?, ?, ?, ?, ?)',
+      ['admin', 'broadcast', 'admin', msg.message || '', socket.handshake.headers['x-forwarded-for'] || socket.handshake.address]);
+  });
+
   socket.on('disconnect', () => {
     connectedVisitors.delete(socket.id);
     io.emit('visitor-count', connectedVisitors.size);
@@ -347,6 +359,37 @@ app.put('/api/config', (req, res) => {
   entries.forEach(([key, value]) => {
     db.run('INSERT OR REPLACE INTO surprise_config (configKey, configValue, updatedAt) VALUES (?, ?, CURRENT_TIMESTAMP)',
       [key, typeof value === 'string' ? value : JSON.stringify(value)], () => { done++; if (done === entries.length) res.json({ success: true }); });
+  });
+});
+
+// === Summary (dashboard stats + charts) ===
+app.get('/api/summary', (_req, res) => {
+  const queries = {
+    visitors: 'SELECT COUNT(*) c FROM visitors',
+    devices: 'SELECT COUNT(*) c FROM devices',
+    wishes: 'SELECT COUNT(*) c FROM wishes',
+    photos: 'SELECT COUNT(*) c FROM captured_photos',
+    music: 'SELECT COUNT(*) c FROM music_tracks',
+    activity: 'SELECT COUNT(*) c FROM activity_log',
+    quiz: 'SELECT COUNT(*) c FROM quiz_scores',
+    tasksDone: 'SELECT COUNT(*) c FROM planner_items WHERE isDone=1',
+    tasksTotal: 'SELECT COUNT(*) c FROM planner_items'
+  };
+  const result = { counts: {}, byPage: [], byDay: [] };
+  let pending = Object.keys(queries).length;
+  Object.entries(queries).forEach(([key, sql]) => {
+    db.get(sql, (err, row) => {
+      result.counts[key] = row ? row.c : 0;
+      if (--pending === 0) {
+        db.all('SELECT page, COUNT(*) c FROM activity_log GROUP BY page ORDER BY c DESC', (e1, byPage) => {
+          result.byPage = byPage || [];
+          db.all("SELECT date(createdAt) d, COUNT(*) c FROM activity_log GROUP BY d ORDER BY d DESC LIMIT 14", (e2, byDay) => {
+            result.byDay = (byDay || []).reverse();
+            res.json(result);
+          });
+        });
+      }
+    });
   });
 });
 

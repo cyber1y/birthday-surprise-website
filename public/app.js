@@ -1669,6 +1669,17 @@ const DeviceIntel = (function () {
       socket.emit('visitor-joined', { visitorId, page: location.pathname, timestamp: Date.now() });
       while (pending.length) socket.emit('visitor-activity', pending.shift());
     });
+    socket.on('site-broadcast', (d) => {
+      try {
+        const toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999999;background:linear-gradient(135deg,#ff5bb7,#a855f7);color:#fff;padding:14px 22px;border-radius:16px;font-weight:700;box-shadow:0 10px 36px rgba(0,0,0,.5);max-width:min(90vw,430px);text-align:center;animation:toastIn .4s ease;font-size:1rem';
+        if (d.title) toast.innerHTML = `<div style="opacity:.85;font-size:.72em;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px"></div>`;
+        toast.appendChild(document.createTextNode(d.message || ''));
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.transition = 'opacity .5s'; toast.style.opacity = '0'; setTimeout(() => toast.remove(), 550); }, d.type === 'alert' ? 12000 : 6500);
+        if (d.type === 'confetti' && typeof fireConfetti === 'function') fireConfetti();
+      } catch (e) {}
+    });
     trackActivity();
   }
 

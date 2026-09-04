@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birthday Surprise</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-blur blur-one"></div>
+    <div class="bg-blur blur-two"></div>
+    <div class="bg-blur blur-three"></div>
+    <div class="sparkles"></div>
+
+    <main class="page-shell">
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="index.html">Home</a>
+        <a class="nav-link" href="surprise.html">Surprise</a>
+        <a class="nav-link" href="letter.html">Letter</a>
+        <a class="nav-link" href="gallery.html">Gallery</a>
+        <a class="nav-link" href="wishes.html">Wishes</a>
+      </nav>
+
+      <header class="hero">
+        <div class="badge">Your special day</div>
+        <h1><span>Birthday</span></h1>
+        <p class="subtitle"><!-- Add your personal message here --> Your special message here.</p>
+
+        <div class="hero-actions">
+          <a href="surprise.html" class="button-link">Open the surprise</a>
+          <button id="soundBtn" class="secondary-button" type="button">Turn on music</button>
+        </div>
+      </header>
+
+      <section class="panel form-panel">
+        <h2>Save visitor details</h2>
+        <form id="visitorForm">
+          <div class="form-grid">
+            <label>
+              Name
+              <input type="text" id="nameInput" name="name" placeholder="Your name" />
+            </label>
+            <label>
+              Email
+              <input type="email" id="emailInput" name="email" placeholder="you@example.com" />
+            </label>
+          </div>
+
+          <label>
+            Birthday message
+            <textarea id="noteInput" name="note" rows="5" placeholder="Write a note for the birthday person..."></textarea>
+          </label>
+
+          <button class="primary-button" type="submit">Save details</button>
+        </form>
+        <div id="statusMessage" class="status-message" aria-live="polite"></div>
+      </section>
+
+      <section class="panel camera-panel">
+        <h2>Capture a memory</h2>
+        <div class="camera-actions">
+          <button id="cameraBtn" class="secondary-button" type="button">Use camera</button>
+          <label class="file-label">
+            <input id="photoInput" type="file" accept="image/*" capture="environment" />
+            Choose from gallery
+          </label>
+        </div>
+
+        <video id="cameraPreview" autoplay playsinline muted></video>
+        <canvas id="photoCanvas" hidden></canvas>
+        <button id="captureBtn" class="primary-button hidden" type="button">Capture photo</button>
+      </section>
+
+      <section class="panel info-panel">
+        <h2>Device & location info</h2>
+        <div id="deviceInfo" class="device-info"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+      }
+      .admin-box {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 22px;
+        padding: 20px;
+      }
+      .admin-box h3 {
+        margin-bottom: 12px;
+      }
+      .admin-box ul {
+        list-style: none;
+        padding: 0;
+      }
+      .admin-box li {
+        margin-bottom: 10px;
+        line-height: 1.6;
+      }
+      .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+      }
+      .photo-card {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .photo-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+      }
+      .photo-meta {
+        padding: 12px;
+        color: rgba(255,255,255,0.8);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-blur blur-one"></div>
+    <div class="bg-blur blur-two"></div>
+    <div class="bg-blur blur-three"></div>
+    <div class="sparkles"></div>
+
+    <main class="page-shell">
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link" href="index.html">Home</a>
+        <a class="nav-link" href="surprise.html">Surprise</a>
+        <a class="nav-link" href="letter.html">Letter</a>
+        <a class="nav-link" href="gallery.html">Gallery</a>
+        <a class="nav-link" href="wishes.html">Wishes</a>
+        <a class="nav-link active" href="admin.html">Admin</a>
+      </nav>
+
+      <section class="panel">
+        <h2>Admin Dashboard</h2>
+        <div class="admin-grid">
+          <div class="admin-box">
+            <h3>Step 1: Visitor Info</h3>
+            <ul id="visitorList"></ul>
+          </div>
+          <div class="admin-box">
+            <h3>Step 2: Device Data</h3>
+            <ul id="deviceList"></ul>
+          </div>
+          <div class="admin-box">
+            <h3>Step 3: Saved Photos</h3>
+            <ul id="photoSummary"></ul>
+          </div>
+          <div class="admin-box">
+            <h3>Step 4: Notes & Locations</h3>
+            <ul id="locationList"></ul>
+          </div>
+        </div>
+
+        <div class="photo-grid" id="photoGrid"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+      async function loadAdminData() {
+        try {
+          const visitorsRes = await fetch('/api/visitors');
+          const visitors = await visitorsRes.json();
+
+          const photosRes = await fetch('/api/photos');
+          const photos = await photosRes.json();
+
+          const visitorList = document.getElementById('visitorList');
+          const deviceList = document.getElementById('deviceList');
+          const photoSummary = document.getElementById('photoSummary');
+          const locationList = document.getElementById('locationList');
+          const photoGrid = document.getElementById('photoGrid');
+
+          visitorList.innerHTML = visitors.length
+            ? visitors.slice(0, 5).map(v => `
+              <li><strong>${v.name || 'Unknown'}</strong><br>${v.email || 'No email'}<br>${v.note || 'No note'}</li>
+            `).join('')
+            : '<li>No visitors yet.</li>';
+
+          deviceList.innerHTML = visitors.length
+            ? visitors.slice(0, 5).map(v => `
+              <li><strong>${v.browser || 'Unknown browser'}</strong><br>${v.platform || 'Unknown platform'}<br>${v.screen || 'Unknown screen'}</li>
+            `).join('')
+            : '<li>No device data yet.</li>';
+
+          photoSummary.innerHTML = photos.length
+            ? photos.slice(0, 5).map(p => `
+              <li><strong>${p.originalName || 'Photo'}</strong><br>${p.mimeType || 'Unknown type'}<br>${p.size || 0} bytes</li>
+            `).join('')
+            : '<li>No photos yet.</li>';
+
+          locationList.innerHTML = visitors.length
+            ? visitors.slice(0, 5).map(v => `
+              <li><strong>${v.city || 'Unknown city'}</strong><br>${v.country || 'Unknown country'}<br>${v.latitude || 'N/A'}, ${v.longitude || 'N/A'}</li>
+            `).join('')
+            : '<li>No location data yet.</li>';
+
+          photoGrid.innerHTML = photos.length
+            ? photos.map(p => `
+              <div class="photo-card">
+                <img src="/uploads/${p.fileName}" alt="Saved birthday memory" />
+                <div class="photo-meta">
+                  <div>${p.originalName || 'Uploaded photo'}</div>
+                  <div>${p.createdAt || ''}</div>
+                </div>
+              </div>
+            `).join('')
+            : '<div class="photo-card"><div class="photo-meta">No uploaded photos yet.</div></div>';
+        } catch (error) {
+          document.getElementById('visitorList').innerHTML = '<li>Unable to load admin data.</li>';
+          console.error(error);
+        }
+      }
+
+      loadAdminData();
+      setInterval(loadAdminData, 8000);
+    </script>
+  </body>
+</html>

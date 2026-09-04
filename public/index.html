@@ -1,82 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Birthday Surprise</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, My Love</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
     <div class="bg-blur blur-one"></div>
     <div class="bg-blur blur-two"></div>
     <div class="bg-blur blur-three"></div>
-    <div class="sparkles"></div>
+    <canvas id="particleLayer"></canvas>
+
+    <!-- Curtain entrance -->
+    <div id="curtainLeft"></div>
+    <div id="curtainRight"></div>
+    <div id="curtainCenter"></div>
 
     <main class="page-shell">
-      <nav class="main-nav" aria-label="Main navigation">
-        <a class="nav-link active" href="index.html">Home</a>
-        <a class="nav-link" href="surprise.html">Surprise</a>
-        <a class="nav-link" href="letter.html">Letter</a>
-        <a class="nav-link" href="gallery.html">Gallery</a>
-        <a class="nav-link" href="wishes.html">Wishes</a>
-      </nav>
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="index.html" class="nav-link active">Home</a>
+            <a href="surprise.html" class="nav-link">Surprise</a>
+            <a href="letter.html" class="nav-link">Letter</a>
+            <a href="gallery.html" class="nav-link">Gallery</a>
+            <a href="wishes.html" class="nav-link">Wishes</a>
+            <a href="finale.html" class="nav-link">Finale</a>
+            <button class="nav-link" data-music>🔇 Music Off</button>
+        </nav>
 
-      <header class="hero">
-        <div class="badge">Your special day</div>
-        <h1><span>Birthday</span></h1>
-        <p class="subtitle"><!-- Add your personal message here --> Your special message here.</p>
+        <header class="site-header">
+            <div class="badge"></div>
+            <h1 class="hero-title gradient-text">Happy Birthday, My Love</h1>
+            <p class="hero-subtitle">A celebration made just for you, filled with love, laughter & a few surprises.</p>
+            <div class="hero-actions">
+                <a href="surprise.html" class="pill-btn btn-primary" id="surpriseBtn">Open the surprise</a>
+                <a href="letter.html" class="pill-btn btn-secondary">Read your letter</a>
+            </div>
+        </header>
 
-        <div class="hero-actions">
-          <a href="surprise.html" class="button-link">Open the surprise</a>
-          <button id="soundBtn" class="secondary-button" type="button">Turn on music</button>
-        </div>
-      </header>
+        <!-- Name balloons float up -->
+        <div id="nameBalloons"></div>
 
-      <section class="panel form-panel">
-        <h2>Save visitor details</h2>
-        <form id="visitorForm">
-          <div class="form-grid">
-            <label>
-              Name
-              <input type="text" id="nameInput" name="name" placeholder="Your name" />
-            </label>
-            <label>
-              Email
-              <input type="email" id="emailInput" name="email" placeholder="you@example.com" />
-            </label>
-          </div>
+        <section class="section">
+            <h2 class="h2 gradient-text reveal">Time Together</h2>
+            <p class="lead reveal">Every second with you is precious. Here's how long we've been making magic.</p>
+            <div id="counter"></div>
+        </section>
 
-          <label>
-            Birthday message
-            <textarea id="noteInput" name="note" rows="5" placeholder="Write a note for the birthday person..."></textarea>
-          </label>
+        <section class="section">
+            <h2 class="h2 gradient-text reveal">Our Story in Numbers</h2>
+            <div class="grid-auto reveal" id="statsGrid"></div>
+        </section>
 
-          <button class="primary-button" type="submit">Save details</button>
-        </form>
-        <div id="statusMessage" class="status-message" aria-live="polite"></div>
-      </section>
+        <section class="section">
+            <h2 class="h2 gradient-text reveal">Why You Matter</h2>
+            <div class="grid-3 reveal" id="featureGrid"></div>
+        </section>
 
-      <section class="panel camera-panel">
-        <h2>Capture a memory</h2>
-        <div class="camera-actions">
-          <button id="cameraBtn" class="secondary-button" type="button">Use camera</button>
-          <label class="file-label">
-            <input id="photoInput" type="file" accept="image/*" capture="environment" />
-            Choose from gallery
-          </label>
-        </div>
-
-        <video id="cameraPreview" autoplay playsinline muted></video>
-        <canvas id="photoCanvas" hidden></canvas>
-        <button id="captureBtn" class="primary-button hidden" type="button">Capture photo</button>
-      </section>
-
-      <section class="panel info-panel">
-        <h2>Device & location info</h2>
-        <div id="deviceInfo" class="device-info"></div>
-      </section>
+        <section class="section cake-scene reveal">
+            <h2 class="h2 gradient-text">A Cake Just for You</h2>
+            <p class="lead">Tap the candle to blow it out, then cut a slice. Make a wish.</p>
+            <div class="cake-wrap" id="cakeWrap"></div>
+            <div class="cake-actions">
+                <button class="pill-btn btn-primary" id="blowBtn">Blow out candles</button>
+                <button class="pill-btn btn-secondary" id="cutBtn">Cut the cake</button>
+            </div>
+            <div class="cake-status" id="cakeStatus"></div>
+        </section>
     </main>
 
+    <footer class="footer">Made with &#10084;&#65039; for the most amazing person</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="app.js"></script>
-  </body>
+</body>
 </html>

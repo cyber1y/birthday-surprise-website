@@ -44,6 +44,25 @@ db.serialize(() => {
       createdAt TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS wishes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT DEFAULT 'Anonymous',
+      message TEXT NOT NULL,
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS quiz_scores (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      quizType TEXT NOT NULL,
+      score INTEGER DEFAULT 0,
+      total INTEGER DEFAULT 0,
+      createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 });
 
 module.exports = db;

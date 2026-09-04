@@ -1,49 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gallery</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
     <div class="bg-blur blur-one"></div>
     <div class="bg-blur blur-two"></div>
     <div class="bg-blur blur-three"></div>
-    <div class="sparkles"></div>
+    <canvas id="particleLayer"></canvas>
 
     <main class="page-shell">
-      <nav class="main-nav" aria-label="Main navigation">
-        <a class="nav-link" href="index.html">Home</a>
-        <a class="nav-link" href="surprise.html">Surprise</a>
-        <a class="nav-link" href="letter.html">Letter</a>
-        <a class="nav-link active" href="gallery.html">Gallery</a>
-        <a class="nav-link" href="wishes.html">Wishes</a>
-      </nav>
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="surprise.html" class="nav-link">Surprise</a>
+            <a href="letter.html" class="nav-link">Letter</a>
+            <a href="gallery.html" class="nav-link active">Gallery</a>
+            <a href="wishes.html" class="nav-link">Wishes</a>
+            <a href="finale.html" class="nav-link">Finale</a>
+            <button class="nav-link" data-music>🔇 Music Off</button>
+        </nav>
 
-      <section class="panel">
-        <h2>Memory Gallery</h2>
-        <div class="form-grid" style="margin-top: 20px;">
-          <div class="device-item">
-            <strong>Memory 1</strong>
-            <span><!-- Add your favorite memory here --> Your favorite memory here.</span>
-          </div>
-          <div class="device-item">
-            <strong>Memory 2</strong>
-            <span><!-- Add a cute moment here --> Your cute moment here.</span>
-          </div>
-          <div class="device-item">
-            <strong>Memory 3</strong>
-            <span><!-- Add a celebration photo note here --> Your celebration here.</span>
-          </div>
-          <div class="device-item">
-            <strong>Memory 4</strong>
-            <span><!-- Add a latest memory here --> Your latest memory here.</span>
-          </div>
-        </div>
-      </section>
+        <header class="site-header">
+            <div class="badge">Moments we treasure</div>
+            <h1 class="hero-title">Our Gallery</h1>
+            <p class="hero-subtitle">A few favourite memories, frozen in time. Tap a photo to see it up close.</p>
+        </header>
+
+        <section class="section">
+            <div class="grid-auto" id="galleryGrid"></div>
+        </section>
     </main>
 
+    <footer class="footer">Made with &#10084;&#65039; for the most amazing person</footer>
+
+    <!-- Lightbox -->
+    <div id="lightbox"><img src="" alt="Enlarged photo"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="app.js"></script>
-  </body>
+</body>
 </html>

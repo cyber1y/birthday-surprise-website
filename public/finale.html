@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finale — You Are Loved</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="bg-blur blur-one"></div>
+    <div class="bg-blur blur-two"></div>
+    <div class="bg-blur blur-three"></div>
+    <canvas id="particleLayer"></canvas>
+
+    <main class="page-shell">
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="surprise.html" class="nav-link">Surprise</a>
+            <a href="letter.html" class="nav-link">Letter</a>
+            <a href="gallery.html" class="nav-link">Gallery</a>
+            <a href="wishes.html" class="nav-link">Wishes</a>
+            <a href="finale.html" class="nav-link active">Finale</a>
+            <button class="nav-link" data-music>🔇 Music Off</button>
+        </nav>
+
+        <header class="site-header" id="finaleMain">
+            <div class="finale-heart">
+                <svg viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2 c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" fill="#ff5bb7"/></svg>
+            </div>
+            <h1 class="finale-big gradient-text" id="finaleText">You Are Loved</h1>
+            <p class="finale-sub" id="finaleSub"></p>
+        </header>
+
+        <!-- Star memory sky -->
+        <section class="section">
+            <h2 class="h2 gradient-text reveal">Our Constellation</h2>
+            <p class="lead">Tap the stars to light them up. Each one holds a memory.</p>
+            <div class="star-sky reveal" id="starSky">
+                <div id="starList" style="position:relative;width:100%;height:120px"></div>
+            </div>
+        </section>
+
+        <!-- Compatibility -->
+        <section class="section">
+            <h2 class="h2 gradient-text reveal">Cosmic Compatibility</h2>
+            <div class="glass-panel reveal" style="text-align:center;padding:30px">
+                <p class="h2" style="color:var(--gold)"><span id="compatScore"></span>/100</p>
+                <p class="lead" id="compatMessage"></p>
+            </div>
+        </section>
+
+        <!-- Love Coupons -->
+        <section class="section">
+            <h2 class="h2 gradient-text reveal">Love Coupons</h2>
+            <p class="lead">Collect them all. They're redeemable for life (no expiration).</p>
+            <div class="grid-auto" id="couponsGrid"></div>
+        </section>
+
+        <!-- Heart progress -->
+        <section class="section">
+            <h2 class="h2 gradient-text reveal">Love Level</h2>
+            <div class="heart-progress-wrap reveal" id="heartProgress"></div>
+            <div style="text-align:center;margin-top:16px">
+                <button class="pill-btn btn-primary" id="heartBtn">Add another love</button>
+            </div>
+        </section>
+
+        <!-- Secret messages -->
+        <section class="section">
+            <h2 class="h2 gradient-text reveal">Secret Messages</h2>
+            <p class="lead">Look closely... something's hiding here.</p>
+            <div class="grid-auto reveal" id="secretGrid"></div>
+        </section>
+
+        <!-- Credits -->
+        <section class="section credits reveal">
+            <h2 class="h2 gradient-text" style="text-align:center;margin-bottom:18px">Credits</h2>
+            <div id="creditsWrap" style="text-align:center"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Made with &#10084;&#65039; for the most amazing person</p>
+        <p style="margin-top:8px;opacity:0.6">Happy Birthday, My Love</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

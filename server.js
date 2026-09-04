@@ -157,6 +157,54 @@ app.get('*', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Wishes API
+app.get('/api/wishes', (_req, res) => {
+  db.all('SELECT * FROM wishes ORDER BY id DESC', (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+app.post('/api/wishes', (req, res) => {
+  const { name = 'Anonymous', message = '' } = req.body || {};
+  if (!message.trim()) {
+    res.status(400).json({ error: 'Message is required.' });
+    return;
+  }
+  db.run('INSERT INTO wishes (name, message) VALUES (?, ?)', [name, message], function (err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.status(201).json({ success: true, id: this.lastID, message: 'Wish saved successfully' });
+  });
+});
+
+// Quiz scores API
+app.get('/api/quiz-scores', (_req, res) => {
+  db.all('SELECT * FROM quiz_scores ORDER BY id DESC LIMIT 10', (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+app.post('/api/quiz-scores', (req, res) => {
+  const { quizType = 'unknown', score = 0, total = 0 } = req.body || {};
+  db.run('INSERT INTO quiz_scores (quizType, score, total) VALUES (?, ?, ?)', [quizType, score, total], function (err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.status(201).json({ success: true, id: this.lastID });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Birthday surprise server running at http://localhost:${PORT}`);
 });

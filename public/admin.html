@@ -1,159 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="styles.css" />
-    <style>
-      .admin-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 18px;
-        margin-top: 18px;
-      }
-      .admin-box {
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.18);
-        border-radius: 22px;
-        padding: 20px;
-      }
-      .admin-box h3 {
-        margin-bottom: 12px;
-      }
-      .admin-box ul {
-        list-style: none;
-        padding: 0;
-      }
-      .admin-box li {
-        margin-bottom: 10px;
-        line-height: 1.6;
-      }
-      .photo-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 18px;
-        margin-top: 18px;
-      }
-      .photo-card {
-        background: rgba(255,255,255,0.07);
-        border: 1px solid rgba(255,255,255,0.18);
-        border-radius: 16px;
-        overflow: hidden;
-      }
-      .photo-card img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        display: block;
-      }
-      .photo-meta {
-        padding: 12px;
-        color: rgba(255,255,255,0.8);
-        font-size: 0.9rem;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="bg-blur blur-one"></div>
-    <div class="bg-blur blur-two"></div>
-    <div class="bg-blur blur-three"></div>
-    <div class="sparkles"></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Birthday Surprise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="admin-avatar">👑</div>
+                <h2>Surprise Admin</h2>
+                <span class="connection-dot" id="connDot" title="Disconnected"></span>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="dashboard">📊 Dashboard</button>
+                <button class="nav-item" data-tab="devices">📱 Devices</button>
+                <button class="nav-item" data-tab="photos">📸 Photos</button>
+                <button class="nav-item" data-tab="music">🎵 Music</button>
+                <button class="nav-item" data-tab="content">✏️ Content</button>
+                <button class="nav-item" data-tab="planner">📋 Planner</button>
+                <button class="nav-item" data-tab="database">🗄️ Database</button>
+                <button class="nav-item" data-tab="settings">⚙️ Settings</button>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/" target="_blank" class="btn btn-sm">🌐 View Site</a>
+                <span class="visitor-badge" id="visitorBadge">0 online</span>
+            </div>
+        </aside>
 
-    <main class="page-shell">
-      <nav class="main-nav" aria-label="Main navigation">
-        <a class="nav-link" href="index.html">Home</a>
-        <a class="nav-link" href="surprise.html">Surprise</a>
-        <a class="nav-link" href="letter.html">Letter</a>
-        <a class="nav-link" href="gallery.html">Gallery</a>
-        <a class="nav-link" href="wishes.html">Wishes</a>
-        <a class="nav-link active" href="admin.html">Admin</a>
-      </nav>
-
-      <section class="panel">
-        <h2>Admin Dashboard</h2>
-        <div class="admin-grid">
-          <div class="admin-box">
-            <h3>Step 1: Visitor Info</h3>
-            <ul id="visitorList"></ul>
-          </div>
-          <div class="admin-box">
-            <h3>Step 2: Device Data</h3>
-            <ul id="deviceList"></ul>
-          </div>
-          <div class="admin-box">
-            <h3>Step 3: Saved Photos</h3>
-            <ul id="photoSummary"></ul>
-          </div>
-          <div class="admin-box">
-            <h3>Step 4: Notes & Locations</h3>
-            <ul id="locationList"></ul>
-          </div>
-        </div>
-
-        <div class="photo-grid" id="photoGrid"></div>
-      </section>
-    </main>
-
-    <script src="app.js"></script>
-    <script>
-      async function loadAdminData() {
-        try {
-          const visitorsRes = await fetch('/api/visitors');
-          const visitors = await visitorsRes.json();
-
-          const photosRes = await fetch('/api/photos');
-          const photos = await photosRes.json();
-
-          const visitorList = document.getElementById('visitorList');
-          const deviceList = document.getElementById('deviceList');
-          const photoSummary = document.getElementById('photoSummary');
-          const locationList = document.getElementById('locationList');
-          const photoGrid = document.getElementById('photoGrid');
-
-          visitorList.innerHTML = visitors.length
-            ? visitors.slice(0, 5).map(v => `
-              <li><strong>${v.name || 'Unknown'}</strong><br>${v.email || 'No email'}<br>${v.note || 'No note'}</li>
-            `).join('')
-            : '<li>No visitors yet.</li>';
-
-          deviceList.innerHTML = visitors.length
-            ? visitors.slice(0, 5).map(v => `
-              <li><strong>${v.browser || 'Unknown browser'}</strong><br>${v.platform || 'Unknown platform'}<br>${v.screen || 'Unknown screen'}</li>
-            `).join('')
-            : '<li>No device data yet.</li>';
-
-          photoSummary.innerHTML = photos.length
-            ? photos.slice(0, 5).map(p => `
-              <li><strong>${p.originalName || 'Photo'}</strong><br>${p.mimeType || 'Unknown type'}<br>${p.size || 0} bytes</li>
-            `).join('')
-            : '<li>No photos yet.</li>';
-
-          locationList.innerHTML = visitors.length
-            ? visitors.slice(0, 5).map(v => `
-              <li><strong>${v.city || 'Unknown city'}</strong><br>${v.country || 'Unknown country'}<br>${v.latitude || 'N/A'}, ${v.longitude || 'N/A'}</li>
-            `).join('')
-            : '<li>No location data yet.</li>';
-
-          photoGrid.innerHTML = photos.length
-            ? photos.map(p => `
-              <div class="photo-card">
-                <img src="/uploads/${p.fileName}" alt="Saved birthday memory" />
-                <div class="photo-meta">
-                  <div>${p.originalName || 'Uploaded photo'}</div>
-                  <div>${p.createdAt || ''}</div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <section class="tab-content active" id="tab-dashboard">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <p>Real-time overview of your birthday surprise</p>
                 </div>
-              </div>
-            `).join('')
-            : '<div class="photo-card"><div class="photo-meta">No uploaded photos yet.</div></div>';
-        } catch (error) {
-          document.getElementById('visitorList').innerHTML = '<li>Unable to load admin data.</li>';
-          console.error(error);
-        }
-      }
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" id="statVisitors">0</div><div class="stat-label">Online Now</div></div>
+                    <div class="stat-card"><div class="stat-icon">📱</div><div class="stat-value" id="statDevices">0</div><div class="stat-label">Devices Seen</div></div>
+                    <div class="stat-card"><div class="stat-icon">💌</div><div class="stat-value" id="statWishes">0</div><div class="stat-label">Wishes</div></div>
+                    <div class="stat-card"><div class="stat-icon">📸</div><div class="stat-value" id="statPhotos">0</div><div class="stat-label">Photos</div></div>
+                    <div class="stat-card"><div class="stat-icon">🎵</div><div class="stat-value" id="statMusic">0</div><div class="stat-label">Tracks</div></div>
+                    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="statTasks">0</div><div class="stat-label">Tasks Done</div></div>
+                </div>
+                <div class="card">
+                    <h3>Live Activity Feed</h3>
+                    <div class="activity-feed" id="activityFeed">
+                        <p class="muted">Waiting for visitors...</p>
+                    </div>
+                </div>
+            </section>
 
-      loadAdminData();
-      setInterval(loadAdminData, 8000);
-    </script>
-  </body>
+            <!-- Devices Tab -->
+            <section class="tab-content" id="tab-devices">
+                <div class="page-header">
+                    <h1>Device Intelligence</h1>
+                    <p>All visitor devices, locations & permissions</p>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table class="data-table" id="devicesTable">
+                            <thead><tr><th>Time</th><th>IP</th><th>Browser</th><th>Platform</th><th>Screen</th><th>Location</th><th>Camera</th><th>Mic</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Photos Tab -->
+            <section class="tab-content" id="tab-photos">
+                <div class="page-header">
+                    <h1>Photo Gallery</h1>
+                    <p>Captured photos & uploaded images</p>
+                </div>
+                <div class="card">
+                    <div class="upload-zone" id="photoUploadZone">
+                        <input type="file" id="photoUploadInput" accept="image/*" multiple hidden>
+                        <p>📁 Drag photos here or <button class="link-btn" onclick="document.getElementById('photoUploadInput').click()">browse</button></p>
+                    </div>
+                </div>
+                <div class="photo-grid" id="photoGrid"></div>
+            </section>
+
+            <!-- Music Tab -->
+            <section class="tab-content" id="tab-music">
+                <div class="page-header">
+                    <h1>Music Manager</h1>
+                    <p>Upload tracks, add YouTube URLs, manage playlists</p>
+                </div>
+                <div class="card">
+                    <h3>Upload Music</h3>
+                    <div class="upload-zone" id="musicUploadZone">
+                        <input type="file" id="musicUploadInput" accept="audio/*" multiple hidden>
+                        <p>🎵 Drag audio files here or <button class="link-btn" onclick="document.getElementById('musicUploadInput').click()">browse</button></p>
+                    </div>
+                    <div class="form-row" style="margin-top:16px">
+                        <input type="text" id="musicTitle" placeholder="Track title" class="input">
+                        <input type="text" id="musicArtist" placeholder="Artist" class="input">
+                        <button class="btn btn-primary" id="uploadMusicBtn">Upload</button>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Add YouTube Track</h3>
+                    <div class="form-row">
+                        <input type="text" id="ytUrl" placeholder="YouTube URL" class="input">
+                        <input type="text" id="ytTitle" placeholder="Title" class="input">
+                        <button class="btn btn-primary" id="addYtBtn">Add</button>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Playlist</h3>
+                    <div id="musicPlaylist"></div>
+                </div>
+            </section>
+
+            <!-- Content Tab -->
+            <section class="tab-content" id="tab-content">
+                <div class="page-header">
+                    <h1>Content Editor</h1>
+                    <p>Edit all site content in real-time</p>
+                </div>
+                <div class="card">
+                    <h3>Basic Info</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Birthday Name</label><input type="text" id="cfg-birthdayName" class="input"></div>
+                        <div class="form-group"><label>Sender Name</label><input type="text" id="cfg-senderName" class="input"></div>
+                        <div class="form-group"><label>Age</label><input type="number" id="cfg-age" class="input"></div>
+                        <div class="form-group"><label>Together Since</label><input type="date" id="cfg-togetherSince" class="input"></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Hero Section</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Title</label><input type="text" id="cfg-hero.title" class="input"></div>
+                        <div class="form-group"><label>Subtitle</label><input type="text" id="cfg-hero.subtitle" class="input"></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Love Letter</h3>
+                    <textarea id="cfg-loveLetter" class="textarea" rows="6" placeholder="Your love letter (separate paragraphs with |||)"></textarea>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Gift Message</h3>
+                    <textarea id="cfg-giftMessage" class="textarea" rows="3"></textarea>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Finale</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Heading</label><input type="text" id="cfg-finalHeading" class="input"></div>
+                        <div class="form-group"><label>Subtitle</label><input type="text" id="cfg-finalSubtitle" class="input"></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Compliments (one per line)</h3>
+                    <textarea id="cfg-compliments" class="textarea" rows="4"></textarea>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Fortune Cookies (one per line)</h3>
+                    <textarea id="cfg-fortuneCookies" class="textarea" rows="4"></textarea>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Secret Messages (one per line)</h3>
+                    <textarea id="cfg-secretMessages" class="textarea" rows="3"></textarea>
+                </div>
+                <div style="margin-top:20px"><button class="btn btn-primary btn-lg" id="saveConfigBtn">💾 Save All Content</button></div>
+            </section>
+
+            <!-- Planner Tab -->
+            <section class="tab-content" id="tab-planner">
+                <div class="page-header">
+                    <h1>Surprise Planner</h1>
+                    <p>Plan every detail of the celebration</p>
+                </div>
+                <div class="card">
+                    <h3>Add Task</h3>
+                    <div class="form-row">
+                        <input type="text" id="plannerTitle" placeholder="Task title" class="input">
+                        <input type="date" id="plannerDate" class="input">
+                        <select id="plannerPriority" class="input"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+                        <select id="plannerCategory" class="input"><option value="general">General</option><option value="decor">Decoration</option><option value="food">Food</option><option value="gift">Gift</option><option value="music">Music</option></select>
+                        <button class="btn btn-primary" id="addTaskBtn">Add</button>
+                    </div>
+                    <div class="form-group" style="margin-top:12px">
+                        <textarea id="plannerDesc" class="textarea" rows="2" placeholder="Description (optional)"></textarea>
+                    </div>
+                </div>
+                <div class="planner-list" id="plannerList"></div>
+            </section>
+
+            <!-- Database Tab -->
+            <section class="tab-content" id="tab-database">
+                <div class="page-header">
+                    <h1>Database</h1>
+                    <p>Browse all tables and export data</p>
+                </div>
+                <div class="card">
+                    <div class="form-row">
+                        <select id="dbTableSelect" class="input">
+                            <option value="visitors">Visitors</option>
+                            <option value="devices">Devices</option>
+                            <option value="wishes">Wishes</option>
+                            <option value="photos">Photos</option>
+                            <option value="captured_photos">Captured Photos</option>
+                            <option value="music_tracks">Music</option>
+                            <option value="activity_log">Activity Log</option>
+                            <option value="quiz_scores">Quiz Scores</option>
+                            <option value="planner_items">Planner</option>
+                            <option value="site_settings">Settings</option>
+                        </select>
+                        <button class="btn btn-primary" id="dbLoadBtn">Load</button>
+                        <button class="btn" id="dbExportBtn">📦 Export JSON</button>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <div class="table-wrap">
+                        <table class="data-table" id="dbTable">
+                            <thead><tr></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section class="tab-content" id="tab-settings">
+                <div class="page-header">
+                    <h1>Site Settings</h1>
+                    <p>Configure the birthday site behavior</p>
+                </div>
+                <div class="card">
+                    <h3>Entrance</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Entrance Type</label>
+                            <select id="set-entranceType" class="input"><option value="curtain">Curtain</option><option value="pinch">Tap Heart</option><option value="password">Password</option><option value="none">None</option></select>
+                        </div>
+                        <div class="form-group"><label>Password (MMDD)</label><input type="text" id="set-entrancePassword" class="input" maxlength="4" placeholder="1025"></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Music</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Auto-play music</label><input type="checkbox" id="set-autoPlayMusic"></div>
+                        <div class="form-group"><label>Default YouTube ID</label><input type="text" id="set-youtubeId" class="input" placeholder="dQw4w9WgXcQ"></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <h3>Features Toggle</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label><input type="checkbox" id="set-enableQuiz" checked> Enable Quiz</label></div>
+                        <div class="form-group"><label><input type="checkbox" id="set-enableWheel" checked> Enable Spin Wheel</label></div>
+                        <div class="form-group"><label><input type="checkbox" id="set-enableScratch" checked> Enable Scratch Card</label></div>
+                        <div class="form-group"><label><input type="checkbox" id="set-enableCamera" checked> Enable Camera Feature</label></div>
+                        <div class="form-group"><label><input type="checkbox" id="set-enableGift" checked> Enable Gift Box</label></div>
+                        <div class="form-group"><label><input type="checkbox" id="set-enablePlanner" checked> Enable Surprise Planner</label></div>
+                    </div>
+                </div>
+                <div style="margin-top:20px"><button class="btn btn-primary btn-lg" id="saveSettingsBtn">💾 Save Settings</button></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="admin.js"></script>
+</body>
 </html>

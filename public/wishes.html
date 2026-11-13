@@ -13,7 +13,7 @@
 <body>
     <div class="bg-blur blur-one"></div>
     <div class="bg-blur blur-two"></div>
-    <canvas id="particleLayer"></canvas>
+    <canvas id="particleLayer" aria-hidden="true"></canvas>
 
     <main class="page-shell">
         <nav class="main-nav" aria-label="Main navigation">
@@ -43,7 +43,8 @@
                         <label for="wishMessage">Your wish 💌</label>
                         <textarea id="wishMessage" rows="4" placeholder="Write something heartfelt..." maxlength="500" required></textarea>
                     </div>
-                    <button type="submit" class="pill-btn btn-primary">Send my wish</button>
+                    <button type="submit" class="pill-btn btn-primary" id="wishSubmit">Send my wish</button>
+                    <p class="form-status" id="wishStatus" role="status" aria-live="polite"></p>
                 </form>
             </div>
 

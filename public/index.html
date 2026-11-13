@@ -4,22 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0f0520">
+    <meta name="description" content="A personal birthday celebration filled with memories, little surprises and a lot of love.">
     <title>Happy Birthday, My Love</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Caveat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="bg-blur blur-one"></div>
     <div class="bg-blur blur-two"></div>
     <div class="bg-blur blur-three"></div>
-    <canvas id="particleLayer"></canvas>
+    <canvas id="particleLayer" aria-hidden="true"></canvas>
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
     <!-- Curtain entrance -->
-    <div id="curtainLeft"></div>
-    <div id="curtainRight"></div>
-    <div id="curtainCenter"></div>
+    <div id="curtainOverlay" role="region" aria-label="Birthday surprise intro">
+        <div id="curtainLeft"></div>
+        <div id="curtainRight"></div>
+        <div id="curtainCenter"></div>
+    </div>
 
     <main class="page-shell">
         <nav class="main-nav" aria-label="Main navigation">
@@ -29,47 +33,207 @@
             <a href="gallery.html" class="nav-link">Gallery</a>
             <a href="wishes.html" class="nav-link">Wishes</a>
             <a href="finale.html" class="nav-link">Finale</a>
-            <button class="nav-link" data-music>🔇 Music Off</button>
+            <button class="nav-link" data-music aria-pressed="false">🔇 Music Off</button>
         </nav>
 
-        <header class="site-header">
-            <div class="badge"></div>
-            <h1 class="hero-title gradient-text">Happy Birthday, My Love</h1>
-            <p class="hero-subtitle">A celebration made just for you, filled with love, laughter & a few surprises.</p>
-            <div class="hero-actions">
-                <a href="surprise.html" class="pill-btn btn-primary" id="surpriseBtn">Open the surprise</a>
-                <a href="letter.html" class="pill-btn btn-secondary">Read your letter</a>
+        <header class="site-header hero">
+            <div class="hero-copy">
+                <p class="eyebrow hero-eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span><span id="heroBadge">A little universe, made for you</span></p>
+                <h1 class="hero-title gradient-text">Happy Birthday,<br><em>My Love</em></h1>
+                <p class="hero-subtitle">A celebration made just for you, filled with love, laughter &amp; a few surprises.</p>
+                <div class="hero-actions">
+                    <a href="surprise.html" class="pill-btn btn-primary" id="surpriseBtn">Open the surprise</a>
+                    <a href="letter.html" class="pill-btn btn-secondary">Read your letter</a>
+                </div>
+                <dl class="hero-facts" aria-label="A few things about us">
+                    <div>
+                        <dt>Celebrating</dt>
+                        <dd><span id="heroAge">22</span> years of you</dd>
+                    </div>
+                    <div>
+                        <dt>Favourite human</dt>
+                        <dd>No. 01</dd>
+                    </div>
+                    <div>
+                        <dt>More chapters</dt>
+                        <dd>∞</dd>
+                    </div>
+                </dl>
             </div>
+
+            <div class="hero-art" aria-hidden="true">
+                <div class="hero-orbit">
+                    <span class="hero-ring hero-ring-one"></span>
+                    <span class="hero-ring hero-ring-two"></span>
+                    <span class="hero-ring hero-ring-three"></span>
+                    <div class="hero-medallion">
+                        <span id="heroAgeBig">22</span>
+                        <small>chapters</small>
+                    </div>
+                    <span class="hero-orbit-chip hero-chip-a">Main character</span>
+                    <span class="hero-orbit-chip hero-chip-b">Today's plan: sparkle</span>
+                </div>
+                <div class="hero-postcard">
+                    <span class="postcard-stamp">BDAY<br>22</span>
+                    <span class="postcard-kicker">Today's forecast</span>
+                    <strong>100% loved</strong>
+                    <span>with a chance of confetti</span>
+                </div>
+                <span class="hero-spark spark-a">✦</span>
+                <span class="hero-spark spark-b">✦</span>
+                <span class="hero-spark spark-c">✧</span>
+            </div>
+
+            <a class="scroll-cue" href="#timeTogether">
+                <span>Scroll for the good stuff</span>
+                <span class="scroll-line" aria-hidden="true"></span>
+            </a>
         </header>
 
         <!-- Name balloons float up -->
         <div id="nameBalloons"></div>
 
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Time Together</h2>
-            <p class="lead reveal">Every second with you is precious. Here's how long we've been making magic.</p>
+        <section class="section time-section reveal" id="timeTogether" aria-labelledby="timeTogetherTitle">
+            <div class="section-head">
+                <p class="eyebrow">Live, from us</p>
+                <h2 class="h2" id="timeTogetherTitle">Time together</h2>
+                <p class="lead">Every second with you is precious. Here's how long we've been making magic.</p>
+            </div>
             <div id="counter"></div>
         </section>
 
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Our Story in Numbers</h2>
-            <div class="grid-auto reveal" id="statsGrid"></div>
+        <section class="section edit-section" id="birthdayEdit" aria-labelledby="birthdayEditTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">The birthday edit</p>
+                <h2 class="h2" id="birthdayEditTitle">A tiny snapshot of us</h2>
+                <p class="lead">A few numbers, a few feelings, and one very good song.</p>
+            </div>
+            <div class="bento-grid">
+                <article class="bento-card bento-age reveal" data-spotlight>
+                    <span class="bento-kicker">Chapter</span>
+                    <strong class="bento-big" id="bentoAge">22</strong>
+                    <p>years of you being <em>you</em>.</p>
+                    <span class="bento-orbit" aria-hidden="true"></span>
+                </article>
+                <article class="bento-card bento-song reveal" data-spotlight>
+                    <span class="bento-kicker">Our soundtrack</span>
+                    <strong>Birthday melody</strong>
+                    <p>A tiny tune for your big day.</p>
+                    <button type="button" class="music-card-btn" id="bentoMusicBtn" aria-pressed="false">
+                        <span class="music-icon" aria-hidden="true">▶</span>
+                        <span id="bentoMusicLabel">Play the melody</span>
+                    </button>
+                    <p class="music-status" id="bentoMusicStatus" role="status" aria-live="polite"></p>
+                </article>
+                <article class="bento-card bento-stat reveal" data-spotlight>
+                    <span class="bento-kicker">Adventures</span>
+                    <strong><span id="bentoAdventures">12</span></strong>
+                    <p>and the best one is still ahead.</p>
+                </article>
+                <article class="bento-card bento-stat reveal" data-spotlight>
+                    <span class="bento-kicker">Laughs shared</span>
+                    <strong><span id="bentoLaughs">527</span>+</strong>
+                    <p>mostly at my jokes, let's be honest.</p>
+                </article>
+                <article class="bento-card bento-stat reveal" data-spotlight>
+                    <span class="bento-kicker">The little things</span>
+                    <strong><span id="bentoFriendship">1</span></strong>
+                    <p>favourite person. That's you.</p>
+                </article>
+                <article class="bento-card bento-mood reveal" data-spotlight>
+                    <span class="bento-kicker">Current mood</span>
+                    <div class="mood-emojis" aria-hidden="true"><span>🎂</span><span>✨</span><span>💗</span></div>
+                    <p>Certified main character energy.</p>
+                </article>
+                <article class="bento-card bento-quote reveal" data-spotlight>
+                    <span class="bento-kicker">On the record</span>
+                    <blockquote id="bentoQuote">“You make ordinary days feel like the best part of the story.”</blockquote>
+                </article>
+            </div>
         </section>
 
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Why You Matter</h2>
-            <div class="grid-3 reveal" id="featureGrid"></div>
+        <section class="section reasons-section" aria-labelledby="reasonsTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">On repeat</p>
+                <h2 class="h2" id="reasonsTitle">Reasons, on repeat</h2>
+                <p class="lead">A little scroll of the things that make you, you.</p>
+            </div>
+            <div class="marquee" role="region" aria-label="Reasons you are loved">
+                <div class="marquee-track" id="reasonsTrack"></div>
+            </div>
         </section>
 
-        <section class="section cake-scene reveal">
-            <h2 class="h2 gradient-text">A Cake Just for You</h2>
-            <p class="lead">Tap the candle to blow it out, then cut a slice. Make a wish.</p>
+        <section class="section why-section" aria-labelledby="whyTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">The little things</p>
+                <h2 class="h2" id="whyTitle">Why you matter</h2>
+                <p class="lead">Not the big speeches. The small, everyday evidence.</p>
+            </div>
+            <div class="feature-bento reveal" id="featureGrid"></div>
+        </section>
+
+        <section class="section story-section" aria-labelledby="storyTitle">
+            <div class="section-head section-head-split reveal">
+                <div>
+                    <p class="eyebrow">Postcards from us</p>
+                    <h2 class="h2" id="storyTitle">Little chapters</h2>
+                </div>
+                <div class="story-controls" aria-label="Scroll story chapters">
+                    <button type="button" class="story-control" id="storyPrev" aria-label="Previous chapters">←</button>
+                    <button type="button" class="story-control" id="storyNext" aria-label="Next chapters">→</button>
+                </div>
+            </div>
+            <ol class="story-track" id="storyTrack" tabindex="0" aria-label="Our story timeline"></ol>
+        </section>
+
+        <section class="section open-when-section" aria-labelledby="openWhenTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">Save these</p>
+                <h2 class="h2" id="openWhenTitle">Open when…</h2>
+                <p class="lead">Three little notes for the days that need them.</p>
+            </div>
+            <div class="open-when-grid" id="openWhenGrid"></div>
+        </section>
+
+        <section class="section cake-scene reveal" aria-labelledby="cakeTitle">
+            <div class="section-head">
+                <p class="eyebrow">Make a wish</p>
+                <h2 class="h2" id="cakeTitle">A cake just for you</h2>
+                <p class="lead">Tap the candle to blow it out, then cut a slice. Make a wish.</p>
+            </div>
             <div class="cake-wrap" id="cakeWrap"></div>
             <div class="cake-actions">
                 <button class="pill-btn btn-primary" id="blowBtn">Blow out candles</button>
                 <button class="pill-btn btn-secondary" id="cutBtn">Cut the cake</button>
             </div>
-            <div class="cake-status" id="cakeStatus"></div>
+            <div class="cake-status" id="cakeStatus" role="status" aria-live="polite"></div>
+        </section>
+
+        <section class="section next-chapters" aria-labelledby="nextTitle">
+            <div class="next-chapters-head reveal">
+                <p class="eyebrow">Keep going</p>
+                <h2 class="h2" id="nextTitle">Choose your next chapter</h2>
+            </div>
+            <div class="next-chapters-grid">
+                <a class="next-card reveal" href="letter.html">
+                    <span class="next-index">01</span>
+                    <strong>Read the letter</strong>
+                    <span>Words I saved for today.</span>
+                    <span class="next-arrow" aria-hidden="true">↗</span>
+                </a>
+                <a class="next-card reveal" href="gallery.html">
+                    <span class="next-index">02</span>
+                    <strong>See the moments</strong>
+                    <span>Our favourite frames, all in one place.</span>
+                    <span class="next-arrow" aria-hidden="true">↗</span>
+                </a>
+                <a class="next-card reveal" href="wishes.html">
+                    <span class="next-index">03</span>
+                    <strong>Leave a wish</strong>
+                    <span>Add your voice to the wall.</span>
+                    <span class="next-arrow" aria-hidden="true">↗</span>
+                </a>
+            </div>
         </section>
     </main>
 

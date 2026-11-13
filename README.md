@@ -1,6 +1,6 @@
-# Birthday Surprise Website + Real-Time Admin Panel
+# Birthday Surprise Website + Real-Time Admin
 
-A personalized, multi-page birthday surprise website (Express + SQLite + Socket.io) with a live admin panel that sees every device/visitor in real time.
+A personalized, multi-page birthday surprise website (Express + SQLite + Socket.io) with a real-time “Surprise HQ” admin panel.
 
 ## Run
 
@@ -9,9 +9,17 @@ npm start
 ```
 
 - Site: http://localhost:3000
-- Admin panel: http://localhost:3000/admin
-- Server log (if backgrounded): `/tmp/birthday-server.log`
+- Admin: http://localhost:3000/admin
 - DB: `data/birthday.db`
+- Server log when detached: `/tmp/opencode/day6-server.log`
+
+Background/CI-friendly start:
+
+```bash
+cd /home/kali/Desktop/day6
+nohup node server.js >/tmp/opencode/day6-server.log 2>&1 &
+curl -fsS http://localhost:3000/api/health
+```
 
 ### Make it public (phones reach the site)
 
@@ -23,52 +31,82 @@ cloudflared tunnel --url http://localhost:3000
 
 Fallback: `ngrok http 3000` (ngrok installed at `/home/kali/ngrok`, authtoken configured). Copy the tunnel URL to any phone.
 
-## History (git commits)
+## Home page redesign (2026)
 
-| Commit | What |
-| --- | --- |
-| `e3a319c` | Initial commit: existing birthday surprise project |
-| `97cfdf8` | Complete 6-page birthday website with 45+ features |
-| `97ee1b1` | Admin panel: real-time dashboard, device intel, music system, content editor & planner |
-| `2c7c836` | Fix site-loading bugs + complete visitor sharing & admin integration (curtain z-index, Wordle TDZ, entrance none auto-open, safe() boot, #knowMeQuiz, DELETE photo route) |
-| `7d1bb8b` | Fully responsive & performance-adapted for mobile (Device module, particle/confetti scaling, mobile nav, reduced-motion) |
-| WIP (uncommitted) | Backend: `/api/summary` endpoint + `admin-broadcast` socket + site-side `site-broadcast` toast/confetti receiver |
+The public home page was rebuilt around a researched “editorial birthday issue” direction:
+
+- **Hero** — oversized editorial headline, personal badge, quick facts, orbit/age medallion and a “100% loved” postcard.
+- **Time together** — the existing live counter, restyled as a single glass ribbon.
+- **The birthday edit** — asymmetric bento grid for age, soundtrack, adventures, laughs, favourite person, mood and a quote.
+- **Reasons, on repeat** — accessible kinetic marquee driven by `CONFIG.reasonsILoveYou`; pauses on hover and becomes static with reduced motion.
+- **Why you matter** — the six “little things” upgraded into an asymmetric feature bento with short notes.
+- **Little chapters** — timeline postcards from `CONFIG.timeline`; four-up on desktop, keyboard-focusable horizontal snap track on mobile.
+- **Open when…** — three native `<details>` notes for the days that need them.
+- **Choose your next chapter** — large destination cards to the letter, gallery and wishes.
+
+New interactions include a scroll-progress bar, pointer spotlight on bento cards, a synchronised music toggle, story-track controls and config-driven personalisation. The pinch-heart entrance now waits up to four seconds for saved admin settings, so a slow first load cannot silently fall back to the wrong entrance style.
+
+Research, trend selection and the full section plan are documented in [`DESIGN-NOTES.md`](DESIGN-NOTES.md).
+
+## Admin — Surprise HQ
+
+Eleven tabs:
+
+`Dashboard`, `Live control`, `Devices`, `Wishes`, `Activity`, `Photos`, `Music`, `Content`, `Planner`, `Database`, `Settings`.
+
+Key capabilities:
+
+- Live online count and activity feed (admin sockets excluded from visitor count).
+- Searchable/filterable device table with dossier modal, focus trap, Escape close and focus restoration.
+- Device and database pagination (`Load 200 more rows` for DB; incremental device rows).
+- Per-table database explorer + CSV export.
+- Filtered/paginated activity, summary breakdowns, visitor dossier.
+- Broadcast toast/confetti control.
+- Custom confirmation dialogs for destructive actions instead of native `window.confirm()`.
+- Responsive layout with mobile “swipe to see all columns” hints and accessible table/button semantics.
 
 ## Architecture
 
 - `server.js` — Express routes, Socket.io, multer uploads (`uploads/photos`, `uploads/music`), static `public/`.
 - `db.js` — SQLite schema: `visitors, photos, wishes, quiz_scores, devices, captured_photos, music_tracks, activity_log, site_settings, planner_items, surprise_config`.
-- `public/app.js` — CONFIG + admin overrides (`applyAdminOverrides` fetches `/api/settings` + `/api/config`), `Device`, `DeviceIntel` (socket emit buffer, browser/permission/geo intel, camera + photo upload), `AudioManager` (uploads + YouTube), all feature inits wrapped in `safe()`.
-- 6 pages: `index.html` (home/hero, flip cards, counter, stats, cake, heart progress, wheel, rizz, compliments, funny questions, know-me quiz, scratch, gift, star sky, slot, cookies, wordle, konami), `letter.html`, `gallery.html`, `wishes.html`, `surprise.html`, `finale.html`.
+- `public/app.js` — `CONFIG` + admin overrides (`applyAdminOverrides`), `Device`, `DeviceIntel`, `AudioManager`, all feature inits wrapped in `safe()`.
+- `public/index.html` — the redesigned home experience.
+- `public/styles.css` — shared design system, home bento/hero/marquee/story components, focus-visible and reduced-motion rules.
+- `public/admin.html`, `public/admin.css`, `public/admin.js` — Surprise HQ.
+- 6 public pages: `index.html`, `letter.html`, `gallery.html`, `wishes.html`, `surprise.html`, `finale.html`.
 
-## Admin API surface
+## API surface
 
-`/api/health`, `/api/visitors`, `/api/visitor`, `/api/devices` (GET/POST), `/api/captured-photos` (GET/POST/DELETE), `/api/photos` (GET/POST), `/api/music` (GET/POST/PUT/DELETE), `/api/activity`, `/api/settings` (GET/PUT), `/api/wishes` (GET/POST/DELETE), `/api/quiz-scores` (GET/POST), `/api/planner` (CRUD), `/api/config` (GET/PUT), `/api/db-export`, `/api/summary`.
+`/api/health`, `/api/visitors`, `/api/visitor`, `/api/devices`, `/api/devices/:visitorId/dossier`, `/api/captured-photos` (GET/POST/DELETE), `/api/photos` (GET/POST), `/api/music` (GET/POST/PUT/DELETE), `/api/activity` (filters + pagination), `/api/settings` (GET/PUT), `/api/wishes` (GET/POST/DELETE), `/api/quiz-scores` (GET/POST), `/api/planner` (CRUD), `/api/config` (GET/PUT), `/api/summary`, `/api/db`, `/api/db/:table`, `/api/db/:table/export.csv`, `/api/db-export`, `/api/broadcast`.
 
 Socket events: `visitor-joined`, `visitor-activity`, `device-info`, `photo-captured`, `admin-broadcast` → site; `visitor-count`, `admin-activity`, `admin-device`, `admin-photo`, `site-broadcast` → clients.
 
-## Saved for later (admin panel upgrade — full plan)
+## Verification
 
-User request: "upgrade the UI/UX of the admin panel, add more tools to access ALL the data on devices where the site is running, make a proper plan."
+The project was checked with headless Chrome via `agent-browser`:
 
-One part is ALREADY DONE (on disk, uncommitted): backend `/api/summary` + `admin-broadcast` socket listener + site-side `site-broadcast` toast/confetti.
+```bash
+agent-browser close --all
+agent-browser set viewport 1280 900
+agent-browser open http://localhost:3000
+agent-browser wait 1500
+agent-browser a11y
+agent-browser errors
+agent-browser console
+```
 
-Remaining phases:
+Results for the latest pass:
 
-1. **Auth + live status bookkeeping** (optional but recommended before going public):
-   - Add a simple admin password/pin for `/api/*` writes + admin panel, or at minimum do not expose DB-export publicly.
-2. **UI/UX polish (admin.css + admin.html)**:
-   - Gradient accent headers, card hover/elevation, consistent empty states, toast notifications instead of `alert()`.
-   - Clickable stat cards (jump to tab), live status strip (online count, socket health).
-   - Devices tab: search box, filter by platform/browser/city/camera permission, sortable columns.
-3. **New tools (tabs/features)**:
-   - **Activity Log tab** — full replay of `activity_log` (reuse GET `/api/activity`), filter by page/type/IP. (Backend ready.)
-   - **Wishes tab** — wall of messages + scores, read/delete. (`/api/wishes`, `/api/quiz-scores` ready.)
-   - **Visitor Timeline** — click a device row → dossier: joined, activity trail, pages visited, quiz score, photos taken, camera/mic perms. Uses `visitors` + `devices` + `activity_log` + `quiz_scores` + `captured_photos`.
-   - **Device Map** — scatter plot from `devices.latitude/longitude` + country/city list. (Geo already being collected.)
-   - **Broadcast / Live Control** — push toast/banner/confetti to all online visitors. (Backend + site receiver DONE.)
-   - **Server Health card** — uptime, DB size, upload counts (`/api/health` + `/api/summary`). (Summary DONE.)
-4. **Database tab upgrade**: per-table row counts, in-table search filter, per-table CSV export (JSON export exists).
-5. **Verification**: curl every API, headless-Chromium mobile render of admin, zero console errors, commit.
+- `node -c server.js`, `node -c public/app.js`, `node -c public/admin.js` — clean.
+- All six public pages: **0 axe violations**, no page/console errors, no broken images.
+- Admin: **0 axe violations**; no page/console errors.
+- No document-level horizontal overflow at 1280, 390 or 320 px.
+- Remaining axe `incomplete` colour-contrast items are manual reviews caused by gradient backgrounds, not automated failures.
+- Home interaction checks: pinch entrance, bento music toggle + nav sync, open-when note, story next/previous, scroll progress, cake blow/cut.
+- Admin checks: dossier modal, focus restoration, custom delete confirmation, device/DB load-more, mobile nav and table hints.
 
-Files to touch: `public/admin.html`, `public/admin.css`, `public/admin.js`; small additions only if needed in `server.js`.
+## Notes
+
+- The site uses Google Fonts and GSAP/canvas-confetti CDNs; on a slow connection the first boot can take a few seconds. API-fetched admin overrides now have a four-second grace period.
+- `data/birthday.db` is a live SQLite database. Back it up before deploying or resetting demo data.
+- Keep the reduced-motion path intact when adding new animations. The site intentionally supports keyboard, screen readers, touch, and low-end devices.

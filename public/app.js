@@ -6,7 +6,7 @@
 const CONFIG = {
   birthdayName: "[Name]",
   senderName: "[Your Name]",
-  age: 25,
+  age: 22,
 
   hero: {
     title: "Happy Birthday",
@@ -26,7 +26,7 @@ const CONFIG = {
   },
 
   loveLetter: [
-    "My dearest [Name], on this special day, I want you to know how much you mean to me. Every moment we've shared has been a gift, and I cherish each one deeply.",
+    "My dearest [Mehak], on this special day, I want you to know how much you mean to me. Every moment we've shared has been a gift, and I cherish each one deeply.",
     "You bring so much joy and warmth into my life. Your laughter is my favorite sound, and your happiness is my greatest wish. Thank you for being the amazing person you are.",
     "Happy Birthday, my love. I hope this year brings you everything your heart desires and more. You deserve all the happiness in the world. With all my love, always."
   ],
@@ -44,9 +44,18 @@ const CONFIG = {
     { emoji: "😂", text: "Your sense of humor" },
     { emoji: "😊", text: "Your smile" },
     { emoji: "🍳", text: "Your cooking" },
-    { emoji: "🤗", text: "Your hugs" },
+    { emoji: "🤗", text: "Your baate" },
     { emoji: "👀", text: "The way you look at me" },
-    { emoji: "☕", text: "Our mornings together" }
+    { emoji: "☕", text:  "Your smartness" }
+  ],
+
+  featureNotes: [
+    "The kind that turns a bad day into an inside joke.",
+    "The first thing I look for in a room.",
+    "Somehow everything tastes better when you make it.",
+    "The conversations that go nowhere and mean everything.",
+    "Like you're seeing the best version of me.",
+    "The quiet kind of brilliant that never needs to show off."
   ],
 
   reasonsILoveYou: [
@@ -64,14 +73,14 @@ const CONFIG = {
     { value: 365, label: "Days Together", icon: "📅" },
     { value: 12, label: "Adventures", icon: "✈️" },
     { value: 1000, label: "Laughs Shared", icon: "😂" },
-    { value: 1, label: "True Love", icon: "💕" }
+    { value: 1, label: "True Friendship", icon: "💕" }
   ],
 
   timeline: [
-    { date: "2023-01-15", title: "The First Hello", desc: "Where it all began.", photo: null },
-    { date: "2023-06-20", title: "First Adventure", desc: "The trip that changed everything.", photo: null },
-    { date: "2024-02-14", title: "First Valentine's", desc: "A night to remember.", photo: null },
-    { date: "2025-10-15", title: "Today", desc: "And so many more to come.", photo: null }
+    { date: "2024-aug-08", title: "The First Hello", desc: "Where I first saw you.", photo: null },
+    { date: "2024-Oct-18", title: "First Interaction", desc: "The first time I messaged you.", photo: null },
+    { date: "2026-Aug-02", title: "First Feeling", desc: "We became friends.", photo: null },
+    { date: "2026-Nov-27", title: "Today", desc: "And so many more to come.", photo: null }
   ],
 
   starMemories: [
@@ -105,8 +114,8 @@ const CONFIG = {
   heartProgressSteps: 5,
 
   wheelItems: [
-    "Free Hug \u{1F917}", "Movie Night \u{1F3AC}", "Breakfast in Bed \u{1F373}",
-    "Surprise Date \u{1F491}", "Dessert of Choice \u{1F370}", "No Chores Day \u{1F389}",
+    "Late nights talks \u{1F917}", "Movie Night \u{1F3AC}", "Our first meeting \u{1F373}",
+    "Surprise Gift\u{1F491}", "Dessert of Choice \u{1F370}", "No Chores Day \u{1F389}",
     "Head Scratches \u{1F485}", "You Pick the Music \u{1F3B5}"
   ],
 
@@ -124,10 +133,10 @@ const CONFIG = {
   wordleWord: "LOVE",
 
   crosswordClues: [
-    { clue: "Year we first met", answer: "2023", length: 4 },
+    { clue: "Year we first met", answer: "2024", length: 4 },
     { clue: "Your favorite food", answer: "TACOS", length: 5 },
     { clue: "The city we said 'I love you'", answer: "PARIS", length: 5 },
-    { clue: "My nickname for you", answer: "SUNNY", length: 5 },
+    { clue: "My nickname for you", answer: "MAHI", length: 4 },
     { clue: "The song stuck in our heads", answer: "MOONLIGHT", length: 9 }
   ],
 
@@ -163,7 +172,7 @@ const CONFIG = {
     ]},
     { q: "What's the best thing about being with me?", options: [
       { text: "My jokes", correct: false, response: "Finally, someone appreciates my comedy!" },
-      { text: "The food I make", correct: false, response: "So you only love me for the snacks?!" },
+      { text: "My nonsense talks", correct: false, response: "So you only love me for the snacks?!" },
       { text: "Just being together", correct: true, response: "Aww. That's the right answer. \u{1F493}" }
     ]},
     { q: "Rate this birthday website (1-10):", options: [
@@ -184,10 +193,10 @@ const CONFIG = {
   ],
 
   knowMeQuiz: [
-    { q: "What's my favorite thing about you?", options: ["Your face", "Your vibes", "All of you, always", "Your shoes"], correct: 2 },
+    { q: "What's my favorite thing about you?", options: ["Your eyez", "Your vibes", "All of you, always", "Your shoes"], correct: 2 },
     { q: "When did I know you were special?", options: ["First day", "Your smile", "Yesterday", "Never"], correct: 1 },
-    { q: "What's our couple superpower?", options: ["Adorable", "Making each other laugh", "Food marathons", "Sleep"], correct: 1 },
-    { q: "What's our dream destination?", options: ["World tour", "Anywhere together", "The moon", "My couch"], correct: 1 },
+    { q: "What's our Friendship superpower?", options: ["Trust", "Making each other laugh", "", "Sleep"], correct: 1 },
+    { q: "What's our dream destination?", options: ["World tour", "Anywhere together", "The moon", "My sath"], correct: 1 },
     { q: "Best birthday gift ever?", options: ["This site", "Expensive stuff", "My love", "Cake"], correct: 2 }
   ],
 
@@ -198,7 +207,7 @@ const CONFIG = {
     message: "Two fire signs, one cosmic match. Off the charts — literally."
   },
 
-  giftMessage: "The best gift I can give you is my love, today and always. Happy Birthday!",
+  giftMessage: "The best gift I can give you is my dostii, today and always. Happy Birthday!",
 
   cake: {
     heading: "Time for the Cake!",
@@ -209,7 +218,7 @@ const CONFIG = {
 
   secretMessages: [
     "You're my favorite notification \u{1F493}",
-    "I'd choose you in every lifetime \u2728",
+    "I'd choose your friendship in every lifetime \u2728",
     "You make my heart do backflips \u{1F938}"
   ],
 
@@ -222,7 +231,7 @@ const CONFIG = {
     "Too hot to handle",
     "Green flags only",
     "Perfectly crafted by the universe",
-    "Chef's kiss of a person",
+    "Chef's  of a person",
     "Born to stand out"
   ],
 
@@ -232,9 +241,9 @@ const CONFIG = {
 
   togetherSince: "2023-01-15",
   credits: [
-    { role: "Director of Smiles", name: "[Your Name]" },
+    { role: "Director of Smiles", name: "[KUMAR_n Swami]" },
     { role: "Screenplay", name: "Us, every day" },
-    { role: "Lead Birthday Star", name: "[Their Name]" },
+    { role: "Lead Birthday Star", name: "[Mehak Joshi]" },
     { role: "Music Supervisor", name: "The songs we can't stop singing" },
     { role: "Executive Producer", name: "Love, obviously \u{1F970}" }
   ]
@@ -481,7 +490,7 @@ function initEntrance() {
     center.innerHTML = `
       <h2 class="h2">A locked gift awaits</h2>
       <p>Enter the passcode (hint: birthday, MMDD)</p>
-      <input id="pwInput" type="text" maxlength="4" style="max-width:120px;text-align:center;font-size:1.4rem" />
+      <input id="pwInput" type="text" maxlength="4" aria-label="Passcode, four digits in month and day order" autocomplete="off" style="max-width:120px;text-align:center;font-size:1.4rem" />
       <button class="pill-btn btn-primary" id="pwBtn">Unlock</button>
     `;
     const btn = $('#pwBtn'), input = $('#pwInput');
@@ -496,7 +505,7 @@ function initEntrance() {
 
   if (type === 'pinch') {
     center.innerHTML = `
-      <div style="font-size:6rem;cursor:pointer" id="pinchHeart">💗</div>
+      <button type="button" id="pinchHeart" aria-label="Open the birthday surprise" style="font-size:6rem;cursor:pointer;background:none;border:0;line-height:1;padding:0">💗</button>
       <p>Tap the heart to begin...</p>
       <button class="pill-btn btn-secondary" id="skipBtn">Skip intro</button>
     `;
@@ -510,6 +519,8 @@ function initEntrance() {
     left.classList.add('open');
     right.classList.add('open');
     center.classList.add('hidden');
+    center.setAttribute('aria-hidden', 'true');
+    center.inert = true;
     return;
   }
 
@@ -524,6 +535,8 @@ function initEntrance() {
     left.classList.add('open');
     right.classList.add('open');
     center.classList.add('hidden');
+    center.setAttribute('aria-hidden', 'true');
+    center.inert = true;
     fireConfetti({ particleCount: 80 });
     vibrate(60);
   }
@@ -568,9 +581,17 @@ function initFlipCards() {
     });
   }
   $$('.flip-card').forEach(card => {
-    card.addEventListener('click', () => {
-      card.classList.toggle('flipped');
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-pressed', 'false');
+    const flip = () => {
+      const flipped = card.classList.toggle('flipped');
+      card.setAttribute('aria-pressed', String(flipped));
       AudioManager.sfxFlip();
+    };
+    card.addEventListener('click', flip);
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); flip(); }
     });
   });
 }
@@ -645,14 +666,51 @@ function initPolaroidTilt() {
 function initLightbox() {
   const box = $('#lightbox');
   if (!box) return;
+  const boxImg = $('img', box);
+  let lastPhoto = null;
+  const close = () => {
+    box.classList.remove('open');
+    box.setAttribute('aria-hidden', 'true');
+    if (lastPhoto && document.contains(lastPhoto)) lastPhoto.focus();
+  };
+  const open = (img, photo) => {
+    if (!img || !boxImg) return;
+    lastPhoto = photo || null;
+    boxImg.src = img.src;
+    boxImg.alt = img.alt || 'Enlarged photo';
+    box.classList.add('open');
+    box.setAttribute('aria-hidden', 'false');
+    box.focus();
+  };
+  const markPhotos = () => {
+    $$('.polaroid .photo').forEach(photo => {
+      if (photo.dataset.zoomReady) return;
+      const img = photo.querySelector('img');
+      if (!img) { photo.removeAttribute('role'); photo.removeAttribute('tabindex'); return; }
+      photo.dataset.zoomReady = '1';
+      photo.tabIndex = 0;
+      photo.setAttribute('role', 'button');
+      const caption = photo.parentElement?.querySelector('.caption')?.textContent.trim();
+      photo.setAttribute('aria-label', 'Enlarge ' + (caption || 'photo'));
+    });
+  };
+  const grid = $('#galleryGrid');
+  if (grid) new MutationObserver(markPhotos).observe(grid, { childList: true, subtree: true });
+  markPhotos();
   document.addEventListener('click', (e) => {
-    const photo = e.target.closest('.polaroid .photo');
-    if (photo && box) {
-      const img = $('img', photo);
-      if (img) { $('img', box).src = img.src; box.classList.add('open'); }
-    }
+    const photo = e.target instanceof Element ? e.target.closest('.polaroid .photo') : null;
+    if (!photo) return;
+    open($('img', photo), photo);
   });
-  box.addEventListener('click', () => box.classList.remove('open'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const photo = e.target instanceof Element ? e.target.closest('.polaroid .photo') : null;
+      if (photo) { e.preventDefault(); photo.click(); }
+    }
+    if (e.key === 'Escape' && box.classList.contains('open')) close();
+  });
+  box.addEventListener('click', () => close());
+  $('#lightboxClose')?.addEventListener('click', event => { event.stopPropagation(); close(); });
 }
 
 /* =========================================================
@@ -900,6 +958,15 @@ function initScratch() {
     ctx.arc(x, y, 25, 0, Math.PI * 2);
     ctx.fill();
   }
+  canvas.tabIndex = 0;
+  canvas.setAttribute('role', 'button');
+  canvas.setAttribute('aria-label', 'Scratch card: press Enter or Space to reveal the message');
+  canvas.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillRect(0, 0, w, h);
+  });
   canvas.addEventListener('mousedown', () => drawing = true);
   canvas.addEventListener('mousemove', e => { if (drawing) scratch(e); });
   canvas.addEventListener('mouseup', () => drawing = false);
@@ -916,15 +983,24 @@ function initGift() {
   const box = $('#giftBox');
   const msg = $('#giftMessage');
   if (!box) return;
-  box.addEventListener('click', () => {
+  box.setAttribute('role', 'button');
+  box.setAttribute('tabindex', '0');
+  box.setAttribute('aria-label', 'Open the gift box');
+  box.setAttribute('aria-expanded', 'false');
+  const openGift = () => {
     box.classList.remove('bounce');
     box.classList.add('open');
+    box.setAttribute('aria-expanded', 'true');
     AudioManager.sfxBoom();
     fireCannon();
     vibrate(100);
     setTimeout(() => {
       if (msg) { msg.classList.add('show'); typewriter($('#giftMsgText'), CONFIG.giftMessage, 30); }
     }, 500);
+  };
+  box.addEventListener('click', openGift);
+  box.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openGift(); }
   });
 }
 
@@ -945,10 +1021,18 @@ function initStarSky() {
     d.style.left = (15 + (i * (70 / Math.max(mems.length - 1, 1)))) + '%';
     d.style.top = (30 + ((i % 2) * 30)) + '%';
     d.title = m;
+    d.tabIndex = 0;
+    d.setAttribute('role', 'button');
+    d.setAttribute('aria-label', 'Reveal memory: ' + m);
+    d.setAttribute('aria-pressed', 'false');
+    d.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); d.click(); }
+    });
     d.addEventListener('click', () => {
       if (!d.classList.contains('lit')) {
         d.classList.add('lit');
         d.textContent = '★';
+        d.setAttribute('aria-pressed', 'true');
         fireConfetti({ particleCount: 15 });
         const note = document.createElement('div');
         note.style.textAlign = 'center';
@@ -1033,7 +1117,14 @@ function initCookies() {
     btn.style.textAlign = 'center';
     btn.style.cursor = 'pointer';
     btn.innerHTML = `<span class="cookie" data-idx="${i}">🥠</span><p style="color:var(--muted);font-size:0.8rem">Cookie ${i + 1}</p>`;
-    btn.querySelector('.cookie').addEventListener('click', function () {
+    const cookie = btn.querySelector('.cookie');
+    cookie.tabIndex = 0;
+    cookie.setAttribute('role', 'button');
+    cookie.setAttribute('aria-label', 'Open fortune cookie ' + (i + 1));
+    cookie.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }
+    });
+    cookie.addEventListener('click', function () {
       if (this.dataset.open) return;
       this.dataset.open = '1';
       this.classList.add('cracked');
@@ -1114,6 +1205,8 @@ function initWordle() {
       const inp = document.createElement('input');
       inp.className = 'wordle-input';
       inp.maxLength = 1;
+      inp.autocomplete = 'off';
+      inp.setAttribute('aria-label', `Wordle letter ${i + 1} of ${word.length}`);
       inputs.push(inp);
       inputRow.appendChild(inp);
       inp.addEventListener('keydown', e => {
@@ -1223,12 +1316,251 @@ function renderFeatures() {
   const grid = $('#featureGrid');
   if (!grid) return;
   grid.innerHTML = '';
-  CONFIG.thingsILove.forEach(f => {
+  CONFIG.thingsILove.forEach((f, i) => {
     const card = document.createElement('div');
     card.className = 'feature-card';
-    card.innerHTML = `<span class="icon">${f.emoji}</span><h3>${f.text}</h3>`;
+    const note = (CONFIG.featureNotes && CONFIG.featureNotes[i]) || '';
+    card.dataset.index = String(i + 1).padStart(2, '0');
+    card.innerHTML = `<span class="icon" aria-hidden="true">${escapeHtml(f.emoji)}</span><h3>${escapeHtml(f.text)}</h3>${note ? `<p>${escapeHtml(note)}</p>` : ''}`;
     grid.appendChild(card);
   });
+}
+
+/* =========================================================
+   Home edit — hero, bento, marquee, story and notes
+   ========================================================= */
+function renderHomeHero() {
+  const age = Number(CONFIG.age) || 22;
+  const ageEl = $('#heroAge');
+  const ageBig = $('#heroAgeBig');
+  if (ageEl) ageEl.textContent = age;
+  if (ageBig) ageBig.textContent = age;
+  const badge = $('#heroBadge');
+  if (badge && CONFIG.hero && CONFIG.hero.badgeText) badge.textContent = CONFIG.hero.badgeText;
+}
+
+function renderBirthdayEdit() {
+  const stats = Array.isArray(CONFIG.stats) ? CONFIG.stats : [];
+  const stat = (needle, fallback) => {
+    const found = stats.find(item => String(item.label || '').toLowerCase().includes(needle));
+    return found && found.value != null ? found.value : fallback;
+  };
+  const set = (id, value) => {
+    const el = $('#' + id);
+    if (el && value != null) el.textContent = Number(value).toLocaleString();
+  };
+  set('bentoAge', CONFIG.age || 22);
+  set('bentoAdventures', stat('adventure', 12));
+  set('bentoLaughs', stat('laugh', 1000));
+  set('bentoFriendship', stat('friend', 1));
+  const quote = $('#bentoQuote');
+  if (quote) {
+    const reason = (CONFIG.reasonsILoveYou && CONFIG.reasonsILoveYou[1]) || (CONFIG.reasonsILoveYou && CONFIG.reasonsILoveYou[0]) || 'You make ordinary days feel like the best part of the story.';
+    quote.textContent = '“' + String(reason).replace(/[.!?]+$/, '') + '.”';
+  }
+}
+
+function renderReasonsMarquee() {
+  const track = $('#reasonsTrack');
+  if (!track) return;
+  const reasons = Array.isArray(CONFIG.reasonsILoveYou) && CONFIG.reasonsILoveYou.length
+    ? CONFIG.reasonsILoveYou
+    : ['You make every ordinary day feel a little more magical.'];
+  track.innerHTML = '';
+  const makeGroup = (hidden) => {
+    const group = document.createElement('div');
+    group.className = 'marquee-group';
+    if (hidden) group.setAttribute('aria-hidden', 'true');
+    else group.setAttribute('role', 'list');
+    reasons.forEach((reason, i) => {
+      const chip = document.createElement('span');
+      chip.className = 'marquee-chip';
+      if (!hidden) chip.setAttribute('role', 'listitem');
+      const index = document.createElement('span');
+      index.textContent = String(i + 1).padStart(2, '0');
+      index.setAttribute('aria-hidden', 'true');
+      chip.append(index, document.createTextNode(String(reason)));
+      group.appendChild(chip);
+    });
+    return group;
+  };
+  track.append(makeGroup(false), makeGroup(true));
+}
+
+function storyDateLabel(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return 'A little memory';
+  const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+  const match = raw.match(/(\d{4})[- ]([A-Za-z]{3,})[- ](\d{1,2})/);
+  if (match) {
+    const month = months.indexOf(match[2].slice(0, 3).toLowerCase());
+    if (month >= 0) {
+      const date = new Date(Number(match[1]), month, Number(match[3]));
+      return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+    }
+  }
+  const parsed = new Date(raw);
+  if (!Number.isNaN(parsed.getTime())) return parsed.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+  return raw;
+}
+
+function renderHomeTimeline() {
+  const track = $('#storyTrack');
+  if (!track) return;
+  const items = Array.isArray(CONFIG.timeline) ? CONFIG.timeline : [];
+  track.innerHTML = '';
+  const stamps = ['💌', '✨', '🌙', '🎂', '💫'];
+  items.forEach((item, i) => {
+    const card = document.createElement('li');
+    card.className = 'story-card reveal';
+    card.dataset.step = String(i + 1).padStart(2, '0');
+    const date = document.createElement('span');
+    date.className = 'story-date';
+    date.textContent = storyDateLabel(item.date);
+    const title = document.createElement('h3');
+    title.textContent = item.title || 'A little chapter';
+    const desc = document.createElement('p');
+    desc.textContent = item.desc || 'A memory worth keeping.';
+    const stamp = document.createElement('span');
+    stamp.className = 'story-stamp';
+    stamp.setAttribute('aria-hidden', 'true');
+    stamp.textContent = stamps[i % stamps.length];
+    card.append(date, title, desc, stamp);
+    track.appendChild(card);
+  });
+}
+
+function renderOpenWhen() {
+  const grid = $('#openWhenGrid');
+  if (!grid) return;
+  const reasons = Array.isArray(CONFIG.reasonsILoveYou) ? CONFIG.reasonsILoveYou : [];
+  const notes = [
+    {
+      title: 'Open when you miss me',
+      paragraphs: [
+        reasons[0] || 'You are my favourite thought.',
+        'Come find me. I will put the kettle on and pretend I was not waiting by the door.'
+      ]
+    },
+    {
+      title: 'Open when you need a smile',
+      paragraphs: [
+        reasons[1] || 'You make ordinary days feel like adventures.',
+        'Now picture me attempting to dance to our song. You are welcome.'
+      ]
+    },
+    {
+      title: 'Open when you forget how loved you are',
+      paragraphs: [
+        reasons[2] || 'You are loved more than you know.',
+        'Read that again. Then look at the cake. You are the whole reason for it.'
+      ]
+    }
+  ];
+  grid.innerHTML = '';
+  notes.forEach((note, i) => {
+    const details = document.createElement('details');
+    details.className = 'open-when-card reveal';
+    const summary = document.createElement('summary');
+    const index = document.createElement('span');
+    index.className = 'open-when-index';
+    index.textContent = String(i + 1).padStart(2, '0');
+    const title = document.createElement('strong');
+    title.textContent = note.title;
+    summary.append(index, title);
+    const body = document.createElement('div');
+    body.className = 'open-when-body';
+    note.paragraphs.forEach(text => {
+      const p = document.createElement('p');
+      p.textContent = text;
+      body.appendChild(p);
+    });
+    details.append(summary, body);
+    grid.appendChild(details);
+  });
+}
+
+function initStoryControls() {
+  const track = $('#storyTrack');
+  const prev = $('#storyPrev');
+  const next = $('#storyNext');
+  if (!track || !prev || !next) return;
+  const amount = () => {
+    const card = track.querySelector('.story-card');
+    return card ? card.getBoundingClientRect().width + 14 : 260;
+  };
+  const update = () => {
+    const max = Math.max(0, track.scrollWidth - track.clientWidth);
+    const hasOverflow = max > 8;
+    prev.hidden = !hasOverflow;
+    next.hidden = !hasOverflow;
+    if (!hasOverflow) return;
+    prev.disabled = track.scrollLeft <= 4;
+    next.disabled = track.scrollLeft >= max - 4;
+  };
+  const go = (direction) => {
+    track.scrollBy({ left: amount() * direction, behavior: Device.reducedMotion ? 'auto' : 'smooth' });
+  };
+  prev.addEventListener('click', () => go(-1));
+  next.addEventListener('click', () => go(1));
+  track.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
+  requestAnimationFrame(update);
+}
+
+function initCardSpotlight() {
+  if (Device.reducedMotion || !window.matchMedia('(hover: hover)').matches) return;
+  $$('[data-spotlight]').forEach(card => {
+    card.addEventListener('pointermove', event => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${event.clientX - rect.left}px`);
+      card.style.setProperty('--my', `${event.clientY - rect.top}px`);
+    });
+    card.addEventListener('pointerleave', () => {
+      card.style.removeProperty('--mx');
+      card.style.removeProperty('--my');
+    });
+  });
+}
+
+function initScrollProgress() {
+  const bar = $('#scrollProgress');
+  if (!bar) return;
+  let queued = false;
+  const update = () => {
+    const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    bar.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
+    queued = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (!queued) { queued = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
+  update();
+}
+
+function initBentoMusic() {
+  const button = $('#bentoMusicBtn');
+  if (!button) return;
+  button.addEventListener('click', () => {
+    const on = AudioManager.toggle();
+    syncMusicUI(on);
+    const status = $('#bentoMusicStatus');
+    if (status) status.textContent = on ? 'Melody on. Happy birthday.' : 'Melody paused.';
+  });
+  syncMusicUI(AudioManager.isOn());
+}
+
+function initHomeSections() {
+  renderHomeHero();
+  renderBirthdayEdit();
+  renderReasonsMarquee();
+  renderHomeTimeline();
+  renderOpenWhen();
+  initStoryControls();
+  initCardSpotlight();
+  initScrollProgress();
+  initBentoMusic();
 }
 
 /* =========================================================
@@ -1382,6 +1714,10 @@ function initLetter() {
   function show() {
     if (revealed) return;
     revealed = true;
+    box.removeAttribute('role');
+    box.removeAttribute('tabindex');
+    box.removeAttribute('aria-expanded');
+    box.style.cursor = 'default';
     const paras = Array.isArray(CONFIG.loveLetter) ? CONFIG.loveLetter : [CONFIG.loveLetter];
     let html = '';
     paras.forEach(p => { html += `<p>${p} &#10084;&#65039;</p>`; });
@@ -1391,8 +1727,15 @@ function initLetter() {
   }
   if (CONFIG.letterTapToOpen) {
     box.style.cursor = 'pointer';
+    box.tabIndex = 0;
+    box.setAttribute('role', 'button');
+    box.setAttribute('aria-label', 'Open your letter');
+    box.setAttribute('aria-expanded', 'false');
     box.innerHTML = '<p style="color:var(--muted);font-style:italic">Tap to open your letter...</p>';
     box.addEventListener('click', show);
+    box.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); show(); }
+    });
   } else {
     show();
   }
@@ -1458,10 +1801,12 @@ function initGallery() {
    ========================================================= */
 function initShare() {
   const selfieBtn = $('#selfieBtn');
+  const choosePhotoBtn = $('#choosePhotoBtn');
   const photoInput = $('#photoInput');
   const status = $('#shareStatus');
   if (!selfieBtn && !photoInput) return;
   const setStatus = (msg) => { if (status) status.textContent = msg; };
+  choosePhotoBtn?.addEventListener('click', () => photoInput?.click());
 
   if (selfieBtn) selfieBtn.addEventListener('click', async () => {
     const preview = $('#cameraPreview');
@@ -1535,17 +1880,32 @@ function initWishes() {
     e.preventDefault();
     const name = $('#wishName') ? $('#wishName').value : '';
     const message = $('#wishMessage') ? $('#wishMessage').value : '';
-    if (!message.trim()) return;
+    const status = $('#wishStatus');
+    const submit = $('#wishSubmit');
+    if (!message.trim()) {
+      if (status) { status.dataset.state = 'error'; status.textContent = 'Write a wish before sending it. 💌'; }
+      return;
+    }
+    if (submit) { submit.disabled = true; submit.textContent = 'Sending…'; }
+    form.setAttribute('aria-busy', 'true');
+    if (status) { status.dataset.state = ''; status.textContent = ''; }
     try {
-      await fetch('/api/wishes', {
+      const res = await fetch('/api/wishes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, message })
       });
+      if (!res.ok) throw new Error('The wish could not be sent.');
       form.reset();
+      if (status) { status.dataset.state = 'success'; status.textContent = 'Your wish is on the wall. Thank you! 💌'; }
       load();
       fireConfetti({ particleCount: 80 });
-    } catch (e) {}
+    } catch (e) {
+      if (status) { status.dataset.state = 'error'; status.textContent = 'Could not send your wish. Please try again.'; }
+    } finally {
+      form.removeAttribute('aria-busy');
+      if (submit) { submit.disabled = false; submit.textContent = 'Send my wish'; }
+    }
   });
 }
 
@@ -1565,7 +1925,7 @@ function initFinale() {
     <div class="finale-heart">
       <svg viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2 c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" fill="#ff5bb7"/></svg>
     </div>
-    <h2 class="finale-big" id="finaleText"></h2>
+    <h1 class="finale-big gradient-text" id="finaleText"></h1>
     <p class="finale-sub" id="finaleSub"></p>
   `;
   typewriter($('#finaleText'), CONFIG.finalHeading, 40, () => {
@@ -1619,7 +1979,13 @@ function initCoupons() {
     const card = document.createElement('div');
     card.className = 'feature-card';
     card.style.cursor = 'pointer';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', 'Redeem coupon: ' + c.title);
     card.innerHTML = `<span class="icon" style="font-size:2.4rem">${c.emoji}</span><h3>${c.title}</h3><p style="color:var(--muted);font-size:0.9rem;margin-top:6px">${c.desc}</p>`;
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); card.click(); }
+    });
     card.addEventListener('click', () => {
       card.classList.add('pop');
       setTimeout(() => card.classList.remove('pop'), 500);
@@ -1642,7 +2008,13 @@ function initSecrets() {
     card.className = 'feature-card';
     card.style.opacity = '0.4';
     card.style.transition = 'all 0.6s ease';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', 'Reveal secret message ' + (i + 1));
     card.innerHTML = `<span class="icon">🔒</span><h3>Secret ${i + 1}</h3><p style="color:var(--muted)">Tap to reveal</p>`;
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); card.click(); }
+    });
     card.addEventListener('click', () => {
       card.style.opacity = '1';
       card.innerHTML = `<span class="icon">💌</span><h3>Found it!</h3><p>${m}</p>`;
@@ -1672,9 +2044,16 @@ const DeviceIntel = (function () {
     socket.on('site-broadcast', (d) => {
       try {
         const toast = document.createElement('div');
-        toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999999;background:linear-gradient(135deg,#ff5bb7,#a855f7);color:#fff;padding:14px 22px;border-radius:16px;font-weight:700;box-shadow:0 10px 36px rgba(0,0,0,.5);max-width:min(90vw,430px);text-align:center;animation:toastIn .4s ease;font-size:1rem';
-        if (d.title) toast.innerHTML = `<div style="opacity:.85;font-size:.72em;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px"></div>`;
-        toast.appendChild(document.createTextNode(d.message || ''));
+        toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999999;background:linear-gradient(135deg,#ff5bb7,#a855f7);color:#1a0a14;padding:14px 22px;border-radius:16px;font-weight:700;box-shadow:0 10px 36px rgba(0,0,0,.5);max-width:min(90vw,430px);text-align:center;animation:toastIn .4s ease;font-size:1rem';
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        if (d.title) {
+          const heading = document.createElement('div');
+          heading.style.cssText = 'opacity:.85;font-size:.72em;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px';
+          heading.textContent = d.title;
+          toast.appendChild(heading);
+        }
+        toast.appendChild(document.createTextNode(d.message || (d.type === 'confetti' ? '🎉 Surprise!' : '')));
         document.body.appendChild(toast);
         setTimeout(() => { toast.style.transition = 'opacity .5s'; toast.style.opacity = '0'; setTimeout(() => toast.remove(), 550); }, d.type === 'alert' ? 12000 : 6500);
         if (d.type === 'confetti' && typeof fireConfetti === 'function') fireConfetti();
@@ -1818,9 +2197,32 @@ function applyAdminOverrides(settings, configOverrides) {
 }
 
 /* =========================================================
+   Music UI sync
+   ========================================================= */
+function syncMusicUI(on) {
+  $$('[data-music]').forEach(btn => {
+    btn.textContent = on ? '🔊 Music On' : '🔇 Music Off';
+    btn.setAttribute('aria-pressed', String(on));
+  });
+  const bento = $('#bentoMusicBtn');
+  if (bento) {
+    bento.setAttribute('aria-pressed', String(on));
+    const label = $('#bentoMusicLabel');
+    if (label) label.textContent = on ? 'Pause the melody' : 'Play the melody';
+    const icon = $('.music-icon', bento);
+    if (icon) icon.textContent = on ? '❚❚' : '▶';
+  }
+}
+
+/* =========================================================
    Boot
    ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
+  // Decorative canvases (particles + confetti) are not content for screen readers.
+  const hideDecorativeCanvases = () => $$('body > canvas').forEach(canvas => canvas.setAttribute('aria-hidden', 'true'));
+  hideDecorativeCanvases();
+  new MutationObserver(hideDecorativeCanvases).observe(document.body, { childList: true });
+
   // Tag the document with device capabilities so CSS can adapt
   const root = document.documentElement;
   if (Device.isMobile) root.classList.add('is-mobile');
@@ -1838,6 +2240,7 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(initCounter);
   safe(renderStats);
   safe(renderFeatures);
+  safe(initHomeSections);
   safe(initCake);
   safe(initHeartProgress);
   safe(initStats);
@@ -1864,18 +2267,32 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(initCompatibility);
   safe(initCoupons);
   safe(initSecrets);
+  const activeNav = $('.main-nav .nav-link.active');
+  if (activeNav) {
+    activeNav.setAttribute('aria-current', 'page');
+    const nav = activeNav.closest('.main-nav');
+    if (nav && nav.scrollWidth > nav.clientWidth) {
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = activeNav.getBoundingClientRect();
+      nav.scrollLeft += linkRect.left - navRect.left - (nav.clientWidth - linkRect.width) / 2;
+    }
+  }
   safe(initFinale);
   safe(initCredits);
   safe(initScrollReveal);
 
   // music toggle buttons
+  syncMusicUI(AudioManager.isOn());
   AudioManager.loadTrack(() => {
-    if (CONFIG.music && CONFIG.music.autoPlay && !AudioManager.isOn()) AudioManager.toggle();
+    if (CONFIG.music && CONFIG.music.autoPlay && !AudioManager.isOn()) {
+      AudioManager.toggle();
+      syncMusicUI(true);
+    }
   });
   $$('[data-music]').forEach(btn => {
     btn.addEventListener('click', () => {
       const on = AudioManager.toggle();
-      btn.textContent = on ? '🔊 Music On' : '🔇 Music Off';
+      syncMusicUI(on);
     });
   });
 
@@ -1886,7 +2303,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (clicks === 8) SparkleTrail.enable();
   });
   }
-  const fetched = (url, timeout = 1200) =>
+  const fetched = (url, timeout = 4000) =>
     new Promise(resolve => {
       const t = setTimeout(() => resolve(null), timeout);
       fetch(url).then(r => r.json().then(d => { clearTimeout(t); resolve(d); })).catch(() => { clearTimeout(t); resolve(null); });

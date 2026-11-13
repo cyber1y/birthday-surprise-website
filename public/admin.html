@@ -1,273 +1,573 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel — Birthday Surprise</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="admin.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0b14">
+  <title>Surprise HQ — Birthday Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <div class="admin-layout">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="admin-avatar">👑</div>
-                <h2>Surprise Admin</h2>
-                <span class="connection-dot" id="connDot" title="Disconnected"></span>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+    <symbol id="i-radio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4M19 5a10 10 0 0 1 0 14M5 19A10 10 0 0 1 5 5"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+    <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2-7 4 14 2-7h6"/></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m7 4 14 8-14 8z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></symbol>
+  </svg>
+
+  <div class="app">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="/admin">
+        <span class="brand-mark">🎂</span>
+        <span class="brand-copy">
+          <strong>Surprise HQ</strong>
+          <small>Birthday command center</small>
+        </span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <p class="nav-label">Overview</p>
+        <button class="nav-item active" data-tab="dashboard"><svg class="icon"><use href="#i-grid"/></svg><span>Dashboard</span></button>
+        <button class="nav-item" data-tab="live"><svg class="icon"><use href="#i-radio"/></svg><span>Live control</span><span class="nav-new">NEW</span></button>
+
+        <p class="nav-label">Audience</p>
+        <button class="nav-item" data-tab="devices"><svg class="icon"><use href="#i-phone"/></svg><span>Devices</span><span class="nav-count" id="navDeviceCount">0</span></button>
+        <button class="nav-item" data-tab="wishes"><svg class="icon"><use href="#i-heart"/></svg><span>Wishes</span><span class="nav-count" id="navWishCount">0</span></button>
+        <button class="nav-item" data-tab="activity"><svg class="icon"><use href="#i-pulse"/></svg><span>Activity</span></button>
+
+        <p class="nav-label">Create</p>
+        <button class="nav-item" data-tab="photos"><svg class="icon"><use href="#i-image"/></svg><span>Photos</span></button>
+        <button class="nav-item" data-tab="music"><svg class="icon"><use href="#i-music"/></svg><span>Music</span></button>
+        <button class="nav-item" data-tab="content"><svg class="icon"><use href="#i-edit"/></svg><span>Content</span></button>
+        <button class="nav-item" data-tab="planner"><svg class="icon"><use href="#i-check"/></svg><span>Planner</span></button>
+
+        <p class="nav-label">System</p>
+        <button class="nav-item" data-tab="database"><svg class="icon"><use href="#i-db"/></svg><span>Database</span></button>
+        <button class="nav-item" data-tab="settings"><svg class="icon"><use href="#i-settings"/></svg><span>Settings</span></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="server-status">
+          <span class="status-dot" id="connDot"></span>
+          <span id="connLabel">Connecting…</span>
+        </div>
+        <div class="footer-actions">
+          <a href="/" target="_blank" class="btn btn-ghost btn-sm">Open site <svg class="icon icon-sm"><use href="#i-external"/></svg></a>
+          <span class="visitor-badge" id="visitorBadge">0 online</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon"><use href="#i-menu"/></svg></button>
+        <div class="topbar-title">
+          <span class="eyebrow">Surprise HQ</span>
+          <strong id="topbarTitle">Dashboard</strong>
+        </div>
+        <div class="topbar-actions">
+          <span class="live-pill"><span class="pulse"></span><span id="topOnline">0</span> online</span>
+          <button class="icon-btn" id="refreshBtn" title="Refresh data" aria-label="Refresh data"><svg class="icon"><use href="#i-refresh"/></svg></button>
+          <a class="btn btn-primary btn-sm" href="/" target="_blank" aria-label="View site"><span>View site</span> <svg class="icon icon-sm"><use href="#i-external"/></svg></a>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- ================= DASHBOARD ================= -->
+        <section class="tab-content active" id="tab-dashboard">
+          <div class="hero-card">
+            <div class="hero-copy">
+              <span class="eyebrow"><span class="pulse"></span>Live control center</span>
+              <h1>Your birthday surprise, <em>in real time.</em></h1>
+              <p>Every visit, wish, photo and reaction — beautifully organized in one place.</p>
+              <div class="hero-actions">
+                <button class="btn btn-primary" data-goto="live"><svg class="icon icon-sm"><use href="#i-radio"/></svg>Send a broadcast</button>
+                <button class="btn btn-ghost" id="heroConfetti"><svg class="icon icon-sm"><use href="#i-spark"/></svg>Drop confetti</button>
+              </div>
             </div>
-            <nav class="sidebar-nav">
-                <button class="nav-item active" data-tab="dashboard">📊 Dashboard</button>
-                <button class="nav-item" data-tab="devices">📱 Devices</button>
-                <button class="nav-item" data-tab="photos">📸 Photos</button>
-                <button class="nav-item" data-tab="music">🎵 Music</button>
-                <button class="nav-item" data-tab="content">✏️ Content</button>
-                <button class="nav-item" data-tab="planner">📋 Planner</button>
-                <button class="nav-item" data-tab="database">🗄️ Database</button>
-                <button class="nav-item" data-tab="settings">⚙️ Settings</button>
-            </nav>
-            <div class="sidebar-footer">
-                <a href="/" target="_blank" class="btn btn-sm">🌐 View Site</a>
-                <span class="visitor-badge" id="visitorBadge">0 online</span>
+            <div class="hero-art" aria-hidden="true">
+              <div class="orbit orbit-1"></div>
+              <div class="orbit orbit-2"></div>
+              <div class="orbit orbit-3"></div>
+              <div class="hero-cake">🎂</div>
+              <span class="float-emoji e1">💌</span>
+              <span class="float-emoji e2">🎈</span>
+              <span class="float-emoji e3">✨</span>
             </div>
-        </aside>
+          </div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Dashboard Tab -->
-            <section class="tab-content active" id="tab-dashboard">
-                <div class="page-header">
-                    <h1>Dashboard</h1>
-                    <p>Real-time overview of your birthday surprise</p>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" id="statVisitors">0</div><div class="stat-label">Online Now</div></div>
-                    <div class="stat-card"><div class="stat-icon">📱</div><div class="stat-value" id="statDevices">0</div><div class="stat-label">Devices Seen</div></div>
-                    <div class="stat-card"><div class="stat-icon">💌</div><div class="stat-value" id="statWishes">0</div><div class="stat-label">Wishes</div></div>
-                    <div class="stat-card"><div class="stat-icon">📸</div><div class="stat-value" id="statPhotos">0</div><div class="stat-label">Photos</div></div>
-                    <div class="stat-card"><div class="stat-icon">🎵</div><div class="stat-value" id="statMusic">0</div><div class="stat-label">Tracks</div></div>
-                    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="statTasks">0</div><div class="stat-label">Tasks Done</div></div>
-                </div>
-                <div class="card">
-                    <h3>Live Activity Feed</h3>
-                    <div class="activity-feed" id="activityFeed">
-                        <p class="muted">Waiting for visitors...</p>
-                    </div>
-                </div>
-            </section>
+          <div class="stats-grid">
+            <button type="button" class="stat-card tone-pink" data-goto="devices">
+              <span class="stat-icon"><svg class="icon"><use href="#i-pulse"/></svg></span>
+              <span class="stat-value" id="statOnline">0</span>
+              <span class="stat-label">Online now</span>
+              <span class="stat-hint" id="statOnlineHint">Listening for visitors</span>
+            </button>
+            <button type="button" class="stat-card tone-violet" data-goto="devices">
+              <span class="stat-icon"><svg class="icon"><use href="#i-phone"/></svg></span>
+              <span class="stat-value" id="statDevices">0</span>
+              <span class="stat-label">Devices seen</span>
+              <span class="stat-hint" id="statDevicesHint">All time</span>
+            </button>
+            <button type="button" class="stat-card tone-blue" data-goto="devices">
+              <span class="stat-icon"><svg class="icon"><use href="#i-eye"/></svg></span>
+              <span class="stat-value" id="statUnique">0</span>
+              <span class="stat-label">Unique visitors</span>
+              <span class="stat-hint" id="statUniqueHint">Deduplicated</span>
+            </button>
+            <button type="button" class="stat-card tone-gold" data-goto="wishes">
+              <span class="stat-icon"><svg class="icon"><use href="#i-heart"/></svg></span>
+              <span class="stat-value" id="statWishes">0</span>
+              <span class="stat-label">Wishes</span>
+              <span class="stat-hint" id="statWishesHint">From the heart</span>
+            </button>
+            <button type="button" class="stat-card tone-mint" data-goto="photos">
+              <span class="stat-icon"><svg class="icon"><use href="#i-image"/></svg></span>
+              <span class="stat-value" id="statPhotos">0</span>
+              <span class="stat-label">Photos</span>
+              <span class="stat-hint" id="statPhotosHint">Captured & uploaded</span>
+            </button>
+            <button type="button" class="stat-card tone-orange" data-goto="activity">
+              <span class="stat-icon"><svg class="icon"><use href="#i-pulse"/></svg></span>
+              <span class="stat-value" id="statActivity">0</span>
+              <span class="stat-label">Activity events</span>
+              <span class="stat-hint" id="statActivityHint">0 today</span>
+            </button>
+            <button type="button" class="stat-card tone-cyan" data-goto="devices">
+              <span class="stat-icon">🌍</span>
+              <span class="stat-value" id="statCountries">0</span>
+              <span class="stat-label">Countries</span>
+              <span class="stat-hint" id="statCountriesHint">Around the world</span>
+            </button>
+            <button type="button" class="stat-card tone-lime" data-goto="planner">
+              <span class="stat-icon"><svg class="icon"><use href="#i-check"/></svg></span>
+              <span class="stat-value" id="statTasks">0</span>
+              <span class="stat-label">Tasks done</span>
+              <span class="stat-hint" id="statTasksHint">0 planned</span>
+            </button>
+          </div>
 
-            <!-- Devices Tab -->
-            <section class="tab-content" id="tab-devices">
-                <div class="page-header">
-                    <h1>Device Intelligence</h1>
-                    <p>All visitor devices, locations & permissions</p>
-                </div>
-                <div class="card">
-                    <div class="table-wrap">
-                        <table class="data-table" id="devicesTable">
-                            <thead><tr><th>Time</th><th>IP</th><th>Browser</th><th>Platform</th><th>Screen</th><th>Location</th><th>Camera</th><th>Mic</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+          <div class="grid-2">
+            <div class="card chart-card">
+              <div class="card-head">
+                <div><h2>Visitor activity</h2><p>Events recorded per day</p></div>
+                <span class="chip">Last 14 days</span>
+              </div>
+              <div class="bar-chart" id="visitorChart"><div class="empty">No activity yet</div></div>
+              <div class="chart-foot"><span><i class="legend-dot pink"></i>Activity events</span><span id="chartTotal">0 total</span></div>
+            </div>
 
-            <!-- Photos Tab -->
-            <section class="tab-content" id="tab-photos">
-                <div class="page-header">
-                    <h1>Photo Gallery</h1>
-                    <p>Captured photos & uploaded images</p>
-                </div>
-                <div class="card">
-                    <div class="upload-zone" id="photoUploadZone">
-                        <input type="file" id="photoUploadInput" accept="image/*" multiple hidden>
-                        <p>📁 Drag photos here or <button class="link-btn" onclick="document.getElementById('photoUploadInput').click()">browse</button></p>
-                    </div>
-                </div>
-                <div class="photo-grid" id="photoGrid"></div>
-            </section>
+            <div class="card">
+              <div class="card-head">
+                <div><h2>Top pages</h2><p>Where visitors spend their time</p></div>
+                <span class="chip" id="pageCountChip">0 pages</span>
+              </div>
+              <div class="rank-list" id="pageList"><div class="empty">No page views yet</div></div>
+            </div>
+          </div>
 
-            <!-- Music Tab -->
-            <section class="tab-content" id="tab-music">
-                <div class="page-header">
-                    <h1>Music Manager</h1>
-                    <p>Upload tracks, add YouTube URLs, manage playlists</p>
-                </div>
-                <div class="card">
-                    <h3>Upload Music</h3>
-                    <div class="upload-zone" id="musicUploadZone">
-                        <input type="file" id="musicUploadInput" accept="audio/*" multiple hidden>
-                        <p>🎵 Drag audio files here or <button class="link-btn" onclick="document.getElementById('musicUploadInput').click()">browse</button></p>
-                    </div>
-                    <div class="form-row" style="margin-top:16px">
-                        <input type="text" id="musicTitle" placeholder="Track title" class="input">
-                        <input type="text" id="musicArtist" placeholder="Artist" class="input">
-                        <button class="btn btn-primary" id="uploadMusicBtn">Upload</button>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Add YouTube Track</h3>
-                    <div class="form-row">
-                        <input type="text" id="ytUrl" placeholder="YouTube URL" class="input">
-                        <input type="text" id="ytTitle" placeholder="Title" class="input">
-                        <button class="btn btn-primary" id="addYtBtn">Add</button>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Playlist</h3>
-                    <div id="musicPlaylist"></div>
-                </div>
-            </section>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head">
+                <div><h2>Live activity</h2><p>Streaming straight from the site</p></div>
+                <button class="btn btn-ghost btn-sm" id="clearFeed">Clear</button>
+              </div>
+              <div class="activity-feed" id="activityFeed" tabindex="0" role="log" aria-label="Live activity feed"><div class="empty">Waiting for visitors…</div></div>
+            </div>
 
-            <!-- Content Tab -->
-            <section class="tab-content" id="tab-content">
-                <div class="page-header">
-                    <h1>Content Editor</h1>
-                    <p>Edit all site content in real-time</p>
-                </div>
-                <div class="card">
-                    <h3>Basic Info</h3>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Birthday Name</label><input type="text" id="cfg-birthdayName" class="input"></div>
-                        <div class="form-group"><label>Sender Name</label><input type="text" id="cfg-senderName" class="input"></div>
-                        <div class="form-group"><label>Age</label><input type="number" id="cfg-age" class="input"></div>
-                        <div class="form-group"><label>Together Since</label><input type="date" id="cfg-togetherSince" class="input"></div>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Hero Section</h3>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Title</label><input type="text" id="cfg-hero.title" class="input"></div>
-                        <div class="form-group"><label>Subtitle</label><input type="text" id="cfg-hero.subtitle" class="input"></div>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Love Letter</h3>
-                    <textarea id="cfg-loveLetter" class="textarea" rows="6" placeholder="Your love letter (separate paragraphs with |||)"></textarea>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Gift Message</h3>
-                    <textarea id="cfg-giftMessage" class="textarea" rows="3"></textarea>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Finale</h3>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Heading</label><input type="text" id="cfg-finalHeading" class="input"></div>
-                        <div class="form-group"><label>Subtitle</label><input type="text" id="cfg-finalSubtitle" class="input"></div>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Compliments (one per line)</h3>
-                    <textarea id="cfg-compliments" class="textarea" rows="4"></textarea>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Fortune Cookies (one per line)</h3>
-                    <textarea id="cfg-fortuneCookies" class="textarea" rows="4"></textarea>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Secret Messages (one per line)</h3>
-                    <textarea id="cfg-secretMessages" class="textarea" rows="3"></textarea>
-                </div>
-                <div style="margin-top:20px"><button class="btn btn-primary btn-lg" id="saveConfigBtn">💾 Save All Content</button></div>
-            </section>
+            <div class="card">
+              <div class="card-head">
+                <div><h2>System health</h2><p>Server & storage at a glance</p></div>
+                <span class="chip ok" id="healthStatus">Healthy</span>
+              </div>
+              <div class="health-grid" id="healthGrid">
+                <div class="empty">Loading server health…</div>
+              </div>
+              <div class="audience-mix" id="audienceMix"></div>
+            </div>
+          </div>
+        </section>
 
-            <!-- Planner Tab -->
-            <section class="tab-content" id="tab-planner">
-                <div class="page-header">
-                    <h1>Surprise Planner</h1>
-                    <p>Plan every detail of the celebration</p>
-                </div>
-                <div class="card">
-                    <h3>Add Task</h3>
-                    <div class="form-row">
-                        <input type="text" id="plannerTitle" placeholder="Task title" class="input">
-                        <input type="date" id="plannerDate" class="input">
-                        <select id="plannerPriority" class="input"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
-                        <select id="plannerCategory" class="input"><option value="general">General</option><option value="decor">Decoration</option><option value="food">Food</option><option value="gift">Gift</option><option value="music">Music</option></select>
-                        <button class="btn btn-primary" id="addTaskBtn">Add</button>
-                    </div>
-                    <div class="form-group" style="margin-top:12px">
-                        <textarea id="plannerDesc" class="textarea" rows="2" placeholder="Description (optional)"></textarea>
-                    </div>
-                </div>
-                <div class="planner-list" id="plannerList"></div>
-            </section>
+        <!-- ================= LIVE CONTROL ================= -->
+        <section class="tab-content" id="tab-live">
+          <div class="page-header">
+            <div><span class="eyebrow">Real-time</span><h1>Live Control</h1><p>Send a message or confetti to every open device instantly.</p></div>
+            <span class="chip live"><span class="pulse"></span><span id="liveOnline">0</span> online</span>
+          </div>
 
-            <!-- Database Tab -->
-            <section class="tab-content" id="tab-database">
-                <div class="page-header">
-                    <h1>Database</h1>
-                    <p>Browse all tables and export data</p>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head"><div><h2>Compose broadcast</h2><p>Appears as a toast on the live site</p></div></div>
+              <div class="form-group"><label for="broadcastTitle">Title <span class="label-hint">optional</span></label><input class="input" id="broadcastTitle" placeholder="A little surprise…" maxlength="80"></div>
+              <div class="form-group"><label for="broadcastMessage">Message</label><textarea class="textarea" id="broadcastMessage" rows="4" placeholder="Write something that will make them smile…" maxlength="300"></textarea></div>
+              <div class="form-row">
+                <div class="form-group grow"><label for="broadcastType">Style</label>
+                  <select class="input" id="broadcastType">
+                    <option value="info">💬 Info toast</option>
+                    <option value="success">💚 Success</option>
+                    <option value="love">💗 Love note</option>
+                    <option value="alert">🔔 Sticky alert</option>
+                    <option value="confetti">🎉 Confetti burst</option>
+                  </select>
                 </div>
-                <div class="card">
-                    <div class="form-row">
-                        <select id="dbTableSelect" class="input">
-                            <option value="visitors">Visitors</option>
-                            <option value="devices">Devices</option>
-                            <option value="wishes">Wishes</option>
-                            <option value="photos">Photos</option>
-                            <option value="captured_photos">Captured Photos</option>
-                            <option value="music_tracks">Music</option>
-                            <option value="activity_log">Activity Log</option>
-                            <option value="quiz_scores">Quiz Scores</option>
-                            <option value="planner_items">Planner</option>
-                            <option value="site_settings">Settings</option>
-                        </select>
-                        <button class="btn btn-primary" id="dbLoadBtn">Load</button>
-                        <button class="btn" id="dbExportBtn">📦 Export JSON</button>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <div class="table-wrap">
-                        <table class="data-table" id="dbTable">
-                            <thead><tr></tr></thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+                <button class="btn btn-primary" id="sendBroadcastBtn"><svg class="icon icon-sm"><use href="#i-radio"/></svg>Send to everyone</button>
+              </div>
+              <div class="broadcast-preview" id="broadcastPreview">
+                <span class="preview-label">Preview</span>
+                <div class="preview-toast"><strong id="previewTitle">A little surprise…</strong><span id="previewMessage">Your message will appear here.</span></div>
+              </div>
+            </div>
 
-            <!-- Settings Tab -->
-            <section class="tab-content" id="tab-settings">
-                <div class="page-header">
-                    <h1>Site Settings</h1>
-                    <p>Configure the birthday site behavior</p>
-                </div>
-                <div class="card">
-                    <h3>Entrance</h3>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Entrance Type</label>
-                            <select id="set-entranceType" class="input"><option value="curtain">Curtain</option><option value="pinch">Tap Heart</option><option value="password">Password</option><option value="none">None</option></select>
-                        </div>
-                        <div class="form-group"><label>Password (MMDD)</label><input type="text" id="set-entrancePassword" class="input" maxlength="4" placeholder="1025"></div>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Music</h3>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Auto-play music</label><input type="checkbox" id="set-autoPlayMusic"></div>
-                        <div class="form-group"><label>Default YouTube ID</label><input type="text" id="set-youtubeId" class="input" placeholder="dQw4w9WgXcQ"></div>
-                    </div>
-                </div>
-                <div class="card" style="margin-top:16px">
-                    <h3>Features Toggle</h3>
-                    <div class="form-grid">
-                        <div class="form-group"><label><input type="checkbox" id="set-enableQuiz" checked> Enable Quiz</label></div>
-                        <div class="form-group"><label><input type="checkbox" id="set-enableWheel" checked> Enable Spin Wheel</label></div>
-                        <div class="form-group"><label><input type="checkbox" id="set-enableScratch" checked> Enable Scratch Card</label></div>
-                        <div class="form-group"><label><input type="checkbox" id="set-enableCamera" checked> Enable Camera Feature</label></div>
-                        <div class="form-group"><label><input type="checkbox" id="set-enableGift" checked> Enable Gift Box</label></div>
-                        <div class="form-group"><label><input type="checkbox" id="set-enablePlanner" checked> Enable Surprise Planner</label></div>
-                    </div>
-                </div>
-                <div style="margin-top:20px"><button class="btn btn-primary btn-lg" id="saveSettingsBtn">💾 Save Settings</button></div>
-            </section>
-        </main>
+            <div class="card">
+              <div class="card-head"><div><h2>Quick actions</h2><p>One tap, instant delight</p></div></div>
+              <div class="quick-grid">
+                <button class="quick-action" id="quickConfetti"><span class="quick-emoji">🎉</span><strong>Confetti burst</strong><small>Celebrate right now</small></button>
+                <button class="quick-action" id="quickToast"><span class="quick-emoji">💌</span><strong>Send love</strong><small>A sweet little toast</small></button>
+                <button class="quick-action" id="quickAlert"><span class="quick-emoji">🔔</span><strong>Sticky alert</strong><small>12 second notice</small></button>
+                <a class="quick-action" href="/" target="_blank"><span class="quick-emoji">🌐</span><strong>Open site</strong><small>See what they see</small></a>
+              </div>
+              <div class="card-head sub"><div><h2>Recent broadcasts</h2></div><button class="btn btn-ghost btn-sm" id="clearBroadcasts">Clear</button></div>
+              <div class="broadcast-history" id="broadcastHistory"><div class="empty">Nothing sent yet</div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= DEVICES ================= -->
+        <section class="tab-content" id="tab-devices">
+          <div class="page-header">
+            <div><span class="eyebrow">Audience</span><h1>Device Intelligence</h1><p>Who is visiting, from where, and on what.</p></div>
+            <div class="header-actions">
+              <button class="btn btn-ghost btn-sm" id="exportDevicesBtn"><svg class="icon icon-sm"><use href="#i-download"/></svg>Export CSV</button>
+              <button class="btn btn-ghost btn-sm" id="refreshDevicesBtn"><svg class="icon icon-sm"><use href="#i-refresh"/></svg>Refresh</button>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head"><div><h2>Location intelligence</h2><p>Top cities & countries</p></div><span class="chip" id="locationChip">0 places</span></div>
+              <div class="rank-list" id="locationList"><div class="empty">Location permission not granted yet</div></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Platform mix</h2><p>Browsers and operating systems</p></div></div>
+              <div class="pill-cloud" id="deviceMix"><div class="empty">No devices yet</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="toolbar">
+              <div class="search-box"><svg class="icon icon-sm"><use href="#i-search"/></svg><input id="deviceSearch" aria-label="Search devices" placeholder="Search visitor, IP, browser, city…"></div>
+              <select class="input compact" id="devicePlatform" aria-label="Filter by platform"><option value="">All platforms</option></select>
+              <select class="input compact" id="deviceCamera" aria-label="Filter by camera permission"><option value="">Any camera</option><option value="granted">Camera granted</option><option value="denied">Camera denied</option><option value="prompt">Camera prompt</option></select>
+              <select class="input compact" id="deviceSort" aria-label="Sort devices"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="browser">Browser A–Z</option><option value="platform">Platform A–Z</option></select>
+              <span class="toolbar-count" id="deviceCount">0 devices</span>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="devicesTable">
+                <thead><tr><th>Last seen</th><th>Visitor</th><th>IP</th><th>Browser</th><th>Platform</th><th>Location</th><th>Camera</th><th>Mic</th><th></th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="empty-state" id="devicesEmpty" hidden>No devices match those filters.</div>
+            <div class="table-more" id="deviceMoreWrap" hidden><button class="btn btn-ghost btn-sm" id="deviceMoreBtn">Show more devices</button></div>
+          </div>
+        </section>
+
+        <!-- ================= WISHES ================= -->
+        <section class="tab-content" id="tab-wishes">
+          <div class="page-header">
+            <div><span class="eyebrow">From the heart</span><h1>Wishes & Quiz</h1><p>Every message and score left by visitors.</p></div>
+            <button class="btn btn-ghost btn-sm" id="refreshWishesBtn"><svg class="icon icon-sm"><use href="#i-refresh"/></svg>Refresh</button>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head"><div><h2>Birthday wishes</h2><p>Newest first</p></div><span class="chip" id="wishesChip">0 wishes</span></div>
+              <div class="wish-list" id="wishesList" tabindex="0" role="region" aria-label="Birthday wishes"><div class="empty">No wishes yet</div></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Quiz leaderboard</h2><p>Highest scores first</p></div><span class="chip" id="quizChip">0 plays</span></div>
+              <div class="table-wrap">
+                <table class="data-table" id="quizTable">
+                  <thead><tr><th>#</th><th>Quiz</th><th>Score</th><th>Accuracy</th><th>When</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="quizEmpty" hidden>No quiz attempts yet.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= ACTIVITY ================= -->
+        <section class="tab-content" id="tab-activity">
+          <div class="page-header">
+            <div><span class="eyebrow">Timeline</span><h1>Activity Log</h1><p>Every page view, scroll and interaction, searchable.</p></div>
+            <button class="btn btn-ghost btn-sm" id="refreshActivityBtn"><svg class="icon icon-sm"><use href="#i-refresh"/></svg>Refresh</button>
+          </div>
+          <div class="card">
+            <div class="toolbar">
+              <div class="search-box"><svg class="icon icon-sm"><use href="#i-search"/></svg><input id="activitySearch" aria-label="Search activity" placeholder="Search action, page, IP, visitor…"></div>
+              <select class="input compact" id="activityPage" aria-label="Filter by page"><option value="">All pages</option></select>
+              <select class="input compact" id="activityAction" aria-label="Filter by action"><option value="">All actions</option></select>
+              <span class="toolbar-count" id="activityCount">0 events</span>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="activityTable">
+                <thead><tr><th>Time</th><th>Visitor</th><th>Action</th><th>Page</th><th>Details</th><th>IP</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="empty-state" id="activityEmpty" hidden>No activity matches those filters.</div>
+            <div class="load-more-wrap"><button class="btn btn-ghost" id="loadMoreActivity">Load more</button></div>
+          </div>
+        </section>
+
+        <!-- ================= PHOTOS ================= -->
+        <section class="tab-content" id="tab-photos">
+          <div class="page-header">
+            <div><span class="eyebrow">Memories</span><h1>Photo Gallery</h1><p>Captured moments and uploaded images.</p></div>
+            <div class="header-actions">
+              <select class="input compact" id="photoSource" aria-label="Filter photos by source"><option value="">All sources</option><option value="admin">Uploaded by you</option><option value="camera">Visitor camera</option><option value="upload">Visitor upload</option></select>
+              <button class="btn btn-primary btn-sm" id="uploadPhotoBtn">Upload photos</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="upload-zone" id="photoUploadZone">
+              <input type="file" id="photoUploadInput" accept="image/*" multiple hidden>
+              <span class="upload-emoji">📸</span>
+              <p><strong>Drop photos here</strong> or <button class="link-btn" type="button" id="browsePhotoBtn">browse your files</button></p>
+              <small>PNG, JPG, WEBP · up to 100 MB each</small>
+            </div>
+          </div>
+          <div class="photo-grid" id="photoGrid"></div>
+          <div class="empty-state" id="photosEmpty" hidden>No photos yet — upload the first memory.</div>
+        </section>
+
+        <!-- ================= MUSIC ================= -->
+        <section class="tab-content" id="tab-music">
+          <div class="page-header">
+            <div><span class="eyebrow">Atmosphere</span><h1>Music Manager</h1><p>Upload tracks or add a YouTube link to set the mood.</p></div>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-head"><div><h2>Upload a track</h2><p>MP3, WAV, OGG</p></div></div>
+              <div class="upload-zone small" id="musicUploadZone">
+                <input type="file" id="musicUploadInput" accept="audio/*" multiple hidden>
+                <span class="upload-emoji">🎵</span>
+                <p><strong>Drop audio here</strong> or <button class="link-btn" type="button" id="browseMusicBtn">browse</button></p>
+              </div>
+              <div class="form-row" style="margin-top:14px">
+                <input type="text" id="musicTitle" aria-label="Track title" placeholder="Track title" class="input grow">
+                <input type="text" id="musicArtist" aria-label="Track artist" placeholder="Artist" class="input grow">
+                <button class="btn btn-primary" id="uploadMusicBtn">Upload</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Add YouTube</h2><p>Perfect for a favourite song</p></div></div>
+              <div class="form-group"><label for="ytUrl">YouTube URL</label><input type="text" id="ytUrl" placeholder="https://youtube.com/watch?v=…" class="input"></div>
+              <div class="form-group"><label for="ytTitle">Title</label><input type="text" id="ytTitle" placeholder="Our song" class="input"></div>
+              <button class="btn btn-primary" id="addYtBtn">Add to playlist</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h2>Playlist</h2><p>Tracks available to the site</p></div><span class="chip" id="musicChip">0 tracks</span></div>
+            <div id="musicPlaylist"><div class="empty">No tracks yet</div></div>
+          </div>
+        </section>
+
+        <!-- ================= CONTENT ================= -->
+        <section class="tab-content" id="tab-content">
+          <div class="page-header">
+            <div><span class="eyebrow">Personalise</span><h1>Content Editor</h1><p>Change the words and details shown across the site.</p></div>
+            <button class="btn btn-primary btn-sm" id="saveConfigBtn"><svg class="icon icon-sm"><use href="#i-check"/></svg>Save content</button>
+          </div>
+          <div class="content-grid">
+            <div class="card">
+              <div class="card-head"><div><h2>Basic info</h2><p>Names and dates</p></div></div>
+              <div class="form-grid">
+                <div class="form-group"><label>Birthday name</label><input type="text" id="cfg-birthdayName" class="input"></div>
+                <div class="form-group"><label>Your name</label><input type="text" id="cfg-senderName" class="input"></div>
+                <div class="form-group"><label>Age</label><input type="number" id="cfg-age" class="input"></div>
+                <div class="form-group"><label>Together since</label><input type="date" id="cfg-togetherSince" class="input"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Hero section</h2><p>The first thing they see</p></div></div>
+              <div class="form-group"><label>Title</label><input type="text" id="cfg-hero.title" class="input"></div>
+              <div class="form-group"><label>Subtitle</label><input type="text" id="cfg-hero.subtitle" class="input"></div>
+            </div>
+            <div class="card span-2">
+              <div class="card-head"><div><h2>Love letter</h2><p>Separate paragraphs with a new line</p></div></div>
+              <textarea id="cfg-loveLetter" class="textarea" rows="6" placeholder="Your love letter…"></textarea>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Gift message</h2><p>Shown when the gift opens</p></div></div>
+              <textarea id="cfg-giftMessage" class="textarea" rows="4"></textarea>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Finale</h2><p>The closing moment</p></div></div>
+              <div class="form-group"><label>Heading</label><input type="text" id="cfg-finalHeading" class="input"></div>
+              <div class="form-group"><label>Subtitle</label><input type="text" id="cfg-finalSubtitle" class="input"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Compliments</h2><p>One per line</p></div></div>
+              <textarea id="cfg-compliments" class="textarea" rows="5"></textarea>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Fortune cookies</h2><p>One per line</p></div></div>
+              <textarea id="cfg-fortuneCookies" class="textarea" rows="5"></textarea>
+            </div>
+            <div class="card span-2">
+              <div class="card-head"><div><h2>Secret messages</h2><p>One per line</p></div></div>
+              <textarea id="cfg-secretMessages" class="textarea" rows="4"></textarea>
+            </div>
+          </div>
+          <div class="sticky-save">
+            <span>Changes apply on the next page load.</span>
+            <button class="btn btn-primary" id="saveConfigBtnBottom"><svg class="icon icon-sm"><use href="#i-check"/></svg>Save all content</button>
+          </div>
+        </section>
+
+        <!-- ================= PLANNER ================= -->
+        <section class="tab-content" id="tab-planner">
+          <div class="page-header">
+            <div><span class="eyebrow">Organise</span><h1>Surprise Planner</h1><p>Plan every little detail of the celebration.</p></div>
+            <span class="chip" id="plannerChip">0% complete</span>
+          </div>
+          <div class="card">
+            <div class="progress-track"><div class="progress-fill" id="plannerProgress"></div></div>
+            <div class="form-row" style="margin-top:18px">
+              <input type="text" id="plannerTitle" aria-label="New task title" placeholder="What needs doing?" class="input grow">
+              <input type="date" id="plannerDate" class="input compact" aria-label="Task due date">
+              <select id="plannerPriority" class="input compact" aria-label="Task priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+              <select id="plannerCategory" class="input compact" aria-label="Task category"><option value="general">General</option><option value="decor">Decoration</option><option value="food">Food</option><option value="gift">Gift</option><option value="music">Music</option></select>
+              <button class="btn btn-primary" id="addTaskBtn">Add task</button>
+            </div>
+            <div class="form-group" style="margin-top:12px"><textarea id="plannerDesc" class="textarea" rows="2" aria-label="Task notes" placeholder="Notes (optional)"></textarea></div>
+          </div>
+          <div class="planner-list" id="plannerList"></div>
+          <div class="empty-state" id="plannerEmpty">No tasks yet — add the first one above.</div>
+        </section>
+
+        <!-- ================= DATABASE ================= -->
+        <section class="tab-content" id="tab-database">
+          <div class="page-header">
+            <div><span class="eyebrow">Raw data</span><h1>Database</h1><p>Browse, search and export every table.</p></div>
+            <div class="header-actions">
+              <button class="btn btn-ghost btn-sm" id="dbExportBtn"><svg class="icon icon-sm"><use href="#i-download"/></svg>Export all JSON</button>
+            </div>
+          </div>
+          <div class="table-cards" id="tableCards"></div>
+          <div class="card">
+            <div class="toolbar">
+              <select id="dbTableSelect" class="input compact" aria-label="Select database table"></select>
+              <div class="search-box"><svg class="icon icon-sm"><use href="#i-search"/></svg><input id="dbSearch" aria-label="Search database table" placeholder="Search this table…"></div>
+              <button class="btn btn-primary" id="dbLoadBtn">Load</button>
+              <button class="btn btn-ghost" id="dbExportCsvBtn"><svg class="icon icon-sm"><use href="#i-download"/></svg>CSV</button>
+              <span class="toolbar-count" id="dbCount">0 rows</span>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="dbTable">
+                <thead><tr></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="empty-state" id="dbEmpty" hidden>No rows match that search.</div>
+            <div class="table-more" id="dbMoreWrap" hidden><button class="btn btn-ghost btn-sm" id="dbMoreBtn">Load 200 more rows</button></div>
+          </div>
+        </section>
+
+        <!-- ================= SETTINGS ================= -->
+        <section class="tab-content" id="tab-settings">
+          <div class="page-header">
+            <div><span class="eyebrow">Configuration</span><h1>Site Settings</h1><p>Entrance, music and feature switches.</p></div>
+            <button class="btn btn-primary btn-sm" id="saveSettingsBtn"><svg class="icon icon-sm"><use href="#i-check"/></svg>Save settings</button>
+          </div>
+          <div class="content-grid">
+            <div class="card">
+              <div class="card-head"><div><h2>Entrance experience</h2><p>How visitors enter the surprise</p></div></div>
+              <div class="form-group"><label>Entrance type</label>
+                <select id="set-entranceType" class="input"><option value="curtain">Curtain</option><option value="pinch">Tap heart</option><option value="password">Password</option><option value="none">None</option></select>
+              </div>
+              <div class="form-group"><label>Password (MMDD)</label><input type="text" id="set-entrancePassword" class="input" maxlength="4" placeholder="1025"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h2>Music</h2><p>Background atmosphere</p></div></div>
+              <label class="switch-row"><span><strong>Auto-play music</strong><small>Start playing when the site loads</small></span><input type="checkbox" id="set-autoPlayMusic" class="switch"></label>
+              <div class="form-group" style="margin-top:14px"><label>Default YouTube ID</label><input type="text" id="set-youtubeId" class="input" placeholder="dQw4w9WgXcQ"></div>
+            </div>
+            <div class="card span-2">
+              <div class="card-head"><div><h2>Feature toggles</h2><p>Turn individual surprises on or off</p></div></div>
+              <div class="feature-grid">
+                <label class="switch-row compact"><span><strong>Quiz</strong><small>Know-me quiz</small></span><input type="checkbox" id="set-enableQuiz" class="switch"></label>
+                <label class="switch-row compact"><span><strong>Spin wheel</strong><small>Prize wheel</small></span><input type="checkbox" id="set-enableWheel" class="switch"></label>
+                <label class="switch-row compact"><span><strong>Scratch card</strong><small>Hidden message</small></span><input type="checkbox" id="set-enableScratch" class="switch"></label>
+                <label class="switch-row compact"><span><strong>Camera</strong><small>Photo booth</small></span><input type="checkbox" id="set-enableCamera" class="switch"></label>
+                <label class="switch-row compact"><span><strong>Gift box</strong><small>Opening surprise</small></span><input type="checkbox" id="set-enableGift" class="switch"></label>
+                <label class="switch-row compact"><span><strong>Planner</strong><small>Surprise checklist</small></span><input type="checkbox" id="set-enablePlanner" class="switch"></label>
+              </div>
+            </div>
+            <div class="card span-2">
+              <div class="card-head"><div><h2>Server info</h2><p>Helpful when sharing the site</p></div></div>
+              <div class="info-grid" id="settingsInfo"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-root" id="toastRoot" aria-live="polite"></div>
+
+  <!-- Device dossier modal -->
+  <div class="modal" id="dossierModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="dossierTitle">
+      <div class="modal-head">
+        <div><span class="eyebrow">Visitor dossier</span><h2 id="dossierTitle">Visitor</h2></div>
+        <button class="icon-btn" data-close-modal aria-label="Close"><svg class="icon"><use href="#i-close"/></svg></button>
+      </div>
+      <div class="modal-body" id="dossierBody"></div>
     </div>
+  </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="admin.js"></script>
+  <!-- Confirm dialog -->
+  <div class="modal" id="confirmModal" aria-hidden="true">
+    <div class="modal-backdrop" data-confirm-cancel></div>
+    <div class="modal-card modal-card-sm" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
+      <div class="modal-head">
+        <div><span class="eyebrow">Please confirm</span><h2 id="confirmTitle">Are you sure?</h2></div>
+        <button class="icon-btn" data-confirm-cancel aria-label="Cancel"><svg class="icon"><use href="#i-close"/></svg></button>
+      </div>
+      <div class="modal-body"><p id="confirmMessage" class="confirm-copy"></p></div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" data-confirm-cancel>Cancel</button>
+        <button class="btn btn-danger" id="confirmOk">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>

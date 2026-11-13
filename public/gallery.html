@@ -14,7 +14,7 @@
     <div class="bg-blur blur-one"></div>
     <div class="bg-blur blur-two"></div>
     <div class="bg-blur blur-three"></div>
-    <canvas id="particleLayer"></canvas>
+    <canvas id="particleLayer" aria-hidden="true"></canvas>
 
     <main class="page-shell">
         <nav class="main-nav" aria-label="Main navigation">
@@ -43,16 +43,20 @@
             <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center">
                 <span id="cameraPreview"></span>
                 <button class="pill-btn btn-primary" id="selfieBtn">📸 Take a selfie</button>
-                <label class="pill-btn btn-secondary" style="cursor:pointer">🖼️ Choose a photo<input type="file" id="photoInput" accept="image/*" style="display:none"></label>
+                <button type="button" class="pill-btn btn-secondary" id="choosePhotoBtn">🖼️ Choose a photo</button>
+                <input type="file" id="photoInput" accept="image/*" hidden>
             </div>
-            <p class="lead" id="shareStatus" style="min-height:24px"></p>
+            <p class="lead" id="shareStatus" role="status" aria-live="polite" style="min-height:24px"></p>
         </section>
     </main>
 
     <footer class="footer">Made with &#10084;&#65039; for the most amazing person</footer>
 
     <!-- Lightbox -->
-    <div id="lightbox"><img src="" alt="Enlarged photo"></div>
+    <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo preview" aria-hidden="true" tabindex="-1">
+        <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close photo preview">&times;</button>
+        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Enlarged photo">
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>

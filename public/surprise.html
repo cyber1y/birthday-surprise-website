@@ -13,7 +13,7 @@
 <body>
     <div class="bg-blur blur-one"></div>
     <div class="bg-blur blur-two"></div>
-    <canvas id="particleLayer"></canvas>
+    <canvas id="particleLayer" aria-hidden="true"></canvas>
 
     <main class="page-shell">
         <nav class="main-nav" aria-label="Main navigation">
@@ -43,11 +43,11 @@
             <h2 class="h2 gradient-text reveal">Spin the Wheel of Fate</h2>
             <div class="wheel-wrap">
                 <div class="wheel-pointer">▼</div>
-                <canvas id="wheelCanvas"></canvas>
+                <canvas id="wheelCanvas" aria-hidden="true"></canvas>
             </div>
             <div style="text-align:center;margin-top:16px">
                 <button class="pill-btn btn-primary" id="spinBtn">Spin</button>
-                <p id="wheelResult" class="cake-status"></p>
+                <p id="wheelResult" class="cake-status" aria-live="polite"></p>
             </div>
         </section>
 

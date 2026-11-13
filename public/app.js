@@ -1760,8 +1760,7 @@ function initTimeline() {
   (CONFIG.timeline || []).forEach(t => {
     const card = document.createElement('div');
     card.className = 'feature-card';
-    const d = t.date ? new Date(t.date).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '';
-    card.innerHTML = `<div style="color:var(--gold);font-weight:700;letter-spacing:0.05em">${d}</div><h3 style="margin:6px 0">${t.title}</h3><p>${t.desc}</p>`;
+    card.innerHTML = `<div style="color:var(--gold);font-weight:700;letter-spacing:0.05em">${storyDateLabel(t.date)}</div><h3 style="margin:6px 0">${escapeHtml(t.title || 'A little chapter')}</h3><p>${escapeHtml(t.desc || 'A memory worth keeping.')}</p>`;
     grid.appendChild(card);
   });
 }
@@ -1781,6 +1780,13 @@ function initGallery() {
     p.innerHTML = `<div class="photo">${img}</div><div class="caption">${g.caption || CONFIG.galleryCaptions[i % CONFIG.galleryCaptions.length] || ''}</div>`;
     grid.appendChild(p);
   });
+  const updateCount = () => {
+    const count = $('#galleryCount');
+    if (!count) return;
+    const n = grid.children.length;
+    count.textContent = `${n} frame${n === 1 ? '' : 's'}`;
+  };
+  updateCount();
   // Merge backend photos (admin uploads + visitor captures)
   Promise.all([
     fetch('/api/photos').then(r => r.json()).catch(() => []),
@@ -1793,6 +1799,7 @@ function initGallery() {
       div.innerHTML = `<div class="photo"><img src="/uploads/photos/${p.fileName}" alt="${p.originalName || ''}"></div><div class="caption">${p.source === 'visitor' ? 'Shared by a friend ✨' : 'Admin upload'}</div>`;
       grid.appendChild(div);
     });
+    updateCount();
   });
 }
 
@@ -1855,7 +1862,9 @@ function initWishes() {
   const list = $('#wishList');
   if (!list) return;
 
+  const countEl = $('#wishCount');
   async function load() {
+    list.setAttribute('aria-busy', 'true');
     try {
       const res = await fetch('/api/wishes');
       const data = await res.json();
@@ -1866,11 +1875,16 @@ function initWishes() {
         item.innerHTML = `<div class="wish-name">${escapeHtml(w.name || 'Anonymous')}</div><div class="wish-text">${escapeHtml(w.message || '')}</div>`;
         list.appendChild(item);
       });
-      if ((data || []).length === 0) {
+      const n = (data || []).length;
+      if (countEl) countEl.textContent = `${n} ${n === 1 ? 'note' : 'notes'}`;
+      if (n === 0) {
         list.innerHTML = '<p class="lead">No wishes yet. Be the first! 💌</p>';
       }
     } catch (e) {
+      if (countEl) countEl.textContent = 'Unavailable';
       list.innerHTML = '<p class="lead">Wishes are loading over the clouds...</p>';
+    } finally {
+      list.removeAttribute('aria-busy');
     }
   }
   load();
@@ -1923,10 +1937,15 @@ function initFinale() {
   if (!wrap) return;
   wrap.innerHTML = `
     <div class="finale-heart">
-      <svg viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2 c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" fill="#ff5bb7"/></svg>
+      <svg viewBox="0 0 32 29.6" aria-hidden="true"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2 c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" fill="#ff5bb7"/></svg>
     </div>
+    <p class="eyebrow finale-eyebrow">Chapter 05 · the last page</p>
     <h1 class="finale-big gradient-text" id="finaleText"></h1>
     <p class="finale-sub" id="finaleSub"></p>
+    <div class="finale-actions">
+      <a href="index.html" class="pill-btn btn-primary">Start again</a>
+      <a href="wishes.html" class="pill-btn btn-secondary">Read the wishes</a>
+    </div>
   `;
   typewriter($('#finaleText'), CONFIG.finalHeading, 40, () => {
     $('#finaleSub').textContent = CONFIG.finalSubtitle;

@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0f0520">
+    <meta name="description" content="Leave a birthday wish and read the notes on the wall.">
     <title>Birthday Wishes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Caveat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -21,37 +22,53 @@
             <a href="surprise.html" class="nav-link">Surprise</a>
             <a href="letter.html" class="nav-link">Letter</a>
             <a href="gallery.html" class="nav-link">Gallery</a>
-            <a href="wishes.html" class="nav-link active">Wishes</a>
+            <a href="wishes.html" class="nav-link active" aria-current="page">Wishes</a>
             <a href="finale.html" class="nav-link">Finale</a>
-            <button class="nav-link" data-music>🔇 Music Off</button>
+            <button class="nav-link" data-music aria-pressed="false">🔇 Music Off</button>
         </nav>
 
-        <header class="site-header">
-            <div class="badge">Leave a message</div>
+        <header class="site-header page-hero">
+            <span class="page-watermark" aria-hidden="true">04</span>
+            <p class="eyebrow">Chapter 04 · leave a little love</p>
             <h1 class="hero-title">Birthday Wishes</h1>
             <p class="hero-subtitle">Drop a wish for our birthday star. Every message becomes a memory.</p>
         </header>
 
-        <section class="section">
-            <div class="glass-panel wish-form reveal">
-                <form id="wishForm">
-                    <div class="field">
-                        <label for="wishName">Your name</label>
-                        <input type="text" id="wishName" placeholder="Your name here..." maxlength="50">
-                    </div>
-                    <div class="field">
-                        <label for="wishMessage">Your wish 💌</label>
-                        <textarea id="wishMessage" rows="4" placeholder="Write something heartfelt..." maxlength="500" required></textarea>
-                    </div>
-                    <button type="submit" class="pill-btn btn-primary" id="wishSubmit">Send my wish</button>
-                    <p class="form-status" id="wishStatus" role="status" aria-live="polite"></p>
-                </form>
-            </div>
+        <section class="section" aria-label="Wish form and wish wall">
+            <div class="wish-layout">
+                <div class="glass-panel wish-form reveal">
+                    <p class="eyebrow">Leave a wish</p>
+                    <h2 class="h2 wish-form-title">Say something sweet</h2>
+                    <form id="wishForm">
+                        <div class="field">
+                            <label for="wishName">Your name</label>
+                            <input type="text" id="wishName" placeholder="Your name here..." maxlength="50">
+                        </div>
+                        <div class="field">
+                            <label for="wishMessage">Your wish 💌</label>
+                            <textarea id="wishMessage" rows="4" placeholder="Write something heartfelt..." maxlength="500" required></textarea>
+                        </div>
+                        <button type="submit" class="pill-btn btn-primary" id="wishSubmit">Send my wish</button>
+                        <p class="form-status" id="wishStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </div>
 
-            <div class="wish-list reveal" id="wishList">
-                <p class="lead">Loading wishes...</p>
+                <div class="reveal">
+                    <div class="wish-wall-head">
+                        <h2 class="h2" id="wishWallTitle">The wish wall</h2>
+                        <span class="wish-count" id="wishCount">Loading…</span>
+                    </div>
+                    <div class="wish-list wish-wall" id="wishList">
+                        <p class="lead">Loading wishes...</p>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <nav class="chapter-next" aria-label="Next chapter">
+            <span class="chapter-next-label">Next chapter</span>
+            <a href="finale.html">One last page <span aria-hidden="true">→</span></a>
+        </nav>
     </main>
 
     <footer class="footer">Made with &#10084;&#65039; for the most amazing person</footer>

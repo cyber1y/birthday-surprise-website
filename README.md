@@ -44,6 +44,15 @@ The public home page was rebuilt around a researched “editorial birthday issue
 - **Open when…** — three native `<details>` notes for the days that need them.
 - **Choose your next chapter** — large destination cards to the letter, gallery and wishes.
 
+The same system now carries through the rest of the site:
+
+- **Surprise** — numbered gifts, a jump-to-surprise map and consistent game cards.
+- **Letter** — editorial envelope stage, reasons bento, timeline cards and a word-game card.
+- **Gallery** — masonry photo wall, live frame count and a redesigned share card.
+- **Wishes** — sticky wish form beside a quote-style wish wall with a live note count.
+- **Finale** — chapter hero, generated closing actions and a full section rhythm for the constellation, coupons, secrets and credits.
+- Every chapter ends with a “next chapter” link in the narrative order.
+
 New interactions include a scroll-progress bar, pointer spotlight on bento cards, a synchronised music toggle, story-track controls and config-driven personalisation. The pinch-heart entrance now waits up to four seconds for saved admin settings, so a slow first load cannot silently fall back to the wrong entrance style.
 
 Research, trend selection and the full section plan are documented in [`DESIGN-NOTES.md`](DESIGN-NOTES.md).
@@ -98,9 +107,9 @@ agent-browser console
 Results for the latest pass:
 
 - `node -c server.js`, `node -c public/app.js`, `node -c public/admin.js` — clean.
-- All six public pages: **0 axe violations**, no page/console errors, no broken images.
+- All six public pages: **0 axe violations** at 1280 px and 390 px, no page/console errors, no broken images.
 - Admin: **0 axe violations**; no page/console errors.
-- No document-level horizontal overflow at 1280, 390 or 320 px.
+- No document-level horizontal overflow at 1280, 390 or 320 px on any public page.
 - Remaining axe `incomplete` colour-contrast items are manual reviews caused by gradient backgrounds, not automated failures.
 - Home interaction checks: pinch entrance, bento music toggle + nav sync, open-when note, story next/previous, scroll progress, cake blow/cut.
 - Admin checks: dossier modal, focus restoration, custom delete confirmation, device/DB load-more, mobile nav and table hints.

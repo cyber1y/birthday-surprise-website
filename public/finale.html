@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0f0520">
+    <meta name="description" content="The last page: a constellation of memories, love coupons and a final thank you.">
     <title>Finale — You Are Loved</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Caveat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -23,30 +24,35 @@
             <a href="letter.html" class="nav-link">Letter</a>
             <a href="gallery.html" class="nav-link">Gallery</a>
             <a href="wishes.html" class="nav-link">Wishes</a>
-            <a href="finale.html" class="nav-link active">Finale</a>
-            <button class="nav-link" data-music>🔇 Music Off</button>
+            <a href="finale.html" class="nav-link active" aria-current="page">Finale</a>
+            <button class="nav-link" data-music aria-pressed="false">🔇 Music Off</button>
         </nav>
 
-        <header class="site-header" id="finaleMain">
-            <div class="finale-heart">
-                <svg viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2 c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" fill="#ff5bb7"/></svg>
-            </div>
-            <h1 class="finale-big gradient-text" id="finaleText">You Are Loved</h1>
-            <p class="finale-sub" id="finaleSub"></p>
-        </header>
+        <div class="page-hero finale-page-hero">
+            <span class="page-watermark" aria-hidden="true">05</span>
+            <header class="site-header" id="finaleMain" style="padding:0">
+                <h1 class="finale-big gradient-text">You Are Loved</h1>
+            </header>
+        </div>
 
         <!-- Star memory sky -->
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Our Constellation</h2>
-            <p class="lead">Tap the stars to light them up. Each one holds a memory.</p>
+        <section class="section" aria-labelledby="constellationTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">The night sky</p>
+                <h2 class="h2" id="constellationTitle">Our constellation</h2>
+                <p class="lead">Tap the stars to light them up. Each one holds a memory.</p>
+            </div>
             <div class="star-sky reveal" id="starSky">
                 <div id="starList" style="position:relative;width:100%;height:120px"></div>
             </div>
         </section>
 
         <!-- Compatibility -->
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Cosmic Compatibility</h2>
+        <section class="section" aria-labelledby="compatibilityTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">Written in the stars</p>
+                <h2 class="h2" id="compatibilityTitle">Cosmic compatibility</h2>
+            </div>
             <div class="glass-panel reveal" style="text-align:center;padding:30px">
                 <p class="h2" style="color:var(--gold)"><span id="compatScore"></span>/100</p>
                 <p class="lead" id="compatMessage"></p>
@@ -54,15 +60,21 @@
         </section>
 
         <!-- Love Coupons -->
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Love Coupons</h2>
-            <p class="lead">Collect them all. They're redeemable for life (no expiration).</p>
+        <section class="section" aria-labelledby="couponsTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">Redeem forever</p>
+                <h2 class="h2" id="couponsTitle">Love coupons</h2>
+                <p class="lead">Collect them all. They're redeemable for life (no expiration).</p>
+            </div>
             <div class="grid-auto" id="couponsGrid"></div>
         </section>
 
         <!-- Heart progress -->
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Love Level</h2>
+        <section class="section" aria-labelledby="loveLevelTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">Still growing</p>
+                <h2 class="h2" id="loveLevelTitle">Love level</h2>
+            </div>
             <div class="heart-progress-wrap reveal" id="heartProgress"></div>
             <div style="text-align:center;margin-top:16px">
                 <button class="pill-btn btn-primary" id="heartBtn">Add another love</button>
@@ -70,17 +82,28 @@
         </section>
 
         <!-- Secret messages -->
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Secret Messages</h2>
-            <p class="lead">Look closely... something's hiding here.</p>
+        <section class="section" aria-labelledby="secretsTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">Look closely</p>
+                <h2 class="h2" id="secretsTitle">Secret messages</h2>
+                <p class="lead">Something's hiding here.</p>
+            </div>
             <div class="grid-auto reveal" id="secretGrid"></div>
         </section>
 
         <!-- Credits -->
-        <section class="section credits reveal">
-            <h2 class="h2 gradient-text" style="text-align:center;margin-bottom:18px">Credits</h2>
-            <div id="creditsWrap" style="text-align:center"></div>
+        <section class="section credits reveal" aria-labelledby="creditsTitle">
+            <div class="section-head">
+                <p class="eyebrow">The end, for now</p>
+                <h2 class="h2" id="creditsTitle">Credits</h2>
+            </div>
+            <div id="creditsWrap"></div>
         </section>
+
+        <nav class="chapter-next" aria-label="Back to the beginning">
+            <span class="chapter-next-label">That's the whole story</span>
+            <a href="index.html">Start again <span aria-hidden="true">↺</span></a>
+        </nav>
     </main>
 
     <footer class="footer">

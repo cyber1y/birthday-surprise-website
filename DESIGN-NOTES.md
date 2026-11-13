@@ -112,3 +112,18 @@ The research was used as a filter, not a checklist. Three.js/WebGL, maximalist c
 - Interaction checks: music toggle + nav sync, open-when note, story next/previous, scroll progress, cake blow/cut, pinch entrance.
 - Axe audit on desktop and mobile with animations frozen for deterministic results.
 - Existing public pages re-checked for regressions after shared CSS changes.
+
+
+## 8. Follow-up pass: chapter pages
+
+The same editorial system now carries through the rest of the public site instead of stopping at the home page.
+
+- **Shared chapter hero** — numbered watermark, eyebrow, large title and short intro on Surprise, Letter, Gallery, Wishes and Finale.
+- **Surprise** — ten gift sections, a jump-to-surprise chip bar, numbered section heads and consistent game cards.
+- **Letter** — two-column letter stage with an intro card and a real envelope-style note card; reasons and timeline now use the new card rhythm.
+- **Gallery** — masonry photo wall, live frame count and a redesigned “share your moment” bento card.
+- **Wishes** — sticky form + wish-wall layout with a live note count, quote-style wish cards and clearer empty/loading states.
+- **Finale** — chapter hero, generated title/actions, section heads for the constellation, compatibility, coupons, love level, secrets and credits.
+- **Chapter footer** — every page now ends with a single “next chapter” link that follows the narrative order: Surprise → Letter → Gallery → Wishes → Finale → Home.
+
+Verification after this pass: axe-core **0 violations** on all five chapter pages at 1280 px and 390 px, no console/page errors, and no horizontal overflow on any public page at either width.

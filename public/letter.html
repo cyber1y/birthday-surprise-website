@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0f0520">
+    <meta name="description" content="A hand-written birthday letter, little reasons and a word game made with love.">
     <title>A Letter For You</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Caveat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,45 +21,78 @@
         <nav class="main-nav" aria-label="Main navigation">
             <a href="index.html" class="nav-link">Home</a>
             <a href="surprise.html" class="nav-link">Surprise</a>
-            <a href="letter.html" class="nav-link active">Letter</a>
+            <a href="letter.html" class="nav-link active" aria-current="page">Letter</a>
             <a href="gallery.html" class="nav-link">Gallery</a>
             <a href="wishes.html" class="nav-link">Wishes</a>
             <a href="finale.html" class="nav-link">Finale</a>
-            <button class="nav-link" data-music>🔇 Music Off</button>
+            <button class="nav-link" data-music aria-pressed="false">🔇 Music Off</button>
         </nav>
 
-        <header class="site-header">
-            <div class="badge">From my heart</div>
+        <header class="site-header page-hero">
+            <span class="page-watermark" aria-hidden="true">02</span>
+            <p class="eyebrow">Chapter 02 · from my heart</p>
             <h1 class="hero-title">A Letter For You</h1>
             <p class="hero-subtitle">Some words are best read slowly, with a cup of tea and a smile.</p>
         </header>
 
         <!-- Envelope -->
-        <section class="section">
-            <div class="envelope-wrap glass-panel reveal">
-                <h2 class="h2 gradient-text" style="text-align:center">Tap the envelope</h2>
-                <div class="love-note" id="letterText"></div>
+        <section class="section letter-section" aria-labelledby="letterTitle">
+            <div class="letter-stage">
+                <div class="letter-aside reveal">
+                    <div>
+                        <p class="eyebrow">Sealed with love</p>
+                        <h2 class="h2" id="letterTitle">Read it slowly.</h2>
+                        <p class="lead">No rush. This one is meant to be read twice — once with your eyes, once with your heart.</p>
+                    </div>
+                    <div class="letter-stamp" aria-hidden="true"><span>With<br>love</span></div>
+                </div>
+                <div class="envelope-wrap glass-panel reveal">
+                    <div class="letter-topline" aria-hidden="true">
+                        <span>To: you</span>
+                        <span>From: me</span>
+                    </div>
+                    <div class="love-note" id="letterText"></div>
+                    <div class="letter-signature" aria-hidden="true">Always, me.</div>
+                </div>
             </div>
         </section>
 
         <!-- Reasons -->
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Because I Love You</h2>
-            <div class="grid-auto reveal" id="reasonsGrid"></div>
+        <section class="section" aria-labelledby="reasonsTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">The little things</p>
+                <h2 class="h2" id="reasonsTitle">Because I love you</h2>
+                <p class="lead">Not the big speeches. The small, everyday evidence.</p>
+            </div>
+            <div class="letter-reasons reveal" id="reasonsGrid"></div>
         </section>
 
         <!-- Timeline -->
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Our Timeline</h2>
-            <div class="grid-2 reveal" id="timelineGrid"></div>
+        <section class="section" aria-labelledby="timelineTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">Our story</p>
+                <h2 class="h2" id="timelineTitle">Little chapters</h2>
+                <p class="lead">The moments that became the story.</p>
+            </div>
+            <div class="letter-timeline reveal" id="timelineGrid"></div>
         </section>
 
         <!-- Wordle -->
-        <section class="section">
-            <h2 class="h2 gradient-text reveal">Can You Guess My Word?</h2>
-            <p class="lead">A little word game with a big meaning. You have 6 tries.</p>
-            <div id="wordleWrap"></div>
+        <section class="section" aria-labelledby="wordleTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">A tiny challenge</p>
+                <h2 class="h2" id="wordleTitle">Can you guess my word?</h2>
+                <p class="lead">A little word game with a big meaning. You have six tries.</p>
+            </div>
+            <div class="game-card reveal">
+                <div id="wordleWrap"></div>
+            </div>
         </section>
+
+        <nav class="chapter-next" aria-label="Next chapter">
+            <span class="chapter-next-label">Next chapter</span>
+            <a href="gallery.html">See the moments <span aria-hidden="true">→</span></a>
+        </nav>
     </main>
 
     <footer class="footer">Made with &#10084;&#65039; for the most amazing person</footer>

@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0f0520">
+    <meta name="description" content="A wall of favourite birthday memories, with a place for your own photo.">
     <title>Our Gallery</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Caveat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -21,33 +22,49 @@
             <a href="index.html" class="nav-link">Home</a>
             <a href="surprise.html" class="nav-link">Surprise</a>
             <a href="letter.html" class="nav-link">Letter</a>
-            <a href="gallery.html" class="nav-link active">Gallery</a>
+            <a href="gallery.html" class="nav-link active" aria-current="page">Gallery</a>
             <a href="wishes.html" class="nav-link">Wishes</a>
             <a href="finale.html" class="nav-link">Finale</a>
-            <button class="nav-link" data-music>🔇 Music Off</button>
+            <button class="nav-link" data-music aria-pressed="false">🔇 Music Off</button>
         </nav>
 
-        <header class="site-header">
-            <div class="badge">Moments we treasure</div>
+        <header class="site-header page-hero">
+            <span class="page-watermark" aria-hidden="true">03</span>
+            <p class="eyebrow">Chapter 03 · moments we keep</p>
             <h1 class="hero-title">Our Gallery</h1>
             <p class="hero-subtitle">A few favourite memories, frozen in time. Tap a photo to see it up close.</p>
         </header>
 
-        <section class="section">
-            <div class="grid-auto" id="galleryGrid"></div>
+        <section class="section" aria-labelledby="galleryTitle">
+            <div class="section-head reveal">
+                <p class="eyebrow">The wall</p>
+                <h2 class="h2" id="galleryTitle">Frames worth keeping</h2>
+                <p class="lead">A growing collection of the moments that made us laugh, cry and take too many selfies. <span class="wish-count" id="galleryCount">6 frames</span></p>
+            </div>
+            <div class="gallery-wall" id="galleryGrid"></div>
         </section>
 
-        <section class="section" id="shareSection">
-            <h2 class="h2 gradient-text reveal">Share Your Moment</h2>
-            <p class="lead">Send a birthday photo here — it lands straight in the surprise!</p>
-            <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center">
-                <span id="cameraPreview"></span>
-                <button class="pill-btn btn-primary" id="selfieBtn">📸 Take a selfie</button>
-                <button type="button" class="pill-btn btn-secondary" id="choosePhotoBtn">🖼️ Choose a photo</button>
-                <input type="file" id="photoInput" accept="image/*" hidden>
+        <section class="section" id="shareSection" aria-labelledby="shareTitle">
+            <div class="share-card reveal">
+                <div>
+                    <p class="eyebrow">Add your frame</p>
+                    <h2 class="h2" id="shareTitle">Share your moment</h2>
+                    <p class="lead">Send a birthday photo here — it lands straight in the surprise.</p>
+                </div>
+                <div class="share-actions">
+                    <span id="cameraPreview"></span>
+                    <button class="pill-btn btn-primary" id="selfieBtn">📸 Take a selfie</button>
+                    <button type="button" class="pill-btn btn-secondary" id="choosePhotoBtn">🖼️ Choose a photo</button>
+                    <input type="file" id="photoInput" accept="image/*" hidden>
+                </div>
+                <p class="share-status" id="shareStatus" role="status" aria-live="polite"></p>
             </div>
-            <p class="lead" id="shareStatus" role="status" aria-live="polite" style="min-height:24px"></p>
         </section>
+
+        <nav class="chapter-next" aria-label="Next chapter">
+            <span class="chapter-next-label">Next chapter</span>
+            <a href="wishes.html">Leave a wish <span aria-hidden="true">→</span></a>
+        </nav>
     </main>
 
     <footer class="footer">Made with &#10084;&#65039; for the most amazing person</footer>

@@ -181,6 +181,28 @@ body::after {
   transform: translateY(-2px);
 }
 
+.music-fab {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 60;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--panel-border);
+  background: var(--glass);
+  color: var(--text);
+  font-size: 22px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-glow);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+.music-fab:hover { transform: scale(1.08); }
+.music-fab[aria-pressed="true"] { background: var(--gradient-main); color: #2a0f1e; }
+.music-fab .music-icon { font-size: 20px; }
+
 .glass-panel {
   background: var(--glass);
   border: 1px solid var(--panel-border);

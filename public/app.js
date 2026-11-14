@@ -1922,6 +1922,42 @@ function initCake() {
     </g>`;
   }
 
+  let autoBusy = false;
+
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  async function runAutoBuild() {
+    // Automates the cake build: bake → frost → decorate → candle setup.
+    if (autoBusy) return;
+    autoBusy = true;
+    try {
+      setStage('bake');
+      cook();
+      await wait(320);
+      if (state.stage !== 'frost') return;
+
+      frost();
+      await wait(320);
+      if (state.stage !== 'decorate') return;
+
+      setTopping('star');
+      placeTopping();
+      await wait(220);
+      finishDecorating();
+      await wait(320);
+      if (state.stage !== 'candles') return;
+
+      setStage('candles');
+      placeAllCandles();
+      await wait(500);
+      setStatus('Candle setup complete. Make a wish, then light them, blow out, and cut.');
+    } catch (e) {
+      setStatus('Auto build paused.');
+    } finally {
+      autoBusy = false;
+    }
+  }
+
   function cook() {
     if (state.stage !== 'bake') return;
     scene.classList.add('is-baked');
@@ -2144,7 +2180,9 @@ function initCake() {
 
   function advance() {
     switch (state.stage) {
-      case 'bake': cook(); break;
+      case 'bake':
+        void runAutoBuild();
+        break;
       case 'frost': frost(); break;
       case 'decorate': placeTopping(); break;
       case 'candles': addCandle(); break;

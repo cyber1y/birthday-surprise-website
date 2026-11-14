@@ -174,6 +174,16 @@ Research references: birthday-cake.online, DigiCakey, bdaycake.com, CakeAnn Cake
 - The knife sweeps through, the slice slides onto a side plate, and the celebration fires after the cut rather than before.
 - Reduced motion swaps the slice and knife animations for their final states.
 
+### Automated build
+
+The user-facing build is now automatable:
+
+- Tapping the cake while it is still in the **Bake** step starts `runAutoBuild()` instead of stopping at bake.
+- The script runs the same internal steps in order: `cook` (bake) → `frost` (frost) → `placeTopping` + `finishDecorating` (decorate) → `setStage('candles')` + `placeAllCandles` (candle setup).
+- Small delays let each staged reveal settle, and each step re-checks the current stage so the run stops cleanly if the user resets or acts manually.
+- An `autoBusy` flag prevents overlapping runs.
+- After the automation finishes, the cake sits in the **Wish** step with baked/frosted layers, a topping placed and all candles set up — then the user continues with wish → light → blow → cut.
+
 ### Accessibility and fallbacks
 
 - The SVG is `aria-hidden`; the stage has a dynamic accessible name and is described by the instruction line.

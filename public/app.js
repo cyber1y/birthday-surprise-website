@@ -1933,23 +1933,23 @@ function initCake() {
     try {
       setStage('bake');
       cook();
-      await wait(320);
+      await wait(750);
       if (state.stage !== 'frost') return;
 
       frost();
-      await wait(320);
+      await wait(750);
       if (state.stage !== 'decorate') return;
 
       setTopping('star');
       placeTopping();
-      await wait(220);
+      await wait(420);
       finishDecorating();
-      await wait(320);
+      await wait(600);
       if (state.stage !== 'candles') return;
 
       setStage('candles');
       placeAllCandles();
-      await wait(500);
+      await wait(800);
       setStatus('Candle setup complete. Make a wish, then light them, blow out, and cut.');
     } catch (e) {
       setStatus('Auto build paused.');

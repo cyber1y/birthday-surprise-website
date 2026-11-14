@@ -179,10 +179,11 @@ Research references: birthday-cake.online, DigiCakey, bdaycake.com, CakeAnn Cake
 The user-facing build is now automatable:
 
 - Tapping the cake while it is still in the **Bake** step starts `runAutoBuild()` instead of stopping at bake.
-- The script runs the same internal steps in order: `cook` (bake) → `frost` (frost) → `placeTopping` + `finishDecorating` (decorate) → `setStage('candles')` + `placeAllCandles` (candle setup).
+- The script runs the same internal steps in order: `cook` (bake) → `frost` (frost) → `placeTopping` + `finishDecorating` (decorate) → `setStage('candles')` + `placeAllCandles` (candle setup) → `lightCandles` (light) → `blowCandles` (blow) → `cutCake` (cut).
 - Small delays let each staged reveal settle, and each step re-checks the current stage so the run stops cleanly if the user resets or acts manually.
 - An `autoBusy` flag prevents overlapping runs.
-- After the automation finishes, the cake sits in the **Wish** step with baked/frosted layers, a topping placed and all candles set up — then the user continues with wish → light → blow → cut.
+- A scripted wish (`A year of good cake!`) is applied only when the user left the field empty.
+- After the automation finishes, the cake is fully built, wished, blown and sliced; the final status comes from the cut step.
 
 ### Accessibility and fallbacks
 

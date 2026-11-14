@@ -1950,7 +1950,20 @@ function initCake() {
       setStage('candles');
       placeAllCandles();
       await wait(500);
-      setStatus('Candle setup complete. Make a wish, then light them, blow out, and cut.');
+
+      // Continue automatically: light the candles (scripted wish), blow them out, cut the slice.
+      setStage('wish');
+      if (wishInput) wishInput.value = wishInput.value || 'A year of good cake!';
+      lightCandles();
+      await wait(800);
+      if (state.stage !== 'blow') return;
+
+      blowCandles();
+      await wait(400);
+      if (state.stage !== 'cut') return;
+
+      cutCake();
+      await wait(1200);
     } catch (e) {
       setStatus('Auto build paused.');
     } finally {

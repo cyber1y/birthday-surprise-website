@@ -1701,6 +1701,69 @@ function initAppShell() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 }
 
+function initCardPager() {
+  const pager = $('#cardPager');
+  const controls = $('#cardControls');
+  const prev = $('#cardPrev');
+  const next = $('#cardNext');
+  const dotsWrap = $('#cardDots');
+  if (!pager || !controls) return;
+  const slides = $$('.card-slide', pager);
+  if (!slides.length) return;
+
+  const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+  const buildDots = () => {
+    if (!dotsWrap) return;
+    dotsWrap.innerHTML = '';
+    slides.forEach((_, i) => {
+      const d = document.createElement('span');
+      d.className = 'card-dot' + (i === 0 ? ' is-active' : '');
+      dotsWrap.appendChild(d);
+    });
+  };
+
+  const getIndex = () => {
+    const center = pager.scrollLeft + pager.clientWidth / 2;
+    let best = 0, bestDist = Infinity;
+    slides.forEach((s, i) => {
+      const mid = s.offsetLeft + s.offsetWidth / 2;
+      const d = Math.abs(mid - center);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    return best;
+  };
+
+  const update = () => {
+    const i = getIndex();
+    if (dotsWrap) $$('.card-dot', dotsWrap).forEach((d, idx) => d.classList.toggle('is-active', idx === i));
+    if (prev) prev.disabled = i <= 0;
+    if (next) next.disabled = i >= slides.length - 1;
+  };
+
+  const goTo = (i) => {
+    const idx = Math.max(0, Math.min(slides.length - 1, i));
+    const s = slides[idx];
+    if (s) s.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+  };
+
+  buildDots();
+  update();
+
+  pager.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+  window.addEventListener('resize', () => { buildDots(); update(); });
+  if (prev) prev.addEventListener('click', () => goTo(getIndex() - 1));
+  if (next) next.addEventListener('click', () => goTo(getIndex() + 1));
+
+  // Only show controls on mobile
+  const syncMode = () => {
+    controls.style.display = isMobile() ? 'flex' : 'none';
+    if (!isMobile()) { pager.scrollLeft = 0; }
+  };
+  syncMode();
+  window.addEventListener('resize', syncMode);
+}
+
 function initHomeSections() {
   renderHomeHero();
   renderBirthdayEdit();
@@ -2848,6 +2911,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const safe = (fn) => { try { fn(); } catch (e) { console.warn('Init failed:', fn.name || 'anonymous', e); } };
   function boot() {
   safe(initAppShell);
+  safe(initCardPager);
   safe(initEntrance);
   safe(initNameBalloons);
   safe(initFlipCards);

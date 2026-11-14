@@ -421,59 +421,67 @@ const ParticleSystem = (function () {
     resize();
     window.addEventListener('resize', resize, { passive: true });
     spawn();
-    loop();
+    if (particles.length && !document.hidden) loop(0);
   }
 
+  let lastFrame = 0;
+
   function resize() {
-    canvas.width = innerWidth * Device.dpr;
-    canvas.height = innerHeight * Device.dpr;
+    const dpr = Math.min(Device.dpr || 1, 2);
+    canvas.width = Math.round(innerWidth * dpr);
+    canvas.height = Math.round(innerHeight * dpr);
     canvas.style.width = innerWidth + 'px';
     canvas.style.height = innerHeight + 'px';
-    ctx && ctx.scale(Device.dpr, Device.dpr);
+    if (ctx) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    }
   }
 
   function spawn() {
-    const base = Device.isMobile ? (Device.isLowEnd ? 14 : 24) : 55;
+    const base = Device.reducedMotion ? 0
+      : Device.isLowEnd ? 8
+      : Device.isMobile ? 14
+      : 28;
+    particles = [];
     for (let i = 0; i < base; i++) {
       particles.push(makeParticle());
     }
   }
 
   function makeParticle() {
-    const hearts = Math.random() < 0.15;
     return {
       x: Math.random() * innerWidth,
       y: innerHeight + Math.random() * 100,
-      r: hearts ? (8 + Math.random() * 10) : (1 + Math.random() * 2.5),
-      vy: -(0.3 + Math.random() * 0.8),
-      vx: (Math.random() - 0.5) * 0.4,
-      a: 0.3 + Math.random() * 0.6,
-      life: 0.5 + Math.random(),
-      hearts,
+      r: 1 + Math.random() * 2.2,
+      vy: -(0.25 + Math.random() * 0.6),
+      vx: (Math.random() - 0.5) * 0.35,
+      a: 0.25 + Math.random() * 0.45,
       hue: Math.random() * 360
     };
   }
 
-  function loop() {
+  function loop(now) {
+    if (!running) return;
+    if (now - lastFrame < 33) { // ~30fps cap
+      raf = requestAnimationFrame(loop);
+      return;
+    }
+    lastFrame = now || 0;
     ctx.clearRect(0, 0, innerWidth, innerHeight);
-    particles.forEach(p => {
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
       p.x += p.vx; p.y += p.vy;
-      if (p.y < -30 || p.x < -30 || p.x > innerWidth + 30) {
+      if (p.y < -20 || p.x < -20 || p.x > innerWidth + 20) {
         Object.assign(p, makeParticle());
       }
-      ctx.save();
       ctx.globalAlpha = p.a;
-      if (p.hearts) {
-        ctx.font = `${p.r}px serif`;
-        ctx.fillText('💕', p.x, p.y);
-      } else {
-        ctx.fillStyle = `hsla(${p.hue}, 90%, 75%, 0.9)`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-    });
+      ctx.fillStyle = `hsla(${p.hue}, 85%, 75%, 0.85)`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
     raf = requestAnimationFrame(loop);
   }
 
@@ -2667,15 +2675,21 @@ const DeviceIntel = (function () {
     // Track page views
     emit('page-view', { page: location.pathname });
 
-    // Track scroll depth
-    let maxScroll = 0;
+    // Track scroll depth (throttled)
+    let maxScroll = 0, scrollQueued = false;
     window.addEventListener('scroll', () => {
-      const depth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
-      if (depth > maxScroll + 25) {
-        maxScroll = depth;
-        emit('scroll', { depth: depth + '%' });
-      }
-    });
+      if (scrollQueued) return;
+      scrollQueued = true;
+      requestAnimationFrame(() => {
+        scrollQueued = false;
+        const denom = Math.max(1, document.body.scrollHeight - window.innerHeight);
+        const depth = Math.round((window.scrollY / denom) * 100);
+        if (depth > maxScroll + 25) {
+          maxScroll = depth;
+          emit('scroll', { depth: depth + '%' });
+        }
+      });
+    }, { passive: true });
 
     // Track feature interactions
     document.addEventListener('click', (e) => {

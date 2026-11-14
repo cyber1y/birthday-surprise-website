@@ -1526,11 +1526,27 @@ html.is-lowend .flip-card-front,
 html.is-lowend .flip-card-back,
 html.is-lowend .quiz-card,
 html.is-lowend .stat-card,
-html.is-lowend .feature-card {
+html.is-lowend .feature-card,
+html.is-lowend .main-nav,
+html.is-lowend .bento-card,
+html.is-lowend .hero-copy,
+html.is-lowend .hero-visual,
+html.is-lowend .polaroid,
+html.is-lowend .gift-box,
+html.is-lowend .cake-stage-wrap,
+html.is-lowend .music-fab {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 html.is-lowend .bg-blur { display: none; }
+html.is-lowend * { scroll-behavior: auto !important; }
+
+@media (max-width: 700px) {
+  .glass-panel, .main-nav, .bento-card, .hero-copy, .hero-visual, .polaroid {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
 
 /* ==== Share a moment (gallery) ==== */
 #cameraPreview video {

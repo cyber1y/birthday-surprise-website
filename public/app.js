@@ -4,9 +4,10 @@
    ========================================================= */
 
 const CONFIG = {
-  birthdayName: "[Name]",
+  birthdayName: "Mehak Joshi",
   senderName: "[Your Name]",
   age: 22,
+  birthdayDate: "2004-11-27",
 
   hero: {
     title: "Happy Birthday",
@@ -26,7 +27,7 @@ const CONFIG = {
   },
 
   loveLetter: [
-    "My dearest [Mehak], on this special day, I want you to know how much you mean to me. Every moment we've shared has been a gift, and I cherish each one deeply.",
+    "My dearest Mehak, on this special day, I want you to know how much you mean to me. Every moment we've shared has been a gift, and I cherish each one deeply.",
     "You bring so much joy and warmth into my life. Your laughter is my favorite sound, and your happiness is my greatest wish. Thank you for being the amazing person you are.",
     "Happy Birthday, my love. I hope this year brings you everything your heart desires and more. You deserve all the happiness in the world. With all my love, always."
   ],
@@ -243,7 +244,7 @@ const CONFIG = {
   credits: [
     { role: "Director of Smiles", name: "[KUMAR_n Swami]" },
     { role: "Screenplay", name: "Us, every day" },
-    { role: "Lead Birthday Star", name: "[Mehak Joshi]" },
+    { role: "Lead Birthday Star", name: "Mehak Joshi" },
     { role: "Music Supervisor", name: "The songs we can't stop singing" },
     { role: "Executive Producer", name: "Love, obviously \u{1F970}" }
   ]

@@ -195,3 +195,11 @@ The user-facing build is now automatable:
 - At 320 px the step rail wraps, the wish row stacks and the cake section stays inside the viewport.
 
 Verification: full flow exercised with real pointer clicks and keyboard at 1280, 390 and 320 px; candle/flame geometry measured; wrong-order cut attempts ignored; mic denial and timeout fallbacks checked; axe-core **0 violations** at 1280, 390 and 320 px (remaining `color-contrast` items are gradient-background manual reviews); no console errors and no horizontal overflow.
+
+
+## Mobile app shell & PWA
+
+- Added a mobile-app shell: compact top bar with music control, fixed bottom tab bar (Home, Surprise, Letter, Gallery, More), and a More bottom sheet for Wishes, Finale and music.
+- Layout uses safe-area insets (`viewport-fit=cover`, `env(safe-area-inset-*)`) and reserves space for the tab bar.
+- PWA support: web manifest, icons (any/maskable/apple-touch), service worker with app-shell precache and offline fallback page, and platform install meta tags.
+- Service worker caches core pages/assets and serves `offline.html` for navigations when offline; `/api`, `/socket.io`, and `/uploads` remain network-only.

@@ -31,6 +31,13 @@ cloudflared tunnel --url http://localhost:3000
 
 Fallback: `ngrok http 3000` (ngrok installed at `/home/kali/ngrok`, authtoken configured). Copy the tunnel URL to any phone.
 
+## Mobile app shell & PWA
+
+- **App shell:** sticky top bar (title + music), fixed bottom tab bar (Home, Surprise, Letter, Gallery, More), and a “More” sheet for Wishes, Finale and music.
+- **Mobile-first layout:** safe-area insets (`viewport-fit=cover`), tab-bar clearance, and app-like navigation across public pages.
+- **PWA:** `manifest.webmanifest`, app icons (192/512/maskable/apple-touch), `sw.js` (app-shell precache + offline fallback), `offline.html`, and install meta for Android/iOS browsers.
+- **Use as an app:** open the site in Chrome (Android) or Safari (iOS) and “Add to Home screen” / Install. For full install/service-worker behavior on devices, serve over HTTPS (Cloudflare tunnel or deployed host).
+
 ## Home page redesign (2026)
 
 The public home page was rebuilt around a researched “editorial birthday issue” direction:

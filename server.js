@@ -147,6 +147,11 @@ app.use(express.static(path.join(__dirname, 'public'), {
   etag: true,
   lastModified: true,
   setHeaders: (res, filePath) => {
+    const base = path.basename(filePath);
+    if (base === 'sw.js' || base === 'manifest.webmanifest') {
+      res.setHeader('Cache-Control', 'no-cache');
+      return;
+    }
     if (/\.(?:js|css|svg|png|jpg|jpeg|webp|gif|ico|woff2?|mp3|mp4)$/i.test(filePath)) {
       res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
     } else if (/\.html$/i.test(filePath)) {

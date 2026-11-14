@@ -2658,6 +2658,10 @@ section[id] { scroll-margin-top: 96px; }
 body {
   padding-bottom: calc(var(--tabbar-height) + var(--safe-bottom));
 }
+html {
+  scroll-padding-top: calc(var(--topbar-height) + var(--safe-top) + 8px);
+  scroll-padding-bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 8px);
+}
 
 .app-topbar {
   position: sticky;

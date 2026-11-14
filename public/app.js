@@ -387,6 +387,22 @@ const AudioManager = (function () {
     sfxPop() { beep(700, 0, 0.08, 'square', 0.06); beep(1000, 0.05, 0.08, 'square', 0.06); },
     sfxFlip() { beep(400, 0, 0.1, 'triangle', 0.08); },
     sfxBoom() { beep(150, 0, 0.3, 'sawtooth', 0.12); beep(80, 0.05, 0.4, 'sawtooth', 0.15); },
+    sfxBlow() {
+      const c = ensure(); if (!c) return;
+      const length = Math.floor(c.sampleRate * 0.45);
+      const buffer = c.createBuffer(1, length, c.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length);
+      const src = c.createBufferSource();
+      src.buffer = buffer;
+      const filter = c.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 780;
+      const gain = c.createGain();
+      gain.gain.value = 0.11;
+      src.connect(filter); filter.connect(gain); gain.connect(c.destination);
+      src.start();
+    },
     ensure
   };
 })();
@@ -1666,119 +1682,510 @@ function initHomeSections() {
 }
 
 /* =========================================================
-   SVG Birthday Cake
+   Interactive cake atelier
    ========================================================= */
-function buildCakeSVG() {
+const CAKE_TOP_SHAPES = {
+  heart: '<path d="M0 4 C-8 -4 -17 5 0 17 C17 5 8 -4 0 4Z" fill="#ff5bb7"/>',
+  star: '<path d="M0 -10 L2.9 -3.2 10 -2.7 4.5 1.9 6.2 9 0 5.1 -6.2 9 -4.5 1.9 -10 -2.7 -2.9 -3.2Z" fill="#ffd166"/>',
+  strawberry: '<path d="M0 -9 C8 -9 10 2 0 11 C-10 2 -8 -9 0 -9Z" fill="#ef4444"/><path d="M-6 -10 L0 -14 L6 -10" fill="#34d399"/>',
+  cherry: '<circle cx="0" cy="4" r="7" fill="#ef4444"/><path d="M0 -3 Q4 -11 9 -13" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>'
+};
+const CAKE_CANDLE_COLORS = ['#ff5bb7', '#a855f7', '#ffd166', '#60a5fa', '#f472b6', '#34d399', '#fbbf24', '#ef4444'];
+const CAKE_STEP_COPY = {
+  bake: { index: 0, tool: 'bake', instruction: 'Tap the cake to bake the layers.', label: 'Bake the cake' },
+  frost: { index: 1, tool: 'frost', instruction: 'Choose a frosting flavour, then tap the cake to pour it.', label: 'Frost the cake' },
+  decorate: { index: 2, tool: 'decorate', instruction: 'Pick a topping, then tap the cake to place it.', label: 'Add a topping to the cake' },
+  candles: { index: 3, tool: 'candles', instruction: 'Tap the cake to add a candle, or place them all.', label: 'Add a candle to the cake' },
+  wish: { index: 4, tool: 'wish', instruction: 'Write a wish if you like, then light the candles.', label: 'Light the candles on the cake' },
+  blow: { index: 4, tool: 'blow', instruction: 'Blow out the candles — or use your mic.', label: 'Blow out the candles' },
+  cut: { index: 5, tool: 'cut', instruction: 'Now cut the first slice.', label: 'Cut the cake' },
+  done: { index: 5, tool: 'done', instruction: 'All done. Bake another whenever you like.', label: 'Finished cake' }
+};
+
+function buildCakeScene() {
   const wrap = $('#cakeWrap');
-  if (!wrap) return;
-  const age = CONFIG.age || 1;
-  const candles = Math.min(age, 8);
-  const topY = 60;
-  let flames = '';
-  let candleColors = ['#ff5bb7', '#a855f7', '#ffd166', '#60a5fa', '#f472b6', '#34d399', '#fbbf24', '#ef4444'];
-  for (let i = 0; i < candles; i++) {
-    const cx = 160 + ((i - (candles - 1) / 2) * (300 / Math.max(candles - 1, 1)));
-    flames += `
-      <g class="candle" transform="translate(${cx}, ${topY + 22})">
-        <rect x="-4" y="-46" width="8" height="46" rx="3" fill="${candleColors[i % candleColors.length]}" stroke="rgba(255,255,255,0.6)"/>
-        <line x1="0" y1="-20" x2="0" y2="-10" stroke="#8b5cf6" stroke-width="2"/>
-        <ellipse class="flame" cx="0" cy="-92" rx="6" ry="12" fill="#ffd166"/>
-        <ellipse class="flame-inner" cx="0" cy="-92" rx="3" ry="6" fill="#ff9f1c"/>
-      </g>`;
-  }
+  if (!wrap) return null;
+  const slots = [[146, 150], [206, 150], [120, 214], [160, 214], [180, 206], [180, 150]];
+  const slotMarkup = slots
+    .map(([x, y], i) => `<g transform="translate(${x} ${y})"><g class="cake-topping" data-slot="${i}"></g></g>`)
+    .join('');
+
   wrap.innerHTML = `
-  <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
     <defs>
-      <linearGradient id="straw" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#ffd6e7"/><stop offset="1" stop-color="#ff9fce"/>
-      </linearGradient>
-      <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#a855f7"/><stop offset="1" stop-color="#6d28d9"/>
-      </linearGradient>
-      <filter id="soft"><feGaussianBlur stdDeviation="0.5"/></filter>
+      <clipPath id="cakeCutClip">
+        <path d="M212 120 L238 120 L238 260 L194 260 Z"/>
+      </clipPath>
     </defs>
 
-    <!-- plate -->
-    <ellipse cx="160" cy="245" rx="140" ry="16" fill="rgba(255,255,255,0.12)"/>
-
-    <!-- bottom tier -->
-    <rect x="70" y="150" width="180" height="88" rx="10" fill="url(#fill)" stroke="rgba(255,255,255,0.25)"/>
-    <rect x="70" y="150" width="180" height="24" rx="10" fill="rgba(255,255,255,0.18)"/>
-    <ellipse cx="160" cy="150" rx="90" ry="16" fill="#7c3aed"/>
-
-    <!-- drips -->
-    <path d="M110 150 q0 26 0 26 M140 150 q0 20 0 20 M180 150 q0 22 0 22 M205 150 q0 16 0 16" stroke="#ffd166" stroke-width="6" fill="none" stroke-linecap="round"/>
-
-    <!-- top tier -->
-    <rect x="105" y="100" width="110" height="58" rx="10" fill="url(#straw)" stroke="rgba(255,255,255,0.25)"/>
-    <rect x="105" y="100" width="110" height="18" rx="10" fill="rgba(255,255,255,0.25)"/>
-    <ellipse cx="160" cy="100" rx="55" ry="12" fill="#ff9fce"/>
-
-    <!-- heart decoration -->
-    <g fill="#ff5bb7" opacity="0.9">
-      <circle cx="200" cy="130" r="6" opacity="0.7"/>
+    <g class="cake-stand">
+      <ellipse cx="180" cy="280" rx="132" ry="14" fill="rgba(255,255,255,0.12)"/>
+      <ellipse cx="180" cy="275" rx="118" ry="11" fill="rgba(255,255,255,0.07)"/>
     </g>
-    <text x="160" y="132" text-anchor="middle" font-size="16">💗</text>
 
-    <!-- candles -->
-    ${flames}
+    <g class="cake-ghost">
+      <rect x="88" y="178" width="184" height="82" rx="12"/>
+      <rect x="122" y="118" width="116" height="60" rx="12"/>
+      <ellipse cx="180" cy="118" rx="58" ry="12"/>
+      <ellipse cx="180" cy="178" rx="92" ry="12"/>
+    </g>
+
+    <g class="cake-tiers">
+      <!-- bottom tier -->
+      <rect x="88" y="178" width="184" height="82" rx="12" fill="#6d28d9" stroke="rgba(255,255,255,0.22)"/>
+      <rect x="88" y="178" width="184" height="20" rx="10" fill="rgba(255,255,255,0.16)"/>
+      <ellipse cx="180" cy="178" rx="92" ry="12" fill="#8b5cf6"/>
+      <circle cx="118" cy="222" r="2.5" fill="#ffd166"/>
+      <circle cx="144" cy="238" r="2" fill="#ff5bb7"/>
+      <circle cx="206" cy="232" r="2.5" fill="#34d399"/>
+      <circle cx="238" cy="218" r="2" fill="#ffd166"/>
+
+      <!-- top tier -->
+      <rect class="cake-tier-top" x="122" y="118" width="116" height="60" rx="12" stroke="rgba(255,255,255,0.25)"/>
+      <rect x="122" y="118" width="116" height="16" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <ellipse class="cake-top-surface" cx="180" cy="118" rx="58" ry="12"/>
+      <circle cx="138" cy="154" r="2" fill="#fff8fb"/>
+      <circle cx="158" cy="164" r="1.8" fill="#ffd166"/>
+      <circle cx="222" cy="160" r="2.2" fill="#fff8fb"/>
+    </g>
+
+    <g class="cake-frosting">
+      <path class="cake-frost-path" d="M122 126 C142 117 162 122 180 118 C198 122 218 117 238 126 L238 140 Q228 154 218 140 Q208 158 198 141 Q188 156 178 141 Q168 158 158 141 Q148 156 138 140 Q128 154 122 140 Z"/>
+      <path d="M128 128 C146 120 164 124 180 121 C196 124 214 120 232 128" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2" stroke-linecap="round"/>
+      <path class="cake-frost-path" opacity="0.92" d="M88 186 C118 176 150 182 180 178 C210 182 242 176 272 186 L272 196 Q260 210 248 197 Q236 214 224 199 Q212 210 200 198 Q188 214 176 199 Q164 210 152 198 Q140 214 128 199 Q116 210 104 198 Q96 208 88 197 Z"/>
+      <path d="M96 188 C124 180 152 184 180 181 C208 184 236 180 264 188" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <g class="cake-decor">${slotMarkup}</g>
+    <g id="cakeCandles"></g>
+
+    <g class="cake-cut-face">
+      <path d="M212 120 L238 120 L238 260 L194 260 Z" fill="#3d0a1e"/>
+      <g clip-path="url(#cakeCutClip)">
+        <rect class="cake-cut-top" x="190" y="120" width="60" height="38"/>
+        <rect x="190" y="158" width="60" height="9" fill="#fff1f7"/>
+        <rect x="190" y="167" width="60" height="38" fill="#8b5cf6"/>
+        <rect x="190" y="205" width="60" height="9" fill="#fff1f7"/>
+        <rect x="190" y="214" width="60" height="46" fill="#6d28d9"/>
+      </g>
+      <path d="M212 120 L238 120 L238 260 L194 260 Z" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+    </g>
+
+    <g class="cake-serve-plate">
+      <ellipse cx="292" cy="280" rx="56" ry="12" fill="rgba(255,255,255,0.16)"/>
+      <ellipse cx="292" cy="276" rx="48" ry="9" fill="rgba(255,255,255,0.09)"/>
+    </g>
+
+    <g class="cake-slice">
+      <g transform="translate(272 190)">
+        <path d="M0 20 L26 0 L44 0 L36 82 L-6 82 Z" fill="#ff9fce"/>
+        <path d="M-6 42 L40 42 L39 50 L-7 50 Z" fill="#fff1f7"/>
+        <path d="M-7 58 L38 58 L37 66 L-8 66 Z" fill="#fff1f7"/>
+        <path d="M26 0 L44 0 L46 12 L24 14 Z" fill="var(--cake-frost)"/>
+        <circle cx="38" cy="8" r="5" fill="#ef4444"/>
+      </g>
+    </g>
+
+    <g class="cake-knife">
+      <rect x="0" y="-6" width="54" height="12" rx="5" fill="#dfe4f2"/>
+      <path d="M54 -6 L64 0 L54 6 Z" fill="#c6cce0"/>
+      <rect x="-26" y="-8" width="30" height="16" rx="7" fill="#8b5cf6"/>
+    </g>
   </svg>`;
   return wrap;
 }
 
 function initCake() {
-  const wrap = buildCakeSVG();
-  if (!wrap) return;
-  let blown = false, cut = false;
-  const status = $('#cakeStatus');
+  const scene = $('#cakeScene');
+  const stage = $('#cakeStage');
+  const wrap = $('#cakeWrap');
+  if (!scene || !stage || !wrap || !buildCakeScene()) return;
 
-  function blinkFlames() {
-    $$('.flame', wrap).forEach(f => {
-      f.style.animation = `flicker 0.4s ${Math.random()}s infinite alternate`;
+  const status = $('#cakeStatus');
+  const instruction = $('#cakeInstruction');
+  const steps = $$('.cake-steps li', scene);
+  const groups = $$('.cake-tool-group', scene);
+  const wishForm = $('#cakeWishForm');
+  const wishInput = $('#cakeWishInput');
+  const wishNote = $('#cakeWishNote');
+  const micBtn = $('#micBtn');
+  const age = Math.max(1, Number(CONFIG.age) || 1);
+  const digits = String(age);
+  const digitMode = age > 8 && digits.length <= 3;
+  const totalCandles = digitMode ? digits.length : Math.min(age, 8);
+  const rawName = String(CONFIG.birthdayName || '').replace(/\[|\]/g, '').trim();
+  const cakeName = /^name$/i.test(rawName) ? '' : rawName;
+
+  const state = {
+    stage: 'bake',
+    flavor: 'strawberry',
+    topping: 'heart',
+    toppings: 0,
+    candles: 0,
+    lit: false,
+    blown: false,
+    cut: false,
+    wish: '',
+    micActive: false
+  };
+
+  let micStream = null;
+  let micCtx = null;
+  let micRaf = 0;
+  let micTimer = 0;
+  let celebrationTimer = 0;
+
+  const setStatus = (text) => { if (status) status.textContent = text; };
+  const setInstruction = (text) => { if (instruction) instruction.textContent = text; };
+
+  function setStage(next, message) {
+    const info = CAKE_STEP_COPY[next] || CAKE_STEP_COPY.bake;
+    state.stage = next;
+    scene.dataset.stage = next;
+    setInstruction(info.instruction);
+    stage.setAttribute('aria-label', info.label);
+    stage.classList.toggle('is-done', next === 'done');
+    if (message) setStatus(message);
+
+    steps.forEach((li, i) => {
+      const done = next === 'done';
+      li.classList.toggle('is-complete', i < info.index || (done && i === info.index));
+      li.classList.toggle('is-active', !done && i === info.index);
+      if (!done && i === info.index) li.setAttribute('aria-current', 'step');
+      else li.removeAttribute('aria-current');
+    });
+
+    groups.forEach(group => {
+      group.hidden = group.dataset.tools !== info.tool;
+    });
+
+    if (next !== 'blow' && state.micActive) stopMic();
+
+    const active = document.activeElement;
+    if (active && active.closest && active.closest('.cake-tool-group') && active.closest('.cake-tool-group').hidden) {
+      stage.focus({ preventScroll: true });
+    }
+  }
+
+  function setFlavor(flavor) {
+    state.flavor = flavor;
+    scene.dataset.frosting = flavor;
+    $$('.cake-swatch', scene).forEach(btn => {
+      const on = btn.dataset.frosting === flavor;
+      btn.classList.toggle('is-selected', on);
+      btn.setAttribute('aria-pressed', String(on));
     });
   }
-  blinkFlames();
 
-  // inject flicker keyframe
-  if (!$('#cakeKeyframes')) {
-    const s = document.createElement('style');
-    s.id = 'cakeKeyframes';
-    s.textContent = '@keyframes flicker { from { transform: scaleY(1); } to { transform: scaleY(0.85) translateY(2px); } }';
-    document.head.appendChild(s);
+  function setTopping(topping) {
+    state.topping = topping;
+    $$('.cake-topping-btn', scene).forEach(btn => {
+      const on = btn.dataset.topping === topping;
+      btn.classList.toggle('is-selected', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
   }
 
-  const blowBtn = $('#blowBtn'), cutBtn = $('#cutBtn');
+  function candleMarkup(index) {
+    if (digitMode) {
+      const count = digits.length;
+      const width = count >= 3 ? 16 : 18;
+      const gap = 10;
+      const step = width + gap;
+      const start = 180 - ((count * step) - gap) / 2 + width / 2;
+      const x = start + index * step;
+      const digit = digits[index];
+      return `<g class="cake-candle" transform="translate(${x} 122)">
+        <g class="cake-candle-inner">
+          <rect x="${-width / 2}" y="-46" width="${width}" height="46" rx="4" fill="#fff4d6" stroke="${CAKE_CANDLE_COLORS[index % CAKE_CANDLE_COLORS.length]}" stroke-width="2"/>
+          <text x="0" y="-14" text-anchor="middle" font-size="${count >= 3 ? 14 : 20}" font-family="'Playfair Display',Georgia,serif" font-weight="800" fill="#1b1023">${digit}</text>
+          <line x1="0" y1="-46" x2="0" y2="-43" stroke="#4c1d95" stroke-width="2"/>
+          <circle class="cake-glow" cx="0" cy="-52" r="10" fill="rgba(255,209,102,0.32)" style="--i:${index}"/>
+          <ellipse class="cake-flame" cx="0" cy="-52" rx="5" ry="9" fill="#ffd166" style="--i:${index}"/>
+          <ellipse class="cake-flame" cx="0" cy="-51" rx="2.5" ry="5" fill="#ff9f1c" style="--i:${index}"/>
+          <circle class="cake-smoke" cx="0" cy="-54" r="4" fill="rgba(255,255,255,0.5)" style="--i:${index}"/>
+        </g>
+      </g>`;
+    }
 
-  function stopFlames() {
-    if (!blown) {
-      blown = true;
-      $$('.flame, .flame-inner', wrap).forEach(f => f.style.display = 'none');
-      AudioManager.sfxPop();
+    const spacing = totalCandles > 1 ? Math.min(14, 70 / (totalCandles - 1)) : 0;
+    const x = 180 + (index - (totalCandles - 1) / 2) * spacing;
+    return `<g class="cake-candle" transform="translate(${x} 122)">
+      <g class="cake-candle-inner">
+        <rect x="-3.5" y="-34" width="7" height="34" rx="2.5" fill="${CAKE_CANDLE_COLORS[index % CAKE_CANDLE_COLORS.length]}" stroke="rgba(255,255,255,0.55)"/>
+        <line x1="0" y1="-34" x2="0" y2="-32" stroke="#4c1d95" stroke-width="2"/>
+        <circle class="cake-glow" cx="0" cy="-39" r="8" fill="rgba(255,209,102,0.32)" style="--i:${index}"/>
+        <ellipse class="cake-flame" cx="0" cy="-39" rx="4" ry="7" fill="#ffd166" style="--i:${index}"/>
+        <ellipse class="cake-flame" cx="0" cy="-38.5" rx="2" ry="4" fill="#ff9f1c" style="--i:${index}"/>
+        <circle class="cake-smoke" cx="0" cy="-41" r="3.5" fill="rgba(255,255,255,0.5)" style="--i:${index}"/>
+      </g>
+    </g>`;
+  }
+
+  function cook() {
+    if (state.stage !== 'bake') return;
+    scene.classList.add('is-baked');
+    AudioManager.sfxPop();
+    vibrate(35);
+    setStage('frost', 'Layers baked. Now pick a flavour and pour the frosting.');
+  }
+
+  function frost() {
+    if (state.stage !== 'frost') return;
+    scene.classList.add('is-frosted');
+    AudioManager.sfxPop();
+    vibrate(35);
+    setStage('decorate', 'Frosting poured. Pick a topping and tap the cake.');
+  }
+
+  function placeTopping() {
+    if (state.stage !== 'decorate') return;
+    if (state.toppings >= 6) {
+      setStatus('That cake is fully decorated. Tap Done decorating.');
+      return;
+    }
+    const slot = $(`.cake-topping[data-slot="${state.toppings}"]`, scene);
+    if (slot) {
+      slot.innerHTML = CAKE_TOP_SHAPES[state.topping] || CAKE_TOP_SHAPES.heart;
+      slot.classList.add('is-placed');
+    }
+    state.toppings += 1;
+    AudioManager.sfxPop();
+    vibrate(30);
+    setStage('decorate', state.toppings >= 6 ? 'Beautiful. Tap Done decorating.' : 'Lovely. Add another topping, or tap Done decorating.');
+  }
+
+  function finishDecorating() {
+    if (state.stage !== 'decorate') return;
+    setStage('candles', state.toppings ? 'Now add the candles.' : 'A minimalist cake. Now add the candles.');
+  }
+
+  function addCandle() {
+    if (state.stage !== 'candles') return;
+    if (state.candles >= totalCandles) return finishCandles();
+    $('#cakeCandles', scene).insertAdjacentHTML('beforeend', candleMarkup(state.candles));
+    state.candles += 1;
+    AudioManager.sfxPop();
+    vibrate(25);
+    if (state.candles >= totalCandles) finishCandles();
+    else setStage('candles', `${state.candles} of ${totalCandles} candles placed.`);
+  }
+
+  function placeAllCandles() {
+    if (state.stage !== 'candles') return;
+    while (state.candles < totalCandles) {
+      $('#cakeCandles', scene).insertAdjacentHTML('beforeend', candleMarkup(state.candles));
+      state.candles += 1;
+    }
+    AudioManager.sfxPop();
+    finishCandles();
+  }
+
+  function finishCandles() {
+    setStage('wish', 'All the candles are on. Make a wish, then light them.');
+  }
+
+  function lightCandles() {
+    if (state.stage !== 'wish') return;
+    if (state.candles === 0) {
+      while (state.candles < totalCandles) {
+        $('#cakeCandles', scene).insertAdjacentHTML('beforeend', candleMarkup(state.candles));
+        state.candles += 1;
+      }
+    }
+    state.wish = wishInput ? wishInput.value.trim() : '';
+    if (wishNote) {
+      if (state.wish) {
+        wishNote.textContent = state.wish;
+        wishNote.hidden = false;
+      } else {
+        wishNote.hidden = true;
+      }
+    }
+    state.lit = true;
+    scene.classList.add('is-lit');
+    AudioManager.sfxPop();
+    vibrate(45);
+    setStage('blow', state.wish ? 'Wish made. Now blow out the candles.' : 'Candles lit. Now blow them out.');
+  }
+
+  function blowCandles() {
+    if (state.stage !== 'blow') {
+      if (state.stage === 'wish') setStatus('Light the candles first, then blow them out.');
+      else if (state.stage !== 'done') setStatus('The candles are not lit yet.');
+      return;
+    }
+    state.blown = true;
+    scene.classList.add('is-blown');
+    if (typeof AudioManager.sfxBlow === 'function') AudioManager.sfxBlow();
+    vibrate(70);
+    setStage('cut', 'Wish made. Now cut the first slice.');
+  }
+
+  function cutCake() {
+    if (state.stage !== 'cut') {
+      if (state.stage === 'blow') setStatus('Blow out the candles first, then cut the cake.');
+      else if (state.stage === 'wish') setStatus('Light the candles, blow them out, then cut the cake.');
+      else setStatus('Finish the candles and the wish before cutting.');
+      return;
+    }
+    state.cut = true;
+    scene.classList.add('is-cut');
+    AudioManager.sfxPop();
+    setStage('done', `Happy birthday${cakeName ? ', ' + cakeName : ''}! ${state.wish ? 'Your wish is safe with me.' : 'Make it a good one.'}`);
+    celebrationTimer = setTimeout(() => {
+      fireCannon();
+      AudioManager.sfxBoom();
+      vibrate(80);
+    }, 650);
+  }
+
+  function stopMic() {
+    state.micActive = false;
+    cancelAnimationFrame(micRaf);
+    clearTimeout(micTimer);
+    if (micStream) micStream.getTracks().forEach(track => track.stop());
+    if (micCtx && micCtx.close) {
+      try {
+        const closing = micCtx.close();
+        if (closing && typeof closing.catch === 'function') closing.catch(() => {});
+      } catch (e) {}
+    }
+    micStream = null;
+    micCtx = null;
+    if (micBtn) {
+      micBtn.textContent = 'Blow with mic';
+      micBtn.setAttribute('aria-pressed', 'false');
     }
   }
 
-  function startFire() {
-    if (status) {
-      const lines = cut ? `${CONFIG.cake.cutText} And your wish? 🤞` : (CONFIG.cake.blownText + ' Now cut a slice! 🍰');
-      status.textContent = lines;
+  async function startMic() {
+    if (state.stage !== 'blow' || state.micActive) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setStatus('This browser cannot use the mic. Use the button instead.');
+      return;
     }
-    if (!blown) fireCannon();
-    else fireConfetti({ particleCount: 90 });
-    vibrate(60);
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (state.stage !== 'blow') {
+        micStream.getTracks().forEach(track => track.stop());
+        micStream = null;
+        return;
+      }
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) throw new Error('no audio context');
+      micCtx = new AudioCtx();
+      if (micCtx.state === 'suspended' && micCtx.resume) micCtx.resume().catch(() => {});
+      const source = micCtx.createMediaStreamSource(micStream);
+      const analyser = micCtx.createAnalyser();
+      analyser.fftSize = 512;
+      source.connect(analyser);
+      const data = new Uint8Array(analyser.fftSize);
+      state.micActive = true;
+      micBtn.textContent = 'Listening… blow now';
+      micBtn.setAttribute('aria-pressed', 'true');
+      setStatus('I’m listening. Blow gently toward your microphone.');
+      let loudFrames = 0;
+      const tick = () => {
+        if (!state.micActive) return;
+        analyser.getByteTimeDomainData(data);
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) {
+          const value = (data[i] - 128) / 128;
+          sum += value * value;
+        }
+        const rms = Math.sqrt(sum / data.length);
+        if (rms > 0.09) loudFrames += 1;
+        else loudFrames = Math.max(0, loudFrames - 1);
+        if (loudFrames > 7) {
+          stopMic();
+          blowCandles();
+          return;
+        }
+        micRaf = requestAnimationFrame(tick);
+      };
+      tick();
+      micTimer = setTimeout(() => {
+        if (state.micActive) {
+          stopMic();
+          setStatus('I did not catch a blow. Use the button instead.');
+        }
+      }, 12000);
+    } catch (e) {
+      stopMic();
+      setStatus('Mic access was not available. Use the button instead.');
+    }
   }
 
-  if (blowBtn) blowBtn.addEventListener('click', () => {
-    stopFlames();
-    startFire();
+  function resetCake() {
+    stopMic();
+    clearTimeout(celebrationTimer);
+    scene.classList.remove('is-baked', 'is-frosted', 'is-lit', 'is-blown', 'is-cut');
+    Object.assign(state, {
+      stage: 'bake', flavor: 'strawberry', topping: 'heart', toppings: 0,
+      candles: 0, lit: false, blown: false, cut: false, wish: '', micActive: false
+    });
+    const holder = $('#cakeCandles', scene);
+    if (holder) holder.innerHTML = '';
+    $$('.cake-topping', scene).forEach(slot => {
+      slot.classList.remove('is-placed');
+      slot.innerHTML = '';
+    });
+    if (wishInput) wishInput.value = '';
+    if (wishNote) {
+      wishNote.hidden = true;
+      wishNote.textContent = '';
+    }
+    setFlavor('strawberry');
+    setTopping('heart');
+    setStage('bake', 'A fresh cake. Tap to bake the layers.');
+    stage.focus({ preventScroll: true });
+  }
+
+  function advance() {
+    switch (state.stage) {
+      case 'bake': cook(); break;
+      case 'frost': frost(); break;
+      case 'decorate': placeTopping(); break;
+      case 'candles': addCandle(); break;
+      case 'wish': lightCandles(); break;
+      case 'blow': blowCandles(); break;
+      case 'cut': cutCake(); break;
+      default: setStatus('This cake is finished. Tap Bake another cake to start again.');
+    }
+  }
+
+  stage.addEventListener('click', advance);
+  $('#bakeBtn')?.addEventListener('click', cook);
+  $('#frostBtn')?.addEventListener('click', frost);
+  $('#decorateDoneBtn')?.addEventListener('click', finishDecorating);
+  $('#candleAddBtn')?.addEventListener('click', addCandle);
+  $('#candleAllBtn')?.addEventListener('click', placeAllCandles);
+  $('#blowBtn')?.addEventListener('click', blowCandles);
+  $('#cutBtn')?.addEventListener('click', cutCake);
+  $('#cakeResetBtn')?.addEventListener('click', resetCake);
+  if (micBtn) micBtn.addEventListener('click', startMic);
+  if (wishForm) wishForm.addEventListener('submit', event => {
+    event.preventDefault();
+    lightCandles();
   });
-  if (cutBtn) cutBtn.addEventListener('click', () => {
-    cut = true;
-    if (!blown) { /* allow cut without blowing */ }
-    startFire();
-    AudioManager.sfxBoom();
+
+  $$('.cake-swatch', scene).forEach(btn => {
+    btn.addEventListener('click', () => {
+      setFlavor(btn.dataset.frosting);
+      AudioManager.sfxFlip();
+    });
   });
-  // also allow tapping the whole cake
-  wrap.addEventListener('click', () => { stopFlames(); startFire(); });
+  $$('.cake-topping-btn', scene).forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTopping(btn.dataset.topping);
+      AudioManager.sfxFlip();
+    });
+  });
+
+  setFlavor('strawberry');
+  setTopping('heart');
+  setStage('bake');
 }
 
 /* =========================================================

@@ -178,7 +178,7 @@
                     <p class="eyebrow">Postcards from us</p>
                     <h2 class="h2" id="storyTitle">Little chapters</h2>
                 </div>
-                <div class="story-controls" aria-label="Scroll story chapters">
+                <div class="story-controls" role="group" aria-label="Scroll story chapters">
                     <button type="button" class="story-control" id="storyPrev" aria-label="Previous chapters">←</button>
                     <button type="button" class="story-control" id="storyNext" aria-label="Next chapters">→</button>
                 </div>
@@ -195,17 +195,85 @@
             <div class="open-when-grid" id="openWhenGrid"></div>
         </section>
 
-        <section class="section cake-scene reveal" aria-labelledby="cakeTitle">
+        <section class="section cake-scene reveal" id="cakeScene" aria-labelledby="cakeTitle">
             <div class="section-head">
-                <p class="eyebrow">Make a wish</p>
-                <h2 class="h2" id="cakeTitle">A cake just for you</h2>
-                <p class="lead">Tap the candle to blow it out, then cut a slice. Make a wish.</p>
+                <p class="eyebrow">The cake atelier</p>
+                <h2 class="h2" id="cakeTitle">Let's build your cake</h2>
+                <p class="lead">Bake it, frost it, decorate it, then make a wish. Tap the cake to begin.</p>
             </div>
-            <div class="cake-wrap" id="cakeWrap"></div>
-            <div class="cake-actions">
-                <button class="pill-btn btn-primary" id="blowBtn">Blow out candles</button>
-                <button class="pill-btn btn-secondary" id="cutBtn">Cut the cake</button>
+
+            <ol class="cake-steps" id="cakeSteps" aria-label="Cake making steps">
+                <li data-step="bake"><span>01</span>Bake</li>
+                <li data-step="frost"><span>02</span>Frost</li>
+                <li data-step="decorate"><span>03</span>Decorate</li>
+                <li data-step="candles"><span>04</span>Candles</li>
+                <li data-step="wish"><span>05</span>Wish</li>
+                <li data-step="cut"><span>06</span>Cut</li>
+            </ol>
+
+            <div class="cake-stage-wrap">
+                <button type="button" class="cake-stage" id="cakeStage" aria-describedby="cakeInstruction">
+                    <span class="cake-visual" id="cakeWrap" aria-hidden="true"></span>
+                </button>
+                <span class="cake-hint" id="cakeHint" aria-hidden="true">tap the cake</span>
             </div>
+
+            <p class="cake-instruction" id="cakeInstruction">Tap the cake to bake the layers.</p>
+
+            <div class="cake-tools" id="cakeTools">
+                <div class="cake-tool-group" data-tools="bake">
+                    <button type="button" class="pill-btn btn-primary" id="bakeBtn">Bake the cake</button>
+                </div>
+
+                <div class="cake-tool-group" data-tools="frost" hidden>
+                    <div class="cake-swatches" role="group" aria-label="Choose a frosting flavour">
+                        <button type="button" class="cake-swatch is-selected" data-frosting="strawberry" aria-pressed="true"><span class="cake-swatch-dot" aria-hidden="true"></span>Strawberry</button>
+                        <button type="button" class="cake-swatch" data-frosting="vanilla" aria-pressed="false"><span class="cake-swatch-dot" aria-hidden="true"></span>Vanilla</button>
+                        <button type="button" class="cake-swatch" data-frosting="chocolate" aria-pressed="false"><span class="cake-swatch-dot" aria-hidden="true"></span>Chocolate</button>
+                    </div>
+                    <button type="button" class="pill-btn btn-primary" id="frostBtn">Pour the frosting</button>
+                </div>
+
+                <div class="cake-tool-group" data-tools="decorate" hidden>
+                    <div class="cake-toppings" role="group" aria-label="Choose a topping">
+                        <button type="button" class="cake-topping-btn is-selected" data-topping="heart" aria-pressed="true">💗 Heart</button>
+                        <button type="button" class="cake-topping-btn" data-topping="star" aria-pressed="false">⭐ Star</button>
+                        <button type="button" class="cake-topping-btn" data-topping="strawberry" aria-pressed="false">🍓 Strawberry</button>
+                        <button type="button" class="cake-topping-btn" data-topping="cherry" aria-pressed="false">🍒 Cherry</button>
+                    </div>
+                    <button type="button" class="pill-btn btn-secondary" id="decorateDoneBtn">Done decorating</button>
+                </div>
+
+                <div class="cake-tool-group" data-tools="candles" hidden>
+                    <button type="button" class="pill-btn btn-primary" id="candleAddBtn">Place a candle</button>
+                    <button type="button" class="pill-btn btn-secondary" id="candleAllBtn">Place all candles</button>
+                </div>
+
+                <div class="cake-tool-group" data-tools="wish" hidden>
+                    <form class="cake-wish-form" id="cakeWishForm" novalidate>
+                        <label for="cakeWishInput">Make a wish <span>optional — stays on this page</span></label>
+                        <div class="cake-wish-row">
+                            <input type="text" id="cakeWishInput" maxlength="80" autocomplete="off" placeholder="I wish for…">
+                            <button type="submit" class="pill-btn btn-primary" id="lightBtn">Light the candles</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="cake-tool-group" data-tools="blow" hidden>
+                    <button type="button" class="pill-btn btn-primary" id="blowBtn">Blow out the candles</button>
+                    <button type="button" class="pill-btn btn-secondary" id="micBtn" aria-pressed="false">Blow with mic</button>
+                </div>
+
+                <div class="cake-tool-group" data-tools="cut" hidden>
+                    <button type="button" class="pill-btn btn-primary" id="cutBtn">Cut the cake</button>
+                </div>
+
+                <div class="cake-tool-group" data-tools="done" hidden>
+                    <button type="button" class="pill-btn btn-secondary" id="cakeResetBtn">Bake another cake</button>
+                </div>
+            </div>
+
+            <p class="cake-wish-note" id="cakeWishNote" hidden></p>
             <div class="cake-status" id="cakeStatus" role="status" aria-live="polite"></div>
         </section>
 

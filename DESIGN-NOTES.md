@@ -143,3 +143,45 @@ The Surprise page already had ten gifts, but no sense of progress. It now has a 
 - Inline layout styles were replaced with shared `.center-actions`, `.gift-stage` and `.reel-face` classes.
 
 Verification: axe-core **0 violations** at 1280 and 390 px, no horizontal overflow at 320 px, and the sticky bar/scroll-spy were exercised in the browser.
+
+## 10. Cake atelier — build, wish, blow, cut
+
+The cake was rebuilt as a small making-of sequence rather than two buttons beside a static illustration.
+
+Research references: birthday-cake.online, DigiCakey, bdaycake.com, CakeAnn CakeBuilder, Gynzy, the GitHub voice-controlled birthday cake and GiftFeels. The useful patterns were a visible step order, direct manipulation of the cake itself, number candles for adult ages, a playful reveal and an optional microphone blow. The implementation stays SVG/CSS/vanilla JS — no WebGL, Three.js or new dependencies.
+
+### Sequence and controls
+
+`Bake → Frost → Decorate → Candles → Wish → Blow → Cut → Bake another`
+
+- The cake stage is a real `<button>`; tapping the cake performs the current step. The toolbelt repeats the same actions for people who prefer explicit controls.
+- The six-chip rail marks completed, current and upcoming steps. Wish covers lighting the candles and blowing them out; Cut is the final step.
+- Flavour swatches change the frosting palette, topping buttons choose the shape placed by the next cake tap, and the wish field is optional and never leaves the page.
+- A fresh cake can be baked at the end; reset clears candles, decorations, wish, classes and status.
+- Cut is gated. The cut button is only shown after the candles are blown, and the action functions guard against early calls with a hint.
+
+### Candle geometry
+
+- Scene viewBox `0 0 360 300`; bottom tier `x=88..272, y=178..260`, top tier `x=122..238, y=118..178`, top surface ellipse `cx=180, cy=118, rx=58, ry=12`.
+- Ages above 8 use number candles (two digits for 22) with cream bodies and dark numerals; ages 8 and below use individual candles. A three-digit age gets narrower digits.
+- Digit candles: 18×46 bodies with a 10 px gap, bottom at `y=122`; individual candles: 7×34 bodies, row `x=145..215` at eight candles, spacing `min(14, 70/(n-1))`, bottom at `y=122`.
+- Wicks are attached to the body tops and flames overlap the wick by roughly 4 px. Candles sit about 5 px into the top tier, so they read as pressed into the cake rather than floating above it.
+- Flames flicker independently, glow, and are replaced by a short smoke puff when blown.
+
+### Cutting
+
+- The cut face is a layered cross-section on the right of both tiers: frosting, sponge, cream, sponge, cream.
+- The knife sweeps through, the slice slides onto a side plate, and the celebration fires after the cut rather than before.
+- Reduced motion swaps the slice and knife animations for their final states.
+
+### Accessibility and fallbacks
+
+- The SVG is `aria-hidden`; the stage has a dynamic accessible name and is described by the instruction line.
+- The rail exposes `aria-current="step"`; the status line is a polite live region; tool groups use the native `hidden` attribute.
+- When an action hides the focused tool group, focus moves to the cake stage so the next action is immediately available.
+- The microphone is never requested automatically. It starts only on an explicit button press, requires permission, and falls back to the button on denial or after a 12-second timeout.
+- The wish is rendered with `textContent`, never injected as HTML.
+- Tap targets are at least 44 px; controls meet contrast, and the reduced-motion path keeps every stage reachable.
+- At 320 px the step rail wraps, the wish row stacks and the cake section stays inside the viewport.
+
+Verification: full flow exercised with real pointer clicks and keyboard at 1280, 390 and 320 px; candle/flame geometry measured; wrong-order cut attempts ignored; mic denial and timeout fallbacks checked; axe-core **0 violations** at 1280, 390 and 320 px (remaining `color-contrast` items are gradient-background manual reviews); no console errors and no horizontal overflow.

@@ -42,6 +42,7 @@ The public home page was rebuilt around a researched “editorial birthday issue
 - **Why you matter** — the six “little things” upgraded into an asymmetric feature bento with short notes.
 - **Little chapters** — timeline postcards from `CONFIG.timeline`; four-up on desktop, keyboard-focusable horizontal snap track on mobile.
 - **Open when…** — three native `<details>` notes for the days that need them.
+- **Cake atelier** — a clickable bake → frost → decorate → candles → wish → blow → cut sequence with number candles seated on the cake, a real slice reveal and an optional microphone blow.
 - **Choose your next chapter** — large destination cards to the letter, gallery and wishes.
 
 The same system now carries through the rest of the site:
@@ -111,7 +112,7 @@ Results for the latest pass:
 - Admin: **0 axe violations**; no page/console errors.
 - No document-level horizontal overflow at 1280, 390 or 320 px on any public page.
 - Remaining axe `incomplete` colour-contrast items are manual reviews caused by gradient backgrounds, not automated failures.
-- Home interaction checks: pinch entrance, bento music toggle + nav sync, open-when note, story next/previous, scroll progress, cake blow/cut.
+- Home interaction checks: pinch entrance, bento music toggle + nav sync, open-when note, story next/previous, scroll progress, and the full cake atelier at 1280/390/320 px (candle geometry, keyboard, gated cut, mic denial/timeout, reset).
 - Admin checks: dossier modal, focus restoration, custom delete confirmation, device/DB load-more, mobile nav and table hints.
 
 ## Notes

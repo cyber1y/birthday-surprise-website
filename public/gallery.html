@@ -18,17 +18,13 @@
     <canvas id="particleLayer" aria-hidden="true"></canvas>
 
     <main class="page-shell">
-        <nav class="main-nav" aria-label="Main navigation">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="surprise.html" class="nav-link">Surprise</a>
-            <a href="letter.html" class="nav-link">Letter</a>
-            <a href="gallery.html" class="nav-link active" aria-current="page">Gallery</a>
-            <a href="wishes.html" class="nav-link">Wishes</a>
-            <a href="finale.html" class="nav-link">Finale</a>
-            <button class="nav-link" data-music aria-pressed="false">🔇 Music Off</button>
-        </nav>
-
-        <header class="site-header page-hero">
+        <header class="app-topbar" role="banner">
+            <div class="app-topbar-title">Gallery</div>
+            <button type="button" class="app-music-btn" data-music aria-pressed="false" aria-label="Toggle music">
+                <span aria-hidden="true">🎵</span>
+            </button>
+        </header>
+<header class="site-header page-hero">
             <span class="page-watermark" aria-hidden="true">03</span>
             <p class="eyebrow">Chapter 03 · moments we keep</p>
             <h1 class="hero-title">Our Gallery</h1>
@@ -66,6 +62,24 @@
             <a href="wishes.html">Leave a wish <span aria-hidden="true">→</span></a>
         </nav>
     </main>
+
+    
+    <nav class="app-tabbar" aria-label="App navigation">
+        <a href="index.html" class="app-tab"><span class="icon" aria-hidden="true">🏠</span><span>Home</span></a>
+        <a href="surprise.html" class="app-tab"><span class="icon" aria-hidden="true">🎁</span><span>Surprise</span></a>
+        <a href="letter.html" class="app-tab"><span class="icon" aria-hidden="true">💌</span><span>Letter</span></a>
+        <a href="gallery.html" class="app-tab active" aria-current="page"><span class="icon" aria-hidden="true">🖼️</span><span>Gallery</span></a>
+        <button type="button" class="app-tab-btn" id="appMoreBtn" aria-expanded="false" aria-controls="appMoreSheet"><span class="icon" aria-hidden="true">⋯</span><span>More</span></button>
+    </nav>
+    <div class="app-more-backdrop" id="appMoreBackdrop"></div>
+    <div class="app-more-sheet" id="appMoreSheet" role="dialog" aria-modal="true" aria-label="More options" aria-hidden="true">
+        <h3>More</h3>
+        <div class="app-more-links">
+            <a href="wishes.html" class="app-more-link"><span class="icon" aria-hidden="true">💫</span><span>Wishes</span></a>
+            <a href="finale.html" class="app-more-link"><span class="icon" aria-hidden="true">✨</span><span>Finale</span></a>
+            <button type="button" class="app-more-link" data-music aria-pressed="false"><span class="icon" aria-hidden="true">🎵</span><span>Toggle music</span></button>
+        </div>
+    </div>
 
     <footer class="footer">Made with &#10084;&#65039; for the most amazing person</footer>
 

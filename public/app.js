@@ -1677,6 +1677,29 @@ function initBentoMusic() {
   syncMusicUI(AudioManager.isOn());
 }
 
+function initAppShell() {
+  const btn = $('#appMoreBtn');
+  const sheet = $('#appMoreSheet');
+  const backdrop = $('#appMoreBackdrop');
+  if (!btn || !sheet || !backdrop) return;
+  const open = () => {
+    sheet.classList.add('is-open');
+    backdrop.classList.add('is-open');
+    sheet.setAttribute('aria-hidden', 'false');
+    btn.setAttribute('aria-expanded', 'true');
+  };
+  const close = () => {
+    sheet.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    sheet.setAttribute('aria-hidden', 'true');
+    btn.setAttribute('aria-expanded', 'false');
+  };
+  btn.addEventListener('click', () => sheet.classList.contains('is-open') ? close() : open());
+  backdrop.addEventListener('click', close);
+  sheet.addEventListener('click', (e) => { if (e.target.closest('a')) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+}
+
 function initHomeSections() {
   renderHomeHero();
   renderBirthdayEdit();
@@ -2781,8 +2804,17 @@ function applyAdminOverrides(settings, configOverrides) {
    ========================================================= */
 function syncMusicUI(on) {
   $$('[data-music]').forEach(btn => {
-    btn.textContent = on ? '🔊 Music On' : '🔇 Music Off';
     btn.setAttribute('aria-pressed', String(on));
+    if (btn.classList.contains('app-music-btn')) {
+      btn.innerHTML = `<span aria-hidden="true">${on ? '🔊' : '🎵'}</span>`;
+      btn.setAttribute('aria-label', on ? 'Turn music off' : 'Turn music on');
+    } else if (btn.classList.contains('app-more-link')) {
+      btn.innerHTML = `<span class="icon" aria-hidden="true">${on ? '🔊' : '🎵'}</span><span>${on ? 'Music: On' : 'Music: Off'}</span>`;
+    } else if (btn.id === 'bentoMusicBtn') {
+      // handled below
+    } else {
+      btn.textContent = on ? '🔊 Music On' : '🔇 Music Off';
+    }
   });
   const bento = $('#bentoMusicBtn');
   if (bento) {
@@ -2814,6 +2846,7 @@ document.addEventListener('DOMContentLoaded', () => {
   DeviceIntel.init();
   const safe = (fn) => { try { fn(); } catch (e) { console.warn('Init failed:', fn.name || 'anonymous', e); } };
   function boot() {
+  safe(initAppShell);
   safe(initEntrance);
   safe(initNameBalloons);
   safe(initFlipCards);

@@ -34,18 +34,29 @@
             <p class="hero-subtitle">Tap, spin, scratch and unwrap your way through. Every interaction is a little gift.</p>
         </header>
 
-        <nav class="surprise-map reveal" aria-label="Jump to a surprise">
-            <a href="#surpriseReasons">01 Reasons</a>
-            <a href="#surpriseWheel">02 Wheel</a>
-            <a href="#surpriseRizz">03 Rizz</a>
-            <a href="#surpriseCompliment">04 Compliments</a>
-            <a href="#surpriseQuiz">05 Quiz</a>
-            <a href="#surpriseKnowMe">06 Know me</a>
-            <a href="#surpriseScratch">07 Scratch</a>
-            <a href="#surpriseGift">08 Gift</a>
-            <a href="#surpriseSlot">09 Lucky slot</a>
-            <a href="#surpriseFortune">10 Fortunes</a>
-        </nav>
+        <div class="surprise-nav reveal" id="surpriseNav">
+            <nav class="surprise-map" aria-label="Jump to a surprise">
+                <a href="#surpriseReasons">01 Reasons</a>
+                <a href="#surpriseWheel">02 Wheel</a>
+                <a href="#surpriseRizz">03 Rizz</a>
+                <a href="#surpriseCompliment">04 Compliments</a>
+                <a href="#surpriseQuiz">05 Quiz</a>
+                <a href="#surpriseKnowMe">06 Know me</a>
+                <a href="#surpriseScratch">07 Scratch</a>
+                <a href="#surpriseGift">08 Gift</a>
+                <a href="#surpriseSlot">09 Lucky slot</a>
+                <a href="#surpriseFortune">10 Fortunes</a>
+            </nav>
+            <div class="surprise-progress">
+                <div class="surprise-progress-meta" role="status" aria-live="polite">
+                    <span id="surpriseProgressLabel">Gifts opened <strong id="surpriseProgressCount">0</strong> / 10</span>
+                    <span class="surprise-progress-done" id="surpriseProgressDone" hidden>All opened ✓</span>
+                </div>
+                <div class="surprise-progress-track" aria-hidden="true">
+                    <span class="surprise-progress-fill" id="surpriseProgressFill"></span>
+                </div>
+            </div>
+        </div>
 
         <!-- Flip cards -->
         <section class="section surprise-step" id="surpriseReasons" aria-labelledby="reasonsTitle">
@@ -69,7 +80,7 @@
                     <div class="wheel-pointer" aria-hidden="true">▼</div>
                     <canvas id="wheelCanvas" aria-hidden="true"></canvas>
                 </div>
-                <div style="text-align:center;margin-top:16px">
+                <div class="center-actions center-actions-tight">
                     <button class="pill-btn btn-primary" id="spinBtn">Spin</button>
                     <p id="wheelResult" class="cake-status" aria-live="polite"></p>
                 </div>
@@ -86,7 +97,7 @@
             <div class="game-card reveal">
                 <div class="rizz-bar"><div class="rizz-fill" id="rizzFill"></div></div>
                 <p class="cake-status" id="rizzLabel"></p>
-                <div style="text-align:center"><button class="pill-btn btn-primary" id="rizzBtn">Test my rizz</button></div>
+                <div class="center-actions"><button class="pill-btn btn-primary" id="rizzBtn">Test my rizz</button></div>
             </div>
         </section>
 
@@ -97,7 +108,7 @@
                 <h2 class="h2" id="complimentTitle">Compliment bomb 💣</h2>
                 <p class="lead">Warning: may cause excessive smiling.</p>
             </div>
-            <div style="text-align:center"><button class="pill-btn btn-primary" id="complimentBtn">Explode compliments</button></div>
+            <div class="center-actions"><button class="pill-btn btn-primary" id="complimentBtn">Explode compliments</button></div>
         </section>
 
         <!-- Funny quiz -->
@@ -140,7 +151,7 @@
                 <h2 class="h2" id="giftTitle">A gift for you</h2>
                 <p class="lead">Tap the box to open it.</p>
             </div>
-            <div style="text-align:center;margin:20px 0">
+            <div class="gift-stage">
                 <div class="gift-box bounce" id="giftBox">
                     <div class="gift-bow"></div>
                     <div class="gift-lid"></div>
@@ -162,11 +173,11 @@
                 <p class="lead">Three reels. One very good outcome.</p>
             </div>
             <div class="slot-machine reveal">
-                <div class="slot-reel"><div class="reel-inner"><div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:3rem">💕</div></div></div>
-                <div class="slot-reel"><div class="reel-inner"><div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:3rem">👑</div></div></div>
-                <div class="slot-reel"><div class="reel-inner"><div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:3rem">🎂</div></div></div>
+                <div class="slot-reel"><div class="reel-inner"><div class="reel-face">💕</div></div></div>
+                <div class="slot-reel"><div class="reel-inner"><div class="reel-face">👑</div></div></div>
+                <div class="slot-reel"><div class="reel-inner"><div class="reel-face">🎂</div></div></div>
             </div>
-            <div style="text-align:center;margin-top:16px"><button class="pill-btn btn-primary" id="slotBtn">Pull!</button></div>
+            <div class="center-actions center-actions-tight"><button class="pill-btn btn-primary" id="slotBtn">Pull!</button></div>
         </section>
 
         <!-- Fortune cookies -->

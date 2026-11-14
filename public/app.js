@@ -1539,6 +1539,108 @@ function initScrollProgress() {
   update();
 }
 
+function initSurpriseNav() {
+  const bar = $('#surpriseNav');
+  const map = $('.surprise-map', bar || document);
+  if (!bar || !map) return;
+
+  const links = $$('a[href^="#"]', map);
+  const sections = links
+    .map(link => document.getElementById(link.getAttribute('href').slice(1)))
+    .filter(Boolean);
+  if (!sections.length) return;
+
+  const countEl = $('#surpriseProgressCount');
+  const fillEl = $('#surpriseProgressFill');
+  const doneEl = $('#surpriseProgressDone');
+  const storeKey = 'day6:surprise:opened:v1';
+  const reduceMotion = Device.reducedMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const total = sections.length;
+  let opened = new Set();
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(storeKey) || '[]');
+    if (Array.isArray(saved)) opened = new Set(saved.filter(id => sections.some(s => s.id === id)));
+  } catch (e) {}
+
+  const save = () => {
+    try { localStorage.setItem(storeKey, JSON.stringify([...opened])); } catch (e) {}
+  };
+
+  const paintProgress = (celebrate) => {
+    const count = opened.size;
+    if (countEl) countEl.textContent = String(count);
+    if (fillEl) fillEl.style.width = `${(count / total) * 100}%`;
+    links.forEach(link => {
+      link.classList.toggle('is-visited', opened.has(link.getAttribute('href').slice(1)));
+    });
+    if (doneEl) doneEl.hidden = count < total;
+    if (celebrate && count === total && typeof fireConfetti === 'function') {
+      fireConfetti({ particleCount: 80, spread: 90 });
+    }
+  };
+
+  const markOpened = (id) => {
+    if (opened.has(id)) return;
+    opened.add(id);
+    save();
+    paintProgress(true);
+  };
+
+  let currentId = null;
+  const setActive = (id) => {
+    if (id === currentId) return;
+    currentId = id;
+    links.forEach(link => {
+      const isActive = link.getAttribute('href') === `#${id}`;
+      link.classList.toggle('is-active', isActive);
+      if (isActive) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    const active = links.find(link => link.getAttribute('href') === `#${id}`);
+    if (active && map.scrollWidth > map.clientWidth) {
+      const left = active.offsetLeft - (map.clientWidth - active.offsetWidth) / 2;
+      if (typeof map.scrollTo === 'function') {
+        map.scrollTo({ left, behavior: reduceMotion ? 'auto' : 'smooth' });
+      } else {
+        map.scrollLeft = left;
+      }
+    }
+  };
+
+  // Mark a gift as opened once a meaningful part of it has been seen.
+  const seen = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.2) markOpened(entry.target.id);
+    });
+  }, { threshold: [0.2, 0.45] });
+  sections.forEach(section => seen.observe(section));
+
+  // Scrollspy: pick the section nearest a line a third down the viewport.
+  let queued = false;
+  const spy = () => {
+    queued = false;
+    const line = window.innerHeight * 0.34;
+    let best = sections[0];
+    let bestDist = Infinity;
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if (rect.bottom < 80) return;
+      const dist = Math.abs(rect.top - line);
+      if (dist < bestDist) { bestDist = dist; best = section; }
+    });
+    if (best) setActive(best.id);
+  };
+  const schedule = () => {
+    if (!queued) { queued = true; requestAnimationFrame(spy); }
+  };
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule, { passive: true });
+
+  paintProgress(false);
+  spy();
+}
+
 function initBentoMusic() {
   const button = $('#bentoMusicBtn');
   if (!button) return;
@@ -2260,6 +2362,7 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(renderStats);
   safe(renderFeatures);
   safe(initHomeSections);
+  safe(initSurpriseNav);
   safe(initCake);
   safe(initHeartProgress);
   safe(initStats);

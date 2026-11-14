@@ -127,3 +127,19 @@ The same editorial system now carries through the rest of the public site instea
 - **Chapter footer** — every page now ends with a single “next chapter” link that follows the narrative order: Surprise → Letter → Gallery → Wishes → Finale → Home.
 
 Verification after this pass: axe-core **0 violations** on all five chapter pages at 1280 px and 390 px, no console/page errors, and no horizontal overflow on any public page at either width.
+
+
+## 9. Follow-up pass: the surprise trail
+
+The Surprise page already had ten gifts, but no sense of progress. It now has a sticky “surprise trail” that turns the page into a small journey.
+
+- The jump bar sticks to the top of the viewport with a light blur, so it stays useful across all ten gifts without becoming a second navigation bar.
+- Scroll-spy marks the current gift and keeps its chip centred in the horizontally scrolling rail.
+- Each gift is marked “opened” once 20% of it has been seen. Progress is shown as `n / 10`, a gradient progress bar and a small dot on visited chips.
+- Opened gifts persist in `localStorage` (`day6:surprise:opened:v1`), so a returning visitor resumes where they left off.
+- Completing all ten triggers a single confetti celebration and an “All opened ✓” label.
+- The progress line is a polite live region; the current chip gets `aria-current="location"`.
+- Reduced-motion visitors get instant rail scrolling and no confetti dependency.
+- Inline layout styles were replaced with shared `.center-actions`, `.gift-stage` and `.reel-face` classes.
+
+Verification: axe-core **0 violations** at 1280 and 390 px, no horizontal overflow at 320 px, and the sticky bar/scroll-spy were exercised in the browser.

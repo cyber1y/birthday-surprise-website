@@ -1900,7 +1900,7 @@ function initCake() {
           <rect x="${-width / 2}" y="-46" width="${width}" height="46" rx="4" fill="#fff4d6" stroke="${CAKE_CANDLE_COLORS[index % CAKE_CANDLE_COLORS.length]}" stroke-width="2"/>
           <text x="0" y="-14" text-anchor="middle" font-size="${count >= 3 ? 14 : 20}" font-family="'Playfair Display',Georgia,serif" font-weight="800" fill="#1b1023">${digit}</text>
           <line x1="0" y1="-46" x2="0" y2="-43" stroke="#4c1d95" stroke-width="2"/>
-          <circle class="cake-glow" cx="0" cy="-52" r="10" fill="rgba(255,209,102,0.32)" style="--i:${index}"/>
+          <circle class="cake-glow" cx="0" cy="-52" r="16" fill="rgba(255,209,102,0.32)" style="--i:${index}"/>
           <ellipse class="cake-flame" cx="0" cy="-52" rx="5" ry="9" fill="#ffd166" style="--i:${index}"/>
           <ellipse class="cake-flame" cx="0" cy="-51" rx="2.5" ry="5" fill="#ff9f1c" style="--i:${index}"/>
           <circle class="cake-smoke" cx="0" cy="-54" r="4" fill="rgba(255,255,255,0.5)" style="--i:${index}"/>
@@ -1914,7 +1914,7 @@ function initCake() {
       <g class="cake-candle-inner">
         <rect x="-3.5" y="-34" width="7" height="34" rx="2.5" fill="${CAKE_CANDLE_COLORS[index % CAKE_CANDLE_COLORS.length]}" stroke="rgba(255,255,255,0.55)"/>
         <line x1="0" y1="-34" x2="0" y2="-32" stroke="#4c1d95" stroke-width="2"/>
-        <circle class="cake-glow" cx="0" cy="-39" r="8" fill="rgba(255,209,102,0.32)" style="--i:${index}"/>
+        <circle class="cake-glow" cx="0" cy="-39" r="12" fill="rgba(255,209,102,0.32)" style="--i:${index}"/>
         <ellipse class="cake-flame" cx="0" cy="-39" rx="4" ry="7" fill="#ffd166" style="--i:${index}"/>
         <ellipse class="cake-flame" cx="0" cy="-38.5" rx="2" ry="4" fill="#ff9f1c" style="--i:${index}"/>
         <circle class="cake-smoke" cx="0" cy="-41" r="3.5" fill="rgba(255,255,255,0.5)" style="--i:${index}"/>

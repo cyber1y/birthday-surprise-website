@@ -2778,8 +2778,14 @@ html {
 .app-more-link .icon { font-size: 20px; }
 .app-more-link[data-music] { width: 100%; justify-content: flex-start; font: inherit; cursor: pointer; }
 
-/* Hide old top nav and floating FAB on mobile-app shell; keep for desktop fallback if needed */
-.main-nav { display: none; }
+/* App shell: keep old nav visible on top, hide legacy FAB */
+.main-nav {
+  display: flex;
+  margin: 8px 0 12px;
+  position: static;
+  top: auto;
+  z-index: 30;
+}
 .music-fab { display: none; }
 .page-shell { padding-bottom: 8px; }
 

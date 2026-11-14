@@ -8,8 +8,31 @@ const db = require('./db');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: '*' } });
+const io = new Server(server, {
+  cors: { origin: '*', methods: ['GET', 'POST'] },
+  pingTimeout: 20000,
+  pingInterval: 25000
+});
 const PORT = process.env.PORT || 3000;
+
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: false, limit: '1mb' }));
+
+// Security and performance headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), geolocation=(self)');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  if (req.path.startsWith('/api/')) {
+    res.setHeader('Cache-Control', 'no-store');
+  }
+  next();
+});
 
 const uploadsDir = path.join(__dirname, 'uploads');
 const musicDir = path.join(uploadsDir, 'music');
@@ -62,10 +85,6 @@ function sendCsv(res, filename, columns, rows) {
   res.send('\uFEFF' + lines.join('\r\n'));
 }
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(uploadsDir));
-
 const storage = multer.diskStorage({
   destination: function (_req, file, cb) {
     if (file.fieldname === 'music') cb(null, musicDir);
@@ -78,7 +97,63 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Simple gzip/brotli-free compression for text responses
+const zlib = require('zlib');
+app.use((req, res, next) => {
+  if (req.method === 'HEAD') return next();
+  const accept = String(req.headers['accept-encoding'] || '');
+  if (!accept.includes('gzip')) return next();
+  const _end = res.end;
+  const _write = res.write;
+  let chunks = [];
+  let total = 0;
+  const shouldCompress = () => {
+    const type = String(res.getHeader('Content-Type') || '');
+    return /text|json|javascript|css|svg|xml/i.test(type) && !res.getHeader('Content-Encoding');
+  };
+  res.write = function (chunk, enc, cb) {
+    if (!shouldCompress()) return _write.call(this, chunk, enc, cb);
+    if (chunk) { const b = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, enc); chunks.push(b); total += b.length; }
+    if (typeof enc === 'function') enc();
+    return true;
+  };
+  res.end = function (chunk, enc, cb) {
+    if (!shouldCompress()) return _end.call(this, chunk, enc, cb);
+    if (chunk) { const b = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, enc); chunks.push(b); total += b.length; }
+    const body = Buffer.concat(chunks, total);
+    if (body.length < 1024) { chunks = null; return _end.call(this, body, cb); }
+    zlib.gzip(body, (err, gz) => {
+      if (err || !gz || gz.length >= body.length) return _end.call(this, body, cb);
+      res.setHeader('Content-Encoding', 'gzip');
+      res.setHeader('Vary', 'Accept-Encoding');
+      res.setHeader('Content-Length', gz.length);
+      _end.call(this, gz, cb);
+    });
+    chunks = null;
+    return this;
+  };
+  next();
+});
+
+app.use('/uploads', express.static(uploadsDir, {
+  maxAge: '7d',
+  etag: true,
+  lastModified: true,
+  setHeaders: (res) => res.setHeader('Cache-Control', 'public, max-age=604800, immutable')
+}));
+
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1h',
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    if (/\.(?:js|css|svg|png|jpg|jpeg|webp|gif|ico|woff2?|mp3|mp4)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+    } else if (/\.html$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  }
+}));
 
 // Track connected visitors
 const connectedVisitors = new Map();
@@ -616,11 +691,39 @@ app.get('/admin', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+app.use('/api', (_req, res) => {
+  res.status(404).json({ error: 'Not found.' });
+});
+
 app.get('*', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-server.listen(PORT, () => {
+app.use((err, _req, res, _next) => {
+  console.error('Server error:', err && err.stack ? err.stack : err);
+  if (res.headersSent) return;
+  res.status(err && err.status ? err.status : 500).json({ error: 'Internal server error.' });
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err);
+});
+
+function shutdown(signal) {
+  console.log(`Shutting down (${signal})...`);
+  server.close(() => {
+    try { db.close && db.close(() => process.exit(0)); } catch (_) {}
+    setTimeout(() => process.exit(0), 500).unref();
+  });
+  setTimeout(() => process.exit(1), 8000).unref();
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
+
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Birthday surprise server running at http://localhost:${PORT}`);
   console.log(`Admin panel at http://localhost:${PORT}/admin`);
 });

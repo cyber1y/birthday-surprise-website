@@ -42,7 +42,7 @@ The public home page was rebuilt around a researched “editorial birthday issue
 - **Why you matter** — the six “little things” upgraded into an asymmetric feature bento with short notes.
 - **Little chapters** — timeline postcards from `CONFIG.timeline`; four-up on desktop, keyboard-focusable horizontal snap track on mobile.
 - **Open when…** — three native `<details>` notes for the days that need them.
-- **Cake atelier** — a clickable bake → frost → decorate → candles → wish → blow → cut sequence with number candles seated on the cake, a real slice reveal and an optional microphone blow; tapping the cake to bake now also auto-runs bake → frost → decorate → candles → light → blow → cut before finishing, skipping manual build steps.
+- **Cake atelier** — a clickable bake → frost → decorate → candles → wish → blow → cut sequence with number candles seated on the cake, a real slice reveal and an optional microphone blow; tapping the cake to bake now also auto-runs bake → frost → decorate → candle setup, then stops for the user to light, blow and cut manually.
 - **Choose your next chapter** — large destination cards to the letter, gallery and wishes.
 
 The same system now carries through the rest of the site:

@@ -2871,6 +2871,43 @@ section[id] { scroll-margin-top: 96px; }
     border-radius: 22px;
   }
   .card-pager .scroll-cue { display: none; }
+
+  .gift-cover-note {
+    margin: 14px 0 16px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(8px);
+  }
+  .gift-cover-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-3);
+    margin-bottom: 6px;
+  }
+  .gift-cover-note p { margin: 0; font-size: 0.95rem; line-height: 1.5; color: var(--text); }
+  .mehak-wish-section { margin-top: 10px; }
+  .mehak-wish-card {
+    padding: 18px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+    border: 1px solid rgba(255,255,255,0.12);
+    text-align: center;
+  }
+  .mehak-wish-message { margin: 0 0 14px; line-height: 1.6; }
+  .mehak-wish-status { margin: 10px 0 0; min-height: 1.2em; color: var(--muted); font-size: 0.92rem; }
+  .hero-cover .hero-title { font-size: clamp(2rem, 8vw, 3.2rem); }
+  @media (max-width: 360px) {
+    .card-slide { padding: 2px 0 12px; }
+    .hero-actions { gap: 8px; }
+    .hero-actions .pill-btn { width: 100%; justify-content: center; }
+    .hero-facts { grid-template-columns: 1fr; }
+  }
   .card-slide > .section,
   .card-slide > header {
     margin-top: 0;

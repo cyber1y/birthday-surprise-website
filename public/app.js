@@ -10,9 +10,9 @@ const CONFIG = {
   birthdayDate: "2004-11-27",
 
   hero: {
-    title: "Happy Birthday",
-    subtitle: "A celebration made just for you, filled with love, laughter & a few surprises.",
-    badgeText: "Your Special Day"
+    title: "Happy 22nd Birthday, Mehak Joshi",
+    subtitle: "Born on 27 November 2004 — a celebration made just for you, filled with love, laughter & a few surprises.",
+    badgeText: "A birthday gift for Mehak"
   },
 
   entrance: {
@@ -1678,6 +1678,25 @@ function initBentoMusic() {
   syncMusicUI(AudioManager.isOn());
 }
 
+function initMehakWish() {
+  const btn = $('#mehakWishBtn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const status = $('#mehakWishStatus');
+    if (typeof confetti === 'function') {
+      const end = Date.now() + 1800;
+      (function frame() {
+        confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1 } });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
+      confetti({ particleCount: 80, spread: 90, origin: { y: 0.7 } });
+    }
+    if (status) status.textContent = 'Sparkles sent for Mehak ✨';
+    btn.textContent = 'Sparkles sent!';
+  });
+}
+
 function initAppShell() {
   const btn = $('#appMoreBtn');
   const sheet = $('#appMoreSheet');
@@ -1774,6 +1793,7 @@ function initHomeSections() {
   initCardSpotlight();
   initScrollProgress();
   initBentoMusic();
+  initMehakWish();
 }
 
 /* =========================================================

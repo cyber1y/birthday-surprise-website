@@ -3,6 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <script>
+      /* Resolve the device view before first paint (no flash).
+         "mobile" = app shell, "desktop" = classic web layout. */
+      (function () {
+        try {
+          var KEY = 'bd-view';
+          var saved = localStorage.getItem(KEY);
+          var auto = window.innerWidth <= 768 ? 'mobile' : 'desktop';
+          var v = (saved === 'mobile' || saved === 'desktop') ? saved : auto;
+          document.documentElement.setAttribute('data-view', v);
+          document.documentElement.setAttribute('data-view-auto', saved ? 'false' : 'true');
+        } catch (e) {
+          document.documentElement.setAttribute('data-view', 'desktop');
+        }
+      })();
+    </script>
     <meta name="theme-color" content="#0f0520">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +31,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Caveat:wght@600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=app9">
+    <link rel="stylesheet" href="styles.css?v=app14">
 </head>
 <body>
     <div class="bg-blur blur-one"></div>
@@ -32,7 +48,7 @@
     </div>
 
     <main class="page-shell">
-        <header class="app-topbar" role="banner">
+        <header class="app-topbar">
             <div class="app-topbar-title">Birthday</div>
             <button type="button" class="app-music-btn" data-music aria-pressed="false" aria-label="Toggle music">
                 <span aria-hidden="true">🎵</span>
@@ -48,14 +64,14 @@
             <button class="nav-link" data-music aria-pressed="false">🔇 Music Off</button>
         </nav>
         <div class="card-pager" id="cardPager" data-card-mode="mobile">
-          <div class="card-slide" data-slide="0" aria-label="Birthday card for Mehak">
+          <div class="card-slide" role="group" data-slide="0" data-title="Welcome" aria-label="Birthday card for Mehak">
 
 <header class="site-header hero hero-cover">
             <div class="hero-copy">
                 <p class="eyebrow hero-eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span><span id="heroBadge">A birthday gift for Mehak</span></p>
                 <h1 class="hero-title gradient-text">Happy 22nd Birthday,<br><em>Mehak Joshi</em></h1>
                 <p class="hero-subtitle">Born on <strong>27 November 2004</strong> — today is all about celebrating you, your smile, and every beautiful chapter ahead.</p>
-                <div class="gift-cover-note" aria-label="Gift note">
+                <div class="gift-cover-note" role="note">
                     <span class="gift-cover-tag">For you</span>
                     <p>This little card is a pocket-sized surprise: memories, music, wishes, and a cake to make your day special.</p>
                 </div>
@@ -66,11 +82,11 @@
                 <dl class="hero-facts" aria-label="A few things about Mehak">
                     <div>
                         <dt>Celebrating</dt>
-                        <dd><span id="heroAge">22</span> wonderful years</dd>
+                        <dd><span id="heroAge">22</span> years</dd>
                     </div>
                     <div>
                         <dt>Birthday</dt>
-                        <dd>27 • 11 • 2004</dd>
+                        <dd>27 Nov</dd>
                     </div>
                     <div>
                         <dt>More chapters</dt>
@@ -113,7 +129,7 @@
 
           </div>
 
-          <div class="card-slide" data-slide="1" aria-label="Highlights">
+          <div class="card-slide" role="group" data-slide="1" data-title="Highlights" aria-label="Highlights">
 
         <section class="section time-section reveal" id="timeTogether" aria-labelledby="timeTogetherTitle">
             <div class="section-head">
@@ -176,7 +192,7 @@
 
           </div>
 
-          <div class="card-slide" data-slide="2" aria-label="Love and reasons">
+          <div class="card-slide" role="group" data-slide="2" data-title="Reasons" aria-label="Love and reasons">
 
         <section class="section reasons-section" aria-labelledby="reasonsTitle">
             <div class="section-head reveal">
@@ -200,7 +216,7 @@
 
           </div>
 
-          <div class="card-slide" data-slide="3" aria-label="Memories">
+          <div class="card-slide" role="group" data-slide="3" data-title="Memories" aria-label="Memories">
 
         <section class="section story-section" aria-labelledby="storyTitle">
             <div class="section-head section-head-split reveal">
@@ -227,7 +243,7 @@
 
           </div>
 
-          <div class="card-slide" data-slide="4" aria-label="Cake">
+          <div class="card-slide" role="group" data-slide="4" data-title="The Cake" aria-label="Cake">
 
         <section class="section cake-scene reveal" id="cakeScene" aria-labelledby="cakeTitle">
             <div class="section-head">
@@ -313,7 +329,7 @@
 
           </div>
 
-          <div class="card-slide" data-slide="5" aria-label="Next chapters">
+          <div class="card-slide" role="group" data-slide="5" data-title="Next Chapters" aria-label="Next chapters">
 
         <section class="section next-chapters" aria-labelledby="nextTitle">
             <div class="next-chapters-head reveal">
@@ -354,9 +370,16 @@
                 <p class="mehak-wish-status" id="mehakWishStatus" role="status" aria-live="polite"></p>
             </div>
         </section>
+          </div><!-- /card-slide 5 -->
+        </div><!-- /card-pager -->
+
+        <nav class="card-controls" id="cardControls" aria-label="Birthday card navigation">
+            <button type="button" class="card-nav-btn" id="cardPrev" aria-label="Previous card">‹</button>
+            <div class="card-dots" id="cardDots" aria-hidden="true"></div>
+            <button type="button" class="card-nav-btn" id="cardNext" aria-label="Next card">›</button>
+        </nav>
     </main>
 
-    
     <nav class="app-tabbar" aria-label="App navigation">
         <a href="index.html" class="app-tab active" aria-current="page"><span class="icon" aria-hidden="true">🏠</span><span>Home</span></a>
         <a href="surprise.html" class="app-tab"><span class="icon" aria-hidden="true">🎁</span><span>Surprise</span></a>
@@ -365,7 +388,7 @@
         <button type="button" class="app-tab-btn" id="appMoreBtn" aria-expanded="false" aria-controls="appMoreSheet"><span class="icon" aria-hidden="true">⋯</span><span>More</span></button>
     </nav>
     <div class="app-more-backdrop" id="appMoreBackdrop"></div>
-    <div class="app-more-sheet" id="appMoreSheet" role="dialog" aria-modal="true" aria-label="More options" aria-hidden="true">
+    <div class="app-more-sheet" id="appMoreSheet" role="dialog" aria-modal="true" aria-label="More options" inert>
         <h3>More</h3>
         <div class="app-more-links">
             <a href="wishes.html" class="app-more-link"><span class="icon" aria-hidden="true">💫</span><span>Wishes</span></a>
@@ -374,22 +397,22 @@
         </div>
     </div>
 
-
-          </div>
-        </div><!-- /card-pager -->
-
-        <div class="card-controls" id="cardControls" aria-label="Birthday card navigation">
-            <button type="button" class="card-nav-btn" id="cardPrev" aria-label="Previous">‹</button>
-            <div class="card-dots" id="cardDots" aria-hidden="true"></div>
-            <button type="button" class="card-nav-btn" id="cardNext" aria-label="Next">›</button>
-        </div>
-
     <footer class="footer">Made with &#10084;&#65039; for the most amazing person</footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="app.js?v=app10"></script>
+    <script src="app.js?v=app14"></script>
+    <button type="button" class="view-toggle" id="viewToggle" aria-label="Switch to desktop view" title="Switch view">
+        <svg class="vt-icon-mobile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2.5" width="12" height="19" rx="2.5"></rect>
+          <path d="M10.5 18.5h3"></path>
+        </svg>
+        <svg class="vt-icon-desktop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2.5" y="4" width="19" height="13" rx="2"></rect>
+          <path d="M8 20.5h8M12 17v3.5"></path>
+        </svg>
+      </button>
 </body>
 </html>

@@ -312,38 +312,92 @@ function typewriter(el, text, speed, onDone) {
 }
 
 /* =========================================================
-   Audio Manager (Web Audio synth + optional MP3)
+   Audio Manager (playlist of uploaded MP3s + built-in melody,
+   with next-track, volume control and state events)
    ========================================================= */
 const AudioManager = (function () {
-  let ctx = null, musicOn = false, audioEl = null, audioUrl = null;
+  let ctx = null, musicOn = false, audioEl = null;
+  let playlist = [];            // [{ title, url }] — empty array means melody mode
+  let trackIndex = 0;
+  let volume = 0.4;
+  const MELODY = 'Happy Birthday melody';
+
+  try {
+    const saved = localStorage.getItem('bd-music-volume');
+    if (saved !== null) { volume = Math.min(1, Math.max(0, parseFloat(saved) || 0.4)); }
+  } catch (e) { /* private mode */ }
+
+  function announce() {
+    window.dispatchEvent(new CustomEvent('musicchange', { detail: info() }));
+  }
+
+  function info() {
+    return {
+      on: musicOn,
+      volume,
+      title: currentTitle(),
+      trackCount: playlist.length,
+      trackIndex
+    };
+  }
+
+  function currentTitle() {
+    if (!playlist.length) return MELODY;
+    const t = playlist[Math.min(trackIndex, playlist.length - 1)];
+    return (t && t.title) || 'Birthday mix';
+  }
 
   function ensure() {
     if (!ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) ctx = new AC(); }
     return ctx;
   }
 
-  // Load first available uploaded track (fallback to built-in melody)
+  // Build the playlist from every uploaded track (melody is the fallback)
   function loadTrack(cb) {
     fetch('/api/music').then(r => r.json()).then(tracks => {
-      if (tracks && tracks.length) {
-        const t = tracks.find(x => x.source === 'upload');
-        audioUrl = t ? `/uploads/music/${t.filePath}` : null;
+      if (Array.isArray(tracks)) {
+        playlist = tracks
+          .filter(x => x && x.source === 'upload' && x.filePath)
+          .map(x => ({
+            title: (x.title || '').trim() || (x.originalName || 'Uploaded track').replace(/\.[^.]+$/, ''),
+            url: `/uploads/music/${x.filePath}`
+          }));
       }
       if (cb) cb();
+      announce();
     }).catch(() => cb && cb());
   }
 
+  function applyVolume() {
+    if (audioEl) audioEl.volume = volume;
+  }
+
   function playRemote() {
-    if (!audioUrl || !musicOn) return;
-    audioEl = new Audio(audioUrl);
-    audioEl.loop = true;
-    audioEl.volume = 0.4;
-    audioEl.play().catch(() => {});
-    return true;
+    if (!musicOn || !playlist.length) return;
+    const t = playlist[trackIndex % playlist.length];
+    audioEl = new Audio(t.url);
+    audioEl.loop = false;
+    applyVolume();
+    audioEl.addEventListener('ended', () => next(1));
+    audioEl.play().catch(() => { /* autoplay guard */ });
   }
 
   function stopRemote() {
     if (audioEl) { audioEl.pause(); audioEl = null; }
+  }
+
+  function next(dir) {
+    if (!playlist.length) return;
+    trackIndex = (trackIndex + dir + playlist.length) % playlist.length;
+    if (musicOn) { stopRemote(); playRemote(); }
+    announce();
+  }
+
+  function setVolume(v) {
+    volume = Math.min(1, Math.max(0, v));
+    applyVolume();
+    try { localStorage.setItem('bd-music-volume', String(volume)); } catch (e) { /* ignore */ }
+    announce();
   }
 
   function beep(freq, t, dur, type, vol) {
@@ -376,15 +430,22 @@ const AudioManager = (function () {
       const c = ensure(); if (!c) return false;
       musicOn = !musicOn;
       if (musicOn) {
-        if (audioUrl) playRemote();
+        if (playlist.length) playRemote();
         else { birthdayMelody(); setTimeout(playMelodyLoop, notesDur()); }
       } else {
         stopRemote();
       }
+      announce();
       return musicOn;
     },
+    next,
+    setVolume,
     loadTrack,
     isOn() { return musicOn; },
+    getVolume() { return volume; },
+    currentTitle,
+    hasTracks() { return playlist.length > 0; },
+    info,
     sfxPop() { beep(700, 0, 0.08, 'square', 0.06); beep(1000, 0.05, 0.08, 'square', 0.06); },
     sfxFlip() { beep(400, 0, 0.1, 'triangle', 0.08); },
     sfxBoom() { beep(150, 0, 0.3, 'sawtooth', 0.12); beep(80, 0.05, 0.4, 'sawtooth', 0.15); },
@@ -581,9 +642,12 @@ function initNameBalloons() {
     b.style.left = (10 + (i * 60 / Math.max(name.length, 1))) + '%';
     b.style.animationDelay = (i * 0.4) + 's';
     b.style.background = `hsl(${(330 + i * 40) % 360}, 85%, 65%)`;
+    b.style.setProperty('--tilt', `${(Math.random() * 10 - 5).toFixed(1)}deg`);
+    b.style.setProperty('--drift', `${(Math.random() * 70 - 35).toFixed(0)}px`);
     wrap.appendChild(b);
   });
-  /* .name-balloon in CSS */
+  /* Balloons fade away on their own (see balloonFloat keyframes); clean up after. */
+  setTimeout(() => { wrap.innerHTML = ''; }, Math.ceil(name.length * 400 + 5300));
   setTimeout(() => fireConfetti({ particleCount: 60 }), 1500);
 }
 
@@ -1702,23 +1766,96 @@ function initAppShell() {
   const sheet = $('#appMoreSheet');
   const backdrop = $('#appMoreBackdrop');
   if (!btn || !sheet || !backdrop) return;
+  const supportsInert = 'inert' in HTMLElement.prototype;
   const open = () => {
     sheet.classList.add('is-open');
     backdrop.classList.add('is-open');
-    sheet.setAttribute('aria-hidden', 'false');
+    if (supportsInert) sheet.removeAttribute('inert');
+    else sheet.setAttribute('aria-hidden', 'false');
     btn.setAttribute('aria-expanded', 'true');
   };
   const close = () => {
     sheet.classList.remove('is-open');
     backdrop.classList.remove('is-open');
-    sheet.setAttribute('aria-hidden', 'true');
+    if (supportsInert) sheet.setAttribute('inert', '');
+    else sheet.setAttribute('aria-hidden', 'true');
     btn.setAttribute('aria-expanded', 'false');
   };
   btn.addEventListener('click', () => sheet.classList.contains('is-open') ? close() : open());
   backdrop.addEventListener('click', close);
   sheet.addEventListener('click', (e) => { if (e.target.closest('a')) close(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  close();
 }
+
+/* =========================================================
+   View mode resolver (mobile app shell vs classic desktop)
+   ========================================================= */
+const ViewMode = (function () {
+  const KEY = 'bd-view';
+  const root = document.documentElement;
+
+  const isMobileViewport = () => window.matchMedia('(max-width: 768px)').matches;
+
+  function current() {
+    return root.getAttribute('data-view') || (isMobileViewport() ? 'mobile' : 'desktop');
+  }
+
+  function apply(mode, persist) {
+    const v = mode === 'mobile' ? 'mobile' : 'desktop';
+    root.setAttribute('data-view', v);
+    root.setAttribute('data-view-auto', persist ? 'false' : 'true');
+    if (persist) {
+      try { localStorage.setItem(KEY, v); } catch (e) {}
+    } else {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+    }
+    syncToggle(v);
+    window.dispatchEvent(new CustomEvent('viewchange', { detail: { view: v } }));
+    return v;
+  }
+
+  function syncToggle(view) {
+    const btn = $('#viewToggle');
+    if (!btn) return;
+    const toMobile = view === 'desktop';
+    btn.setAttribute('aria-label', toMobile ? 'Switch to mobile app view' : 'Switch to desktop view');
+    btn.setAttribute('title', toMobile ? 'Mobile app view' : 'Desktop view');
+    btn.setAttribute('aria-pressed', String(view === 'mobile'));
+  }
+
+  function init() {
+    // Honour the pre-paint resolver value, but keep it in sync with the viewport
+    // until the user makes an explicit choice.
+    let manual = false;
+    try { manual = localStorage.getItem(KEY) === 'mobile' || localStorage.getItem(KEY) === 'desktop'; } catch (e) {}
+
+    if (!manual) {
+      const mq = window.matchMedia('(max-width: 768px)');
+      const onChange = () => { if (!manual) apply(mq.matches ? 'mobile' : 'desktop', false); };
+      if (mq.addEventListener) mq.addEventListener('change', onChange);
+      else if (mq.addListener) mq.addListener(onChange);
+    }
+
+    const btn = $('#viewToggle');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        manual = true;
+        const next = current() === 'mobile' ? 'desktop' : 'mobile';
+        apply(next, true);
+      });
+    }
+
+    syncToggle(current());
+
+    // Keep the app shell's internal state (tab bar, More sheet) in step.
+    window.addEventListener('viewchange', () => {
+      if (typeof syncMusicUI === 'function') syncMusicUI(AudioManager.isOn());
+    });
+  }
+
+  return { init, current, apply };
+})();
 
 function initCardPager() {
   const pager = $('#cardPager');
@@ -1730,7 +1867,8 @@ function initCardPager() {
   const slides = $$('.card-slide', pager);
   if (!slides.length) return;
 
-  const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+  const isMobile = () => (typeof ViewMode !== 'undefined' ? ViewMode.current() === 'mobile'
+                                                   : window.matchMedia('(max-width: 768px)').matches);
 
   const buildDots = () => {
     if (!dotsWrap) return;
@@ -1741,6 +1879,12 @@ function initCardPager() {
       dotsWrap.appendChild(d);
     });
   };
+
+  // Scrollable slides must be keyboard reachable
+  slides.forEach((s) => {
+    if (!s.hasAttribute('tabindex')) s.setAttribute('tabindex', '0');
+    if (!s.hasAttribute('role')) s.setAttribute('role', 'group');
+  });
 
   const getIndex = () => {
     const center = pager.scrollLeft + pager.clientWidth / 2;
@@ -1776,11 +1920,11 @@ function initCardPager() {
 
   // Only show controls on mobile
   const syncMode = () => {
-    controls.style.display = isMobile() ? 'flex' : 'none';
-    if (!isMobile()) { pager.scrollLeft = 0; }
+    if (!isMobile()) pager.scrollLeft = 0;
   };
   syncMode();
   window.addEventListener('resize', syncMode);
+  window.addEventListener('viewchange', syncMode);
 }
 
 function initHomeSections() {
@@ -2393,7 +2537,10 @@ function initLetter() {
     box.setAttribute('role', 'button');
     box.setAttribute('aria-label', 'Open your letter');
     box.setAttribute('aria-expanded', 'false');
-    box.innerHTML = '<p style="color:var(--muted);font-style:italic">Tap to open your letter...</p>';
+    const tapHint = window.matchMedia && window.matchMedia('(pointer: fine)').matches
+      ? 'Click to open your letter...'
+      : 'Tap to open your letter...';
+    box.innerHTML = `<p style="color:var(--muted);font-style:italic">${tapHint}</p>`;
     box.addEventListener('click', show);
     box.addEventListener('keydown', event => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); show(); }
@@ -2908,6 +3055,56 @@ function syncMusicUI(on) {
     const icon = $('.music-icon', bento);
     if (icon) icon.textContent = on ? '❚❚' : '▶';
   }
+  updateMusicPlayer();
+}
+
+/* =========================================================
+   Mini music player (playlist, next track, volume)
+   ========================================================= */
+function initMusicPlayer() {
+  const host = document.createElement('div');
+  host.className = 'music-player';
+  host.id = 'musicPlayer';
+  host.hidden = true;
+  host.innerHTML = `
+    <button type="button" class="mp-btn" data-mp-toggle aria-pressed="false" aria-label="Pause the music"><span aria-hidden="true">❚❚</span></button>
+    <div class="mp-meta">
+      <span class="mp-title" id="mpTitle">Music</span>
+      <div class="mp-volume-row">
+        <span class="mp-vol-icon" aria-hidden="true">🔈</span>
+        <input type="range" class="mp-volume" id="mpVolume" min="0" max="100" step="1" value="40" aria-label="Music volume">
+      </div>
+    </div>
+    <button type="button" class="mp-btn" data-mp-next aria-label="Next track"><span aria-hidden="true">⏭</span></button>`;
+  document.body.appendChild(host);
+
+  host.querySelector('[data-mp-toggle]').addEventListener('click', () => {
+    syncMusicUI(AudioManager.toggle());
+  });
+  host.querySelector('[data-mp-next]').addEventListener('click', () => {
+    AudioManager.next(1);
+  });
+  const vol = host.querySelector('#mpVolume');
+  vol.addEventListener('input', () => AudioManager.setVolume(vol.value / 100));
+
+  window.addEventListener('musicchange', updateMusicPlayer);
+}
+
+function updateMusicPlayer() {
+  const host = $('#musicPlayer');
+  if (!host) return;
+  const state = AudioManager.info();
+  host.hidden = !state.on;
+  const toggleBtn = host.querySelector('[data-mp-toggle]');
+  toggleBtn.setAttribute('aria-pressed', String(state.on));
+  toggleBtn.setAttribute('aria-label', state.on ? 'Pause the music' : 'Play the music');
+  toggleBtn.innerHTML = `<span aria-hidden="true">${state.on ? '❚❚' : '▶'}</span>`;
+  const title = $('#mpTitle');
+  if (title) {
+    title.textContent = state.trackCount > 1 ? `${state.title} · ${state.trackIndex + 1}/${state.trackCount}` : state.title;
+  }
+  const vol = $('#mpVolume');
+  if (vol && document.activeElement !== vol) vol.value = Math.round(state.volume * 100);
 }
 
 /* =========================================================
@@ -2930,6 +3127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   DeviceIntel.init();
   const safe = (fn) => { try { fn(); } catch (e) { console.warn('Init failed:', fn.name || 'anonymous', e); } };
   function boot() {
+  safe(ViewMode.init);
   safe(initAppShell);
   safe(initCardPager);
   safe(initEntrance);

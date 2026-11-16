@@ -203,6 +203,71 @@ body::after {
 .music-fab[aria-pressed="true"] { background: var(--gradient-main); color: #2a0f1e; }
 .music-fab .music-icon { font-size: 20px; }
 
+/* ==== Mini music player ==== */
+.music-player {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-pill);
+  background: rgba(15, 5, 32, 0.82);
+  box-shadow: 0 18px 44px rgba(5, 0, 15, 0.35);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  max-width: min(320px, calc(100vw - 36px));
+}
+.mp-btn {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--panel-border);
+  border-radius: 50%;
+  background: var(--gradient-main);
+  color: #2a0f1e;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.mp-btn:hover { transform: scale(1.07); box-shadow: var(--shadow-glow); }
+.mp-btn[data-mp-next] { background: var(--glass); color: var(--text); font-size: 0.95rem; }
+.mp-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.mp-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mp-volume-row { display: flex; align-items: center; gap: 6px; }
+.mp-vol-icon { font-size: 0.7rem; opacity: 0.8; }
+.mp-volume {
+  width: 100%;
+  min-width: 90px;
+  height: 14px;
+  accent-color: var(--pink);
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .music-player { right: 12px; bottom: 84px; padding: 8px 10px; }
+  .mp-volume { min-width: 70px; }
+}
+html[data-view="mobile"] .music-player { bottom: 84px; }
+
 .glass-panel {
   background: var(--glass);
   border: 1px solid var(--panel-border);
@@ -3205,6 +3270,7 @@ html[data-view="mobile"] .app-more-backdrop {
   position: fixed;
   inset: 0;
   z-index: 65;
+  display: block;
   background: rgba(8, 3, 18, 0.6);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
@@ -3220,6 +3286,7 @@ html[data-view="mobile"] .app-more-sheet {
   transform: translate(-50%, 130%);
   bottom: calc(12px + var(--safe-bottom));
   z-index: 70;
+  display: block;
   width: min(calc(100% - 24px), 460px);
   padding: 16px 16px 18px;
   background: rgba(22, 11, 40, 0.97);

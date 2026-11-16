@@ -592,7 +592,7 @@ function initEntrance() {
   if (type === 'pinch') {
     center.innerHTML = `
       <button type="button" id="pinchHeart" aria-label="Open the birthday surprise" style="font-size:6rem;cursor:pointer;background:none;border:0;line-height:1;padding:0">💗</button>
-      <p>Tap the heart to begin...</p>
+      <p>${window.matchMedia && window.matchMedia('(pointer: fine)').matches ? 'Click the heart to begin...' : 'Tap the heart to begin...'}</p>
       <button class="pill-btn btn-secondary" id="skipBtn">Skip intro</button>
     `;
     $('#pinchHeart').addEventListener('click', () => { fireConfetti(); openCurtain(); });
@@ -3177,6 +3177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(initFinale);
   safe(initCredits);
   safe(initScrollReveal);
+  safe(initMusicPlayer);
 
   // music toggle buttons
   syncMusicUI(AudioManager.isOn());

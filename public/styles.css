@@ -266,7 +266,13 @@ body::after {
   .music-player { right: 12px; bottom: 84px; padding: 8px 10px; }
   .mp-volume { min-width: 70px; }
 }
-html[data-view="mobile"] .music-player { bottom: 84px; }
+/* Keep the mini player clear of the card pager controls and the tab bar. */
+html[data-view="mobile"] .music-player {
+  bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 86px);
+  right: 12px;
+  max-width: min(300px, calc(100% - 24px));
+}
+html[data-view="mobile"] .mp-volume { max-width: 84px; }
 
 .glass-panel {
   background: var(--glass);

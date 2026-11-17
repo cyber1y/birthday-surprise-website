@@ -1,4 +1,4 @@
-const CACHE_NAME = 'birthday-app-v18';
+const CACHE_NAME = 'birthday-app-v19';
 const CORE_ASSETS = [
   '/',
   '/index.html',
@@ -8,7 +8,7 @@ const CORE_ASSETS = [
   '/wishes.html',
   '/finale.html',
   '/offline.html',
-  '/styles.css?v=app16',
+  '/styles.css?v=app17',
   '/app.js?v=app15',
   '/manifest.webmanifest',
   '/assets/icons/icon-192.png',

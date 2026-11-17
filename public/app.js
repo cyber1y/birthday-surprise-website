@@ -3066,6 +3066,8 @@ function initMusicPlayer() {
   host.className = 'music-player';
   host.id = 'musicPlayer';
   host.hidden = true;
+  host.setAttribute('role', 'region');
+  host.setAttribute('aria-label', 'Music player');
   host.innerHTML = `
     <button type="button" class="mp-btn" data-mp-toggle aria-pressed="false" aria-label="Pause the music"><span aria-hidden="true">❚❚</span></button>
     <div class="mp-meta">

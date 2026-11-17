@@ -1,4 +1,4 @@
-const CACHE_NAME = 'birthday-app-v17';
+const CACHE_NAME = 'birthday-app-v18';
 const CORE_ASSETS = [
   '/',
   '/index.html',
